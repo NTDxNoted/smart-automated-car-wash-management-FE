@@ -1,22 +1,24 @@
-import Navbar     from "./components/Navbar";
-import Hero       from "./components/Hero";
-import Services   from "./components/Services";
-import Booking    from "./components/Booking";
-import Membership from "./components/Membership";
-import Footer     from "./components/Footer";
-import "./App.css";
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+import { AuthProvider } from './context/AuthContext';
+import { Toaster } from 'react-hot-toast';
+import './App.css';
 
 export default function App() {
   return (
-    <>
-      <Navbar />
-      <main>
-        <Hero />
-        <Services />
-        <Booking />
-        <Membership />
-      </main>
-      <Footer />
-    </>
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: '#111827',
+            color: '#e2e8f0',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            borderRadius: '12px',
+          },
+        }}
+      />
+    </AuthProvider>
   );
 }
