@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { register } from "../../services/authService";
+import bg from "../../assets/img/bg-car.png";
 
 /* ─── Tailwind config injection (matches DESIGN.md) ──────────────────────
    The host app must load:
@@ -40,50 +41,45 @@ function InputRow({ label, name, type = "text", value, onChange, placeholder, er
       <label className="font-label-caps text-label-caps text-on-surface-variant px-1">
         {label}
       </label>
-      <div className="relative group">
-        {/* Left icon */}
+      <div className="flex items-center gap-sm group">
+        {/* Icon nằm NGOÀI, TRƯỚC input */}
         <span
           className={[
-            "absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined transition-colors",
-            error
-              ? "text-error"
-              : "text-outline group-focus-within:text-primary",
+            "material-symbols-outlined transition-colors shrink-0",
+            error ? "text-error" : "text-outline group-focus-within:text-primary",
           ].join(" ")}
           style={{ fontSize: "20px" }}
         >
           {icon}
         </span>
 
-        <input
-          id={name}
-          name={name}
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          autoComplete={autoComplete}
-          disabled={disabled}
-          className={[
-            "w-full bg-surface-container-low border rounded-lg py-3 pl-12 text-on-surface",
-            "placeholder:text-outline outline-none transition-all duration-300",
-            "focus:ring-1",
-            rightSlot ? "pr-12" : "pr-4",
-            error
-              ? "border-error/60 focus:border-error focus:ring-error/40"
-              : "border-outline/30 focus:border-primary focus:ring-primary/30",
-            disabled ? "opacity-50 cursor-not-allowed" : "",
-          ].join(" ")}
-        />
-
-        {/* Right slot (e.g. eye toggle) */}
-        {rightSlot && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {rightSlot}
-          </div>
-        )}
+        {/* Input */}
+        <div className="relative flex-1">
+          <input
+            id={name}
+            name={name}
+            type={type}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            autoComplete={autoComplete}
+            disabled={disabled}
+            className={[
+              "w-full bg-surface-container-low border rounded-lg py-3 px-4 text-on-surface",
+              "placeholder:text-outline outline-none transition-all duration-300 focus:ring-1",
+              rightSlot ? "pr-12" : "pr-4",
+              error
+                ? "border-error/60 focus:border-error focus:ring-error/40"
+                : "border-outline/30 focus:border-primary focus:ring-primary/30",
+              disabled ? "opacity-50 cursor-not-allowed" : "",
+            ].join(" ")}
+          />
+          {rightSlot && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightSlot}</div>
+          )}
+        </div>
       </div>
 
-      {/* Error message */}
       {error && (
         <p className="flex items-center gap-xs text-error text-xs px-1 mt-0.5">
           <span
@@ -210,7 +206,7 @@ export default function RegisterPage() {
         {/* Hero background */}
         <div className="fixed inset-0 z-0">
           <img
-            src="https://lh3.googleusercontent.com/aida/AP1WRLvEKpT-h0m5Bc--YsvKG9KNRVhL34DUUfcJg29gx6VBIGy4N3CkQD9xJpKGZHq8o-yXwbtseovLOBfB_whN-PvrsY0m5W8audJBcYZIxShtnCYTVwZj2YbaATyyxTFF3lHaA0Tm8YzO9GaIF2n5yQ4Ly0CVv8EsplaeqY1a5okNvKqaQhykcYsATjKs5pa5xXhra0dc6VEKAingaHpR0TSNrweLeP9IM1vFExmGJ683USgff3Plr0Bakteu"
+            src={bg}
             alt="AutoWash Pro Background"
             className="w-full h-full object-cover opacity-60"
             style={{ filter: "grayscale(0.3)" }}
@@ -267,7 +263,7 @@ export default function RegisterPage() {
                 type="text"
                 value={form.fullName}
                 onChange={handleChange}
-                placeholder="Nguyễn Văn A"
+                placeholder=" Nguyễn Văn A"
                 error={errors.fullName}
                 icon="person"
                 autoComplete="name"
@@ -281,7 +277,7 @@ export default function RegisterPage() {
                 type="tel"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="Số điện thoại (dùng để đăng nhập)"
+                placeholder=" Số điện thoại (dùng để đăng nhập)"
                 error={errors.phone}
                 icon="phone_iphone"
                 autoComplete="tel"
@@ -294,7 +290,7 @@ export default function RegisterPage() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder=" ••••••••"
                 error={errors.password}
                 icon="lock"
                 autoComplete="new-password"
@@ -307,7 +303,7 @@ export default function RegisterPage() {
                 name="confirmPassword"
                 value={form.confirmPassword}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder=" ••••••••"
                 error={errors.confirmPassword}
                 icon="shield_lock"
                 autoComplete="new-password"

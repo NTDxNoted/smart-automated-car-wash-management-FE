@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from "react";
+import { createContext, useState, useCallback, useContext } from "react";
 import { logout as logoutService } from "../services/authService";
 
 /**
@@ -38,8 +38,8 @@ function loadFromStorage() {
 
 export const AuthContext = createContext({
   auth: DEFAULT_AUTH,
-  setAuth: () => {},
-  logout: () => {},
+  setAuth: () => { },
+  logout: () => { },
   isAdmin: false,
   isMember: false,
   isGuest: true,
@@ -65,5 +65,10 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ auth, setAuth, logout, isAdmin, isMember, isGuest }}>
       {children}
     </AuthContext.Provider>
+
   );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
 }
