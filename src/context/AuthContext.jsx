@@ -1,45 +1,69 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useCallback } from "react";
+import { logout as logoutService } from "../services/authService";
 
-const AuthContext = createContext(null);
+/**
+ * AuthContext — global auth state.
+ *
+ * Shape of `auth`:
+ * {
+ *   token        : string | null,
+ *   customerId   : string | null,
+ *   fullName     : string | null,
+ *   tier         : 'MEMBER' | 'SILVER' | 'GOLD' | 'PLATINUM' | null,
+ *   suspendedUntil: string | null,  // ISO date or null
+ *   role         : 'ADMIN' | 'MEMBER' | null,
+ * }
+ */
 
-export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
-  const [user, setUser] = useState(() => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch {
-      return null;
+const DEFAULT_AUTH = {
+  token: null,
+  customerId: null,
+  fullName: null,
+  tier: null,
+  suspendedUntil: null,
+  role: null,
+};
+
+// Rehydrate from localStorage on app boot
+function loadFromStorage() {
+  try {
+    const token = localStorage.getItem("aw_token");
+    const raw = localStorage.getItem("aw_user");
+    if (token && raw) {
+      return { token, ...JSON.parse(raw) };
     }
-  });
+  } catch (_) { /* ignore */ }
+  return DEFAULT_AUTH;
+}
 
-  const login = (newToken, userData) => {
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setToken(newToken);
-    setUser(userData);
-  };
+export const AuthContext = createContext({
+  auth: DEFAULT_AUTH,
+  setAuth: () => {},
+  logout: () => {},
+  isAdmin: false,
+  isMember: false,
+  isGuest: true,
+});
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
-  };
+export function AuthProvider({ children }) {
+  const [auth, setAuthState] = useState(loadFromStorage);
 
-  const isAuthenticated = !!token;
+  const setAuth = useCallback((payload) => {
+    setAuthState(payload ?? DEFAULT_AUTH);
+  }, []);
+
+  const logout = useCallback(() => {
+    logoutService(); // clears localStorage
+    setAuthState(DEFAULT_AUTH);
+  }, []);
+
+  const isAdmin = auth.role === "ADMIN";
+  const isMember = !!auth.token && auth.role === "MEMBER";
+  const isGuest = !auth.token;
 
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ auth, setAuth, logout, isAdmin, isMember, isGuest }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+}
