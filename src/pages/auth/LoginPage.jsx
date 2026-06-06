@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { login } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext";
+import bg from "../../assets/img/bg-car.png";
 
 // ─── Validators ─────────────────────────────────────────────────────────────
 function validate({ phone, password }) {
