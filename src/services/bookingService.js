@@ -2,45 +2,48 @@ import axios from 'axios';
 
 const USE_MOCK_DATA = true; // Gạt thành false khi backend deploy API thật
 
+// ─────────────────────────────────────────────────────────────────────────────
 // 📦 1. KHO DỮ LIỆU ẢO MOCK DỊCH VỤ CHUẨN THEO DATABASE SQL CỦA BẠN
+// ─────────────────────────────────────────────────────────────────────────────
 const MOCK_SERVICES = [
-    { ServiceID: 1, ServiceName: "Rửa xe cơ bản", ServiceCategory: "Basic", Description: "Rửa ngoài, sấy khô, lau kính", Price: 80000, Duration: 20 },
-    { ServiceID: 2, ServiceName: "Rửa xe cao cấp", ServiceCategory: "Premium", Description: "Rửa toàn diện + xịt bóng ngoại thất", Price: 150000, Duration: 35 },
-    { ServiceID: 3, ServiceName: "Rửa + Hút bụi nội thất", ServiceCategory: "Premium", Description: "Rửa ngoài và hút bụi toàn bộ nội thất", Price: 220000, Duration: 50 },
-    { ServiceID: 4, ServiceName: "Rửa chi tiết toàn bộ", ServiceCategory: "Detail", Description: "Dịch vụ cao cấp nhất — trong và ngoài hoàn hảo", Price: 350000, Duration: 90 },
-    { ServiceID: 5, ServiceName: "Đánh bóng & bảo vệ sơn", ServiceCategory: "AddOn", Description: "Đánh bóng lớp sơn + phủ ceramic nano", Price: 200000, Duration: 45 }
+    { ServiceID: 1, ServiceName: "Rửa xe cơ bản",         ServiceCategory: "Basic",   Description: "Rửa ngoài, sấy khô, lau kính",                        Price: 80000,  Duration: 20 },
+    { ServiceID: 2, ServiceName: "Rửa xe cao cấp",         ServiceCategory: "Premium", Description: "Rửa toàn diện + xịt bóng ngoại thất",                 Price: 150000, Duration: 35 },
+    { ServiceID: 3, ServiceName: "Rửa + Hút bụi nội thất", ServiceCategory: "Premium", Description: "Rửa ngoài và hút bụi toàn bộ nội thất",                Price: 220000, Duration: 50 },
+    { ServiceID: 4, ServiceName: "Rửa chi tiết toàn bộ",   ServiceCategory: "Detail",  Description: "Dịch vụ cao cấp nhất — trong và ngoài hoàn hảo",       Price: 350000, Duration: 90 },
+    { ServiceID: 5, ServiceName: "Đánh bóng & bảo vệ sơn", ServiceCategory: "AddOn",   Description: "Đánh bóng lớp sơn + phủ ceramic nano",                 Price: 200000, Duration: 45 }
 ];
 
-// 📦 2. HÀM TỰ ĐỘNG SINH 7 NGÀY VÀ CÁC SLOT GIỜ ẢO ĐỂ IN RA HÌNH LƯỚI (TIME SLOT PICKER)
+// ─────────────────────────────────────────────────────────────────────────────
+// 📦 2. HÀM TỰ ĐỘNG SINH 7 NGÀY VÀ CÁC SLOT GIỜ ẢO (TIME SLOT PICKER)
+// ─────────────────────────────────────────────────────────────────────────────
 const generateMockTimeSlots = () => {
     const daysOfWeek = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
     const mockData = [];
 
-    // Chạy vòng lặp tạo ra dữ liệu cho 7 ngày tính từ ngày hôm nay
     for (let i = 0; i < 7; i++) {
         const d = new Date();
-        d.setDate(d.getDate() + i); // Tăng dần từng ngày
+        d.setDate(d.getDate() + i);
 
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const dateVal = String(d.getDate()).padStart(2, '0');
-        const fullDateStr = `${year}-${month}-${dateVal}`; // Định dạng chuẩn: YYYY-MM-DD
+        const year     = d.getFullYear();
+        const month    = String(d.getMonth() + 1).padStart(2, '0');
+        const dateVal  = String(d.getDate()).padStart(2, '0');
+        const fullDateStr = `${year}-${month}-${dateVal}`;
 
         mockData.push({
-            dateStr: fullDateStr,                     // Dùng để lưu vào DB (VD: "2026-06-07")
-            label: dateVal,                          // In ra số ngày trên giao diện (VD: "07")
-            dayOfWeek: daysOfWeek[d.getDay()],       // In ra thứ trên giao diện (VD: "CN")
+            dateStr:   fullDateStr,
+            label:     dateVal,
+            dayOfWeek: daysOfWeek[d.getDay()],
             slots: [
                 { time: "07:30", isAvailable: true },
                 { time: "08:00", isAvailable: true },
-                { time: "08:30", isAvailable: i !== 0 }, // Giả định ngày đầu tiên (hôm nay) slot này đã có người đặt (false)
+                { time: "08:30", isAvailable: i !== 0 },
                 { time: "09:00", isAvailable: true },
-                { time: "09:30", isAvailable: i !== 1 }, // Giả định ngày mai slot này bận
+                { time: "09:30", isAvailable: i !== 1 },
                 { time: "10:00", isAvailable: true },
                 { time: "10:30", isAvailable: true },
                 { time: "11:00", isAvailable: true },
                 { time: "14:00", isAvailable: true },
-                { time: "14:30", isAvailable: false }, // Slot cố định bận để test UI màu xám bận
+                { time: "14:30", isAvailable: false },
                 { time: "15:00", isAvailable: true },
                 { time: "15:30", isAvailable: true },
             ]
@@ -49,33 +52,103 @@ const generateMockTimeSlots = () => {
     return mockData;
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 📦 3. MOCK DATA CHO BOOKING HISTORY (FE-ISSUE-05)
+// ─────────────────────────────────────────────────────────────────────────────
+const MOCK_BOOKINGS = [
+    {
+        bookingId: "BK-20250101", vehiclePlate: "51A-12345",
+        serviceName: "Rửa xe cao cấp Premium",
+        scheduledTime: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(), // +3h → nút hủy hiện
+        status: "Pending",
+        baseAmount: 250000, tierDiscount: 25000, promotionDiscount: 0, rewardDiscount: 0,
+        finalAmount: 225000, pointsEarned: 22, pointsRefunded: 0,
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+        bookingId: "BK-20250102", vehiclePlate: "51B-67890",
+        serviceName: "Bảo dưỡng định kỳ 5000km",
+        scheduledTime: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // +30 phút → nút hủy ẩn (BR-63)
+        status: "Pending",
+        baseAmount: 850000, tierDiscount: 85000, promotionDiscount: 50000, rewardDiscount: 0,
+        finalAmount: 715000, pointsEarned: 71, pointsRefunded: 0,
+        createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    },
+    {
+        bookingId: "BK-20250098", vehiclePlate: "51A-12345",
+        serviceName: "Đánh bóng sơn Ceramic Coating",
+        scheduledTime: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "Completed",
+        baseAmount: 1500000, tierDiscount: 150000, promotionDiscount: 0, rewardDiscount: 100000,
+        finalAmount: 1250000, pointsEarned: 125, pointsRefunded: 0,
+        createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+        bookingId: "BK-20250090", vehiclePlate: "51C-11111",
+        serviceName: "Rửa xe tiêu chuẩn",
+        scheduledTime: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "Cancelled",
+        baseAmount: 120000, tierDiscount: 0, promotionDiscount: 0, rewardDiscount: 0,
+        finalAmount: 120000, pointsEarned: 0, pointsRefunded: 12,
+        createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+        bookingId: "BK-20250085", vehiclePlate: "51B-67890",
+        serviceName: "Bảo dưỡng toàn diện",
+        scheduledTime: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "Failed",
+        baseAmount: 2200000, tierDiscount: 220000, promotionDiscount: 0, rewardDiscount: 0,
+        finalAmount: 1980000, pointsEarned: 0, pointsRefunded: 0,
+        createdAt: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    {
+        bookingId: "BK-20250080", vehiclePlate: "51A-12345",
+        serviceName: "Rửa xe + Hút bụi nội thất",
+        scheduledTime: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+        status: "No-show",
+        baseAmount: 180000, tierDiscount: 18000, promotionDiscount: 0, rewardDiscount: 0,
+        finalAmount: 162000, pointsEarned: 0, pointsRefunded: 0,
+        createdAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔧 HELPER
+// ─────────────────────────────────────────────────────────────────────────────
+const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🚀 BOOKING SERVICE
+// ─────────────────────────────────────────────────────────────────────────────
 export const bookingService = {
-    // [HÀM MỚI] Lấy lịch các khung giờ trống khả dụng
-    // Truyền vào startDate để sau này API thật biết lọc từ ngày nào
+
+    // ── FE-ISSUE-04: Lấy danh sách khung giờ trống ───────────────────────────
+    // GET /api/bookings/available-slots?startDate=YYYY-MM-DD
     getAvailableSlots: async (startDate) => {
         if (USE_MOCK_DATA) {
-            await new Promise(resolve => setTimeout(resolve, 400)); // Giả lập delay mạng 400ms
-            return generateMockTimeSlots(); // Trả về cấu trúc mảng 7 ngày ở trên
+            await delay(400);
+            return generateMockTimeSlots();
         }
-        // Khi backend code xong, hàm này sẽ gọi endpoint thật dưới đây:
-        const response = await axios.get(`/api/bookings/available-slots`, { params: { startDate } });
+        const response = await axios.get('/api/bookings/available-slots', { params: { startDate } });
         return response.data;
     },
 
-    // GET /api/services - Lấy danh sách dịch vụ
+    // ── FE-ISSUE-04: Lấy danh sách dịch vụ ──────────────────────────────────
+    // GET /api/services
     getServices: async () => {
         if (USE_MOCK_DATA) {
-            await new Promise(resolve => setTimeout(resolve, 300));
+            await delay(300);
             return MOCK_SERVICES;
         }
         const response = await axios.get('/api/services');
         return response.data;
     },
 
-    // GET /api/vehicles - Lấy danh sách xe của member
+    // ── FE-ISSUE-04: Lấy danh sách xe của member ─────────────────────────────
+    // GET /api/vehicles
     getVehicles: async () => {
         if (USE_MOCK_DATA) {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await delay(500);
             return [
                 { id: 'v1', licensePlate: '29A-12345', model: 'Mercedes C200' },
                 { id: 'v2', licensePlate: '30H-99999', model: 'Porsche Taycan' },
@@ -85,10 +158,11 @@ export const bookingService = {
         return response.data;
     },
 
+    // ── FE-ISSUE-04: Validate mã khuyến mãi ──────────────────────────────────
     // GET /api/promotions/validate?code=xxx
     validatePromo: async (code) => {
         if (USE_MOCK_DATA) {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await delay(500);
             if (code.toUpperCase() === 'WELCOME2025') {
                 return { promotionId: 1, discountType: 'Fixed_Amount', discountValue: 30000, isValid: true };
             } else if (code.toUpperCase() === 'WEEKEND50') {
@@ -97,34 +171,84 @@ export const bookingService = {
                 throw { response: { data: { code: 'PROMO_INVALID', message: 'Mã giảm giá không tồn tại hoặc hết hạn' } } };
             }
         }
-        try {
-            const response = await axios.get(`/api/promotions/validate?code=${code}`);
-            return response.data;
-        } catch (error) {
-            throw error;
-        }
+        const response = await axios.get(`/api/promotions/validate?code=${code}`);
+        return response.data;
     },
 
-    // POST /api/bookings - Gửi dữ liệu đặt lịch lên hệ thống
+    // ── FE-ISSUE-04: Tạo booking mới ─────────────────────────────────────────
+    // POST /api/bookings
     createBooking: async (bookingData) => {
         if (USE_MOCK_DATA) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await delay(1000);
             return {
                 bookingId: 'BK-' + Math.floor(Math.random() * 90000 + 10000),
                 scheduledTime: bookingData.scheduledTime,
                 status: 'Pending',
                 invoice: {
-                    baseAmount: bookingData.baseAmount || 150000,
+                    baseAmount:      bookingData.baseAmount      || 150000,
                     discountApplied: bookingData.discountApplied || 0,
-                    finalAmount: bookingData.finalAmount || 150000
+                    finalAmount:     bookingData.finalAmount      || 150000,
                 }
             };
         }
-        try {
-            const response = await axios.post('/api/bookings', bookingData);
-            return response.data;
-        } catch (error) {
-            throw error;
+        const response = await axios.post('/api/bookings', bookingData);
+        return response.data;
+    },
+
+    // ── FE-ISSUE-05: Lấy danh sách booking của member ────────────────────────
+    // GET /api/bookings?status=xxx&page=x
+    getMyBookings: async ({ status = 'all', page = 1, pageSize = 5 } = {}) => {
+        if (USE_MOCK_DATA) {
+            await delay(600);
+            const filtered = status === 'all'
+                ? MOCK_BOOKINGS
+                : MOCK_BOOKINGS.filter(b => b.status === status);
+            const total = filtered.length;
+            const start = (page - 1) * pageSize;
+            return {
+                data: filtered.slice(start, start + pageSize),
+                pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+            };
         }
-    }
+        const params = new URLSearchParams({ page, pageSize });
+        if (status !== 'all') params.append('status', status);
+        const response = await axios.get(`/api/bookings?${params}`);
+        return response.data;
+    },
+
+    // ── FE-ISSUE-05: Lấy chi tiết một booking ────────────────────────────────
+    // GET /api/bookings/{id}
+    getBookingDetail: async (id) => {
+        if (USE_MOCK_DATA) {
+            await delay(400);
+            const booking = MOCK_BOOKINGS.find(b => b.bookingId === id);
+            if (!booking) throw { response: { data: { code: 'BOOKING_NOT_FOUND' } } };
+            return booking;
+        }
+        const response = await axios.get(`/api/bookings/${id}`);
+        return response.data;
+    },
+
+    // ── FE-ISSUE-05: Hủy booking ─────────────────────────────────────────────
+    // POST /api/bookings/{id}/cancel
+    // → trả { bookingId, status: 'Cancelled', pointsRefunded }
+    // Note: BR-63 — frontend check 2h để ẩn/hiện nút; backend validate độc lập
+    cancelBooking: async (id) => {
+        if (USE_MOCK_DATA) {
+            await delay(800);
+            const booking = MOCK_BOOKINGS.find(b => b.bookingId === id);
+            if (!booking) throw { response: { data: { code: 'BOOKING_NOT_FOUND' } } };
+            if (booking.status !== 'Pending') throw { response: { data: { code: 'BOOKING_NOT_CANCELLABLE' } } };
+            const diffHours = (new Date(booking.scheduledTime) - new Date()) / (1000 * 60 * 60);
+            if (diffHours < 2) throw { response: { data: { code: 'CANCELLATION_TIME_EXCEEDED' } } };
+
+            const pointsRefunded = Math.floor(booking.finalAmount / 10000);
+            booking.status = 'Cancelled';
+            booking.pointsRefunded = pointsRefunded;
+
+            return { bookingId: id, status: 'Cancelled', pointsRefunded };
+        }
+        const response = await axios.post(`/api/bookings/${id}/cancel`);
+        return response.data;
+    },
 };
