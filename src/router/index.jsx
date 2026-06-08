@@ -1,33 +1,48 @@
+import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import CustomerLayout from '../layouts/CustomerLayout';
 import AdminLayout from '../layouts/AdminLayout';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 
-// Auth pages
-import LoginPage from '../pages/auth/LoginPage';
-import RegisterPage from '../pages/auth/RegisterPage';
+// Hiển thị fallback trong lúc tải code
+const GlobalLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="w-10 h-10 border-4 border-slate-200 border-t-cyan-500 rounded-full animate-spin"></div>
+      <p className="text-sm text-slate-500 font-medium">Đang tải dữ liệu...</p>
+    </div>
+  </div>
+);
 
-// Customer pages
-import HomePage from '../pages/customer/HomePage';
-import BookingPage from '../pages/customer/BookingPage';
-import BookingHistoryPage from '../pages/customer/BookingHistoryPage';
-import ProfilePage from '../pages/customer/ProfilePage';
-import LoyaltyPage from '../pages/customer/LoyaltyPage';
+// Auth pages (Lazy)
+const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'));
 
-// Admin pages
-import DashboardPage from '../pages/admin/DashboardPage';
-import BookingManagementPage from '../pages/admin/BookingManagementPage';
-import CustomerListPage from '../pages/admin/CustomerListPage';
-import CustomerDetailPage from '../pages/admin/CustomerDetailPage';
-import ServiceManagementPage from '../pages/admin/ServiceManagementPage';
-import PromotionManagementPage from '../pages/admin/PromotionManagementPage';
-import TierConfigPage from '../pages/admin/TierConfigPage';
-import ReportPage from '../pages/admin/ReportPage';
+// Customer pages (Lazy)
+const HomePage = lazy(() => import('../pages/customer/HomePage'));
+const BookingPage = lazy(() => import('../pages/customer/BookingPage'));
+const BookingHistoryPage = lazy(() => import('../pages/customer/BookingHistoryPage'));
+const ProfilePage = lazy(() => import('../pages/customer/ProfilePage'));
+const LoyaltyPage = lazy(() => import('../pages/customer/LoyaltyPage'));
+
+// Admin pages (Lazy)
+const DashboardPage = lazy(() => import('../pages/admin/DashboardPage'));
+const BookingManagementPage = lazy(() => import('../pages/admin/BookingManagementPage'));
+const CustomerListPage = lazy(() => import('../pages/admin/CustomerListPage'));
+const CustomerDetailPage = lazy(() => import('../pages/admin/CustomerDetailPage'));
+const ServiceManagementPage = lazy(() => import('../pages/admin/ServiceManagementPage'));
+const PromotionManagementPage = lazy(() => import('../pages/admin/PromotionManagementPage'));
+const TierConfigPage = lazy(() => import('../pages/admin/TierConfigPage'));
+const ReportPage = lazy(() => import('../pages/admin/ReportPage'));
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <CustomerLayout />,
+    element: (
+      <Suspense fallback={<GlobalLoader />}>
+        <CustomerLayout />
+      </Suspense>
+    ),
     children: [
       { path: '', element: <HomePage /> },
       {
@@ -62,17 +77,27 @@ export const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <LoginPage />
+    element: (
+      <Suspense fallback={<GlobalLoader />}>
+        <LoginPage />
+      </Suspense>
+    )
   },
   {
     path: '/register',
-    element: <RegisterPage />
+    element: (
+      <Suspense fallback={<GlobalLoader />}>
+        <RegisterPage />
+      </Suspense>
+    )
   },
   {
     path: '/admin',
     element: (
       <ProtectedRoute requireAdmin={true}>
-        <AdminLayout />
+        <Suspense fallback={<GlobalLoader />}>
+          <AdminLayout />
+        </Suspense>
       </ProtectedRoute>
     ),
     children: [
