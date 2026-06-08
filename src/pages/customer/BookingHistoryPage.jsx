@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-// Import các Service và Components con từ các file độc lập của bạn
-import bookingService from "../../services/bookingService";
+// ĐÃ SỬA: Import đúng object bookingService được export từ file service chung của nhóm
+import { bookingService } from "../../services/bookingService";
 import BookingCard from "../../components/booking/BookingCard";
 import BookingDetailModal from "../../components/booking/BookingDetailModal";
 import CancelConfirmDialog from "../../components/booking/CancelConfirmDialog";
@@ -22,20 +22,23 @@ export default function BookingHistoryPage() {
   const fetchBookings = useCallback(async (statusFilter, pageNum) => {
     setIsLoading(true);
     setErrorMsg("");
-    try {
-      // Chuẩn hóa trạng thái truyền lên API theo đúng đặc tả yêu cầu
-      const apiStatus = statusFilter === "Tất cả" ? "" : statusFilter;
 
-      // Gọi qua lớp service tập trung, tự động ăn theo cơ chế MOCK hoặc API thật
+    // 🔍 CHÈN LOG KIỂM TRA LUỒNG:
+    console.log("=== FLOW: Trang Lịch sử bắt đầu gọi API lấy dữ liệu ===");
+
+    try {
+      const apiStatus = statusFilter === "Tất cả" ? "all" : statusFilter;
       const response = await bookingService.getMyBookings({
         status: apiStatus,
         page: pageNum,
+        pageSize: 5
       });
 
-      setBookings(response.bookings || []);
+      console.log("✅ API lấy lịch sử thành công, dữ liệu nhận được:", response);
+      setBookings(response?.data || []);
       setPagi({
-        page: response.page || pageNum,
-        totalPages: response.totalPages || 1,
+        page: response?.pagination?.page || pageNum,
+        totalPages: response?.pagination?.totalPages || 1,
       });
     } catch (err) {
       console.error("Lỗi khi tải lịch sử booking:", err);
@@ -45,7 +48,7 @@ export default function BookingHistoryPage() {
     }
   }, []);
 
-  // Tự động gọi lại hàm fetch mỗi khi người dùng đổi Tab Filter hoặc chuyển trang phân trang
+  // Tự động gọi lại hàm fetch mỗi khi người dùng đổi Tab Filter
   useEffect(() => {
     fetchBookings(filter, 1);
   }, [filter, fetchBookings]);
@@ -60,10 +63,8 @@ export default function BookingHistoryPage() {
       // Hiển thị thông báo Toast thành công lấy số điểm hoàn trả thực tế từ API trả về
       alert(`Hủy lịch đặt thành công! Thao tác đã được xử lý. Bạn được hoàn trả ${res.pointsRefunded} điểm Loyalty.`);
 
-      // Đóng dialog hủy lịch
+      // Đóng các modal và dialog sau khi xử lý thành công
       setBookingToCancel(null);
-
-      // Nếu modal chi tiết cũng đang mở booking này, cập nhật giao diện hoặc đóng lại
       setSelectedBooking(null);
 
       // KÍCH HOẠT RELOAD DANH SÁCH: Tải lại trang hiện tại để cập nhật trạng thái mới nhất
@@ -86,6 +87,10 @@ export default function BookingHistoryPage() {
 
   return (
     <div style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto", background: "#060B0B", minHeight: "100vh", color: "#fff" }}>
+
+      {/* 💡 HỘP ĐỆM TÀNG HÌNH: Chỉ chiếm diện tích lúc đầu để đẩy chữ xuống, khi cuộn trang nó sẽ trượt lên và biến mất */}
+      <div className="h-16 w-full block" aria-hidden="true"></div>
+
       <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "28px", fontWeight: 700, color: "#00DCDC", textShadow: "0 0 10px rgba(0,220,220,0.3)", marginBottom: "24px" }}>
         Lịch Sử Đặt Lịch Của Tôi
       </h1>
@@ -160,7 +165,7 @@ export default function BookingHistoryPage() {
         </div>
       )}
 
-      {/* 4. MODAL CHI TIẾT BOOKING (Gọi từ file component độc lập của bạn) */}
+      {/* 4. MODAL CHI TIẾT BOOKING */}
       {selectedBooking && (
         <BookingDetailModal
           booking={selectedBooking}
@@ -169,7 +174,7 @@ export default function BookingHistoryPage() {
         />
       )}
 
-      {/* 5. DIALOG XÁC NHẬN HỦY LỊCH (Gọi từ file component độc lập của bạn) */}
+      {/* 5. DIALOG XÁC NHẬN HỦY LỊCH */}
       {bookingToCancel && (
         <CancelConfirmDialog
           booking={bookingToCancel}

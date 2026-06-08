@@ -3,7 +3,9 @@ import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
 export default function CustomerLayout() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isMember, auth, logout } = useAuth();
+  const isAuthenticated = isMember;
+  const user = auth;
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
