@@ -21,7 +21,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0, 0, 0, 0.72)",
+        background: "rgba(0, 0, 0, 0.4)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -36,8 +36,8 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
         style={{
           width: "420px",
           maxWidth: "90vw",
-          background: "linear-gradient(135deg, #0D1A1A 0%, #0A1212 100%)",
-          border: "1px solid rgba(255,92,92,0.35)",
+          background: "#ffffff",
+          border: "none",
           borderRadius: "18px",
           padding: "28px",
           boxShadow: "0 0 40px rgba(255,92,92,0.12)",
@@ -66,7 +66,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
               fontFamily: "'Syne', sans-serif",
               fontSize: "18px",
               fontWeight: 700,
-              color: "#fff",
+              color: "#0f172a",
               margin: "0 0 6px",
             }}
           >
@@ -76,7 +76,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: "13px",
-              color: "rgba(255,255,255,0.5)",
+              color: "rgba(0,0,0,0.5)",
               margin: 0,
             }}
           >
@@ -87,8 +87,8 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
         {/* Booking Info */}
         <div
           style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "#f8fafc",
+            border: "1px solid rgba(0,0,0,0.1)",
             borderRadius: "10px",
             padding: "14px 16px",
             marginBottom: "16px",
@@ -100,7 +100,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
                 fontFamily: "'Syne', sans-serif",
                 fontSize: "14px",
                 fontWeight: 700,
-                color: "#00DCDC",
+                color: "#0891b2",
                 letterSpacing: "0.05em",
               }}
             >
@@ -108,10 +108,10 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
             </span>
             <BookingStatusBadge status="Pending" size="sm" />
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "rgba(255,255,255,0.7)", margin: "0 0 4px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.7)", margin: "0 0 4px" }}>
             {booking.serviceName}
           </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: 0 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", margin: 0 }}>
             #{booking.bookingId}
           </p>
         </div>
@@ -120,8 +120,8 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
         {estimatedPoints > 0 && (
           <div
             style={{
-              background: "rgba(0,220,220,0.06)",
-              border: "1px solid rgba(0,220,220,0.2)",
+              background: "rgba(8, 145, 178, 0.05)",
+              border: "1px solid rgba(8, 145, 178, 0.2)",
               borderRadius: "10px",
               padding: "12px 16px",
               marginBottom: "20px",
@@ -135,7 +135,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: "13px",
-                color: "#00DCDC",
+                color: "#0891b2",
                 margin: 0,
               }}
             >
@@ -155,9 +155,9 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
               fontFamily: "'DM Sans', sans-serif",
               fontSize: "14px",
               fontWeight: 600,
-              color: "rgba(255,255,255,0.6)",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(0,0,0,0.6)",
+              background: "#f1f5f9",
+              border: "1px solid rgba(0,0,0,0.1)",
               borderRadius: "10px",
               padding: "12px",
               cursor: "pointer",

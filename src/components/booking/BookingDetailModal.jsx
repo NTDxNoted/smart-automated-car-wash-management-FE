@@ -33,7 +33,7 @@ function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highli
         justifyContent: "space-between",
         alignItems: "center",
         padding: isFinal ? "10px 0 0" : "6px 0",
-        borderTop: isFinal ? "1px solid rgba(255,255,255,0.1)" : "none",
+        borderTop: isFinal ? "1px solid rgba(0,0,0,0.1)" : "none",
         marginTop: isFinal ? "4px" : 0,
       }}
     >
@@ -41,7 +41,7 @@ function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highli
         style={{
           fontFamily: "'DM Sans', sans-serif",
           fontSize: isFinal ? "14px" : "13px",
-          color: isFinal ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.5)",
+          color: isFinal ? "#0f172a" : "rgba(0,0,0,0.6)",
           fontWeight: isFinal ? 600 : 400,
         }}
       >
@@ -53,12 +53,12 @@ function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highli
           fontSize: isFinal ? "16px" : "13px",
           fontWeight: isFinal ? 700 : 500,
           color: isFinal
-            ? "#00DCDC"
+            ? "#0891b2"
             : isDiscount
-            ? "#4AE082"
+            ? "#16a34a"
             : highlight
-            ? "#FFD04A"
-            : "rgba(255,255,255,0.75)",
+            ? "#d97706"
+            : "rgba(0,0,0,0.7)",
         }}
       >
         {isDiscount && amount > 0 ? `−${formatVND(amount)}` : formatVND(amount)}
@@ -76,7 +76,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0, 0, 0, 0.78)",
+        background: "rgba(0, 0, 0, 0.4)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -94,11 +94,11 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
           maxWidth: "100%",
           maxHeight: "90vh",
           overflowY: "auto",
-          background: "linear-gradient(160deg, #0C1A1F 0%, #08121A 100%)",
-          border: "1px solid rgba(0,220,220,0.2)",
+          background: "#ffffff",
+          border: "none",
           borderRadius: "20px",
           padding: "28px",
-          boxShadow: "0 0 60px rgba(0,220,220,0.08)",
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(0,220,220,0.2) transparent",
         }}
@@ -112,7 +112,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
                   fontFamily: "'Syne', sans-serif",
                   fontSize: "20px",
                   fontWeight: 700,
-                  color: "#00DCDC",
+                  color: "#0891b2",
                   letterSpacing: "0.06em",
                 }}
               >
@@ -124,24 +124,24 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: "15px",
-                color: "rgba(255,255,255,0.8)",
+                color: "#0f172a",
                 margin: "0 0 4px",
                 fontWeight: 500,
               }}
             >
               {booking.serviceName}
             </p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(255,255,255,0.35)", margin: 0 }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", margin: 0 }}>
               #{booking.bookingId}
             </p>
           </div>
           <button
             onClick={onClose}
             style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.1)",
+              background: "transparent",
+              border: "none",
               borderRadius: "8px",
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(0,0,0,0.5)",
               width: "32px",
               height: "32px",
               cursor: "pointer",
@@ -159,8 +159,8 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         {/* Giờ hẹn */}
         <div
           style={{
-            background: "rgba(0,220,220,0.05)",
-            border: "1px solid rgba(0,220,220,0.15)",
+            background: "rgba(8, 145, 178, 0.05)",
+            border: "1px solid rgba(8, 145, 178, 0.2)",
             borderRadius: "10px",
             padding: "12px 16px",
             marginBottom: "20px",
@@ -171,8 +171,8 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         >
           <span style={{ fontSize: "18px" }}>📅</span>
           <div>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Giờ hẹn</p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#00DCDC", margin: 0, fontWeight: 500 }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "rgba(0,0,0,0.5)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Giờ hẹn</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#0891b2", margin: 0, fontWeight: 500 }}>
               {formatDateTime(booking.scheduledTime)}
             </p>
           </div>
@@ -180,13 +180,13 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
 
         {/* Invoice Breakdown */}
         <div style={{ marginBottom: "20px" }}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: "12px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 12px" }}>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 12px" }}>
             Chi tiết hóa đơn
           </p>
           <div
             style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "#f8fafc",
+              border: "1px solid rgba(0,0,0,0.1)",
               borderRadius: "10px",
               padding: "14px 16px",
             }}
@@ -208,8 +208,8 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         {/* Points Info */}
         <div
           style={{
-            background: "rgba(255,208,74,0.05)",
-            border: "1px solid rgba(255,208,74,0.15)",
+            background: "rgba(217, 119, 6, 0.05)",
+            border: "1px solid rgba(217, 119, 6, 0.2)",
             borderRadius: "10px",
             padding: "12px 16px",
             marginBottom: "22px",
@@ -220,7 +220,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ fontSize: "16px" }}>⭐</span>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "rgba(255,255,255,0.6)" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.6)" }}>
               {booking.status === "Cancelled" ? "Điểm được hoàn trả" : "Điểm tích lũy"}
             </span>
           </div>
@@ -229,7 +229,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
               fontFamily: "'Syne', sans-serif",
               fontSize: "16px",
               fontWeight: 700,
-              color: "#FFD04A",
+              color: "#d97706",
             }}
           >
             {booking.status === "Cancelled"
