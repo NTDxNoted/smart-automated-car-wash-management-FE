@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 export const CATEGORIES = [
   { value: 'all', label: 'Tất cả' },
@@ -12,7 +12,7 @@ export const CATEGORIES = [
  * ServiceFilter — Tab bar lọc theo category
  * @param {{ active: string, onChange: (cat: string) => void }} props
  */
-export default function ServiceFilter({ active, onChange }) {
+const ServiceFilter = memo(function ServiceFilter({ active, onChange }) {
   return (
     <div className="service-filter" role="tablist" aria-label="Lọc theo danh mục dịch vụ">
       {CATEGORIES.map((cat) => (
@@ -28,4 +28,6 @@ export default function ServiceFilter({ active, onChange }) {
       ))}
     </div>
   );
-}
+});
+
+export default ServiceFilter;

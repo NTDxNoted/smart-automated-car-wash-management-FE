@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import ServiceCard from './ServiceCard';
 
 /** Loading skeleton cho 1 card */
@@ -39,7 +39,7 @@ function EmptyState({ category }) {
  * ServiceList — Render grid services với skeleton + empty state
  * @param {{ services: Array, loading: boolean, activeCategory: string }} props
  */
-export default function ServiceList({ services, loading, activeCategory }) {
+const ServiceList = memo(function ServiceList({ services, loading, activeCategory }) {
   const SKELETON_COUNT = 6;
 
   if (loading) {
@@ -70,4 +70,6 @@ export default function ServiceList({ services, loading, activeCategory }) {
       ))}
     </div>
   );
-}
+});
+
+export default ServiceList;

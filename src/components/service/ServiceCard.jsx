@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Adjust path nếu project dùng alias: import { formatVND } from '@/services/serviceService';
 import { formatVND } from '../../services/serviceService';
 
 /**
@@ -9,7 +8,7 @@ import { formatVND } from '../../services/serviceService';
  *
  * @param {{ service: { serviceId, serviceName, serviceCategory, description, price, duration } }} props
  */
-export default function ServiceCard({ service }) {
+const ServiceCard = memo(function ServiceCard({ service }) {
   const navigate = useNavigate();
   const { serviceId, serviceName, serviceCategory, description, price, duration } = service;
 
@@ -54,4 +53,6 @@ export default function ServiceCard({ service }) {
       </button>
     </article>
   );
-}
+});
+
+export default ServiceCard;
