@@ -6,11 +6,11 @@ const USE_MOCK_DATA = true; // Gạt thành false khi backend deploy API thật
 // 📦 1. KHO DỮ LIỆU ẢO MOCK DỊCH VỤ CHUẨN THEO DATABASE SQL CỦA BẠN
 // ─────────────────────────────────────────────────────────────────────────────
 const MOCK_SERVICES = [
-    { ServiceID: 1, ServiceName: "Rửa xe cơ bản",         ServiceCategory: "Basic",   Description: "Rửa ngoài, sấy khô, lau kính",                        Price: 80000,  Duration: 20 },
-    { ServiceID: 2, ServiceName: "Rửa xe cao cấp",         ServiceCategory: "Premium", Description: "Rửa toàn diện + xịt bóng ngoại thất",                 Price: 150000, Duration: 35 },
-    { ServiceID: 3, ServiceName: "Rửa + Hút bụi nội thất", ServiceCategory: "Premium", Description: "Rửa ngoài và hút bụi toàn bộ nội thất",                Price: 220000, Duration: 50 },
-    { ServiceID: 4, ServiceName: "Rửa chi tiết toàn bộ",   ServiceCategory: "Detail",  Description: "Dịch vụ cao cấp nhất — trong và ngoài hoàn hảo",       Price: 350000, Duration: 90 },
-    { ServiceID: 5, ServiceName: "Đánh bóng & bảo vệ sơn", ServiceCategory: "AddOn",   Description: "Đánh bóng lớp sơn + phủ ceramic nano",                 Price: 200000, Duration: 45 }
+    { ServiceID: 1, ServiceName: "Rửa xe cơ bản", ServiceCategory: "Basic", Description: "Rửa ngoài, sấy khô, lau kính", Price: 80000, Duration: 20 },
+    { ServiceID: 2, ServiceName: "Rửa xe cao cấp", ServiceCategory: "Premium", Description: "Rửa toàn diện + xịt bóng ngoại thất", Price: 150000, Duration: 35 },
+    { ServiceID: 3, ServiceName: "Rửa + Hút bụi nội thất", ServiceCategory: "Premium", Description: "Rửa ngoài và hút bụi toàn bộ nội thất", Price: 220000, Duration: 50 },
+    { ServiceID: 4, ServiceName: "Rửa chi tiết toàn bộ", ServiceCategory: "Detail", Description: "Dịch vụ cao cấp nhất — trong và ngoài hoàn hảo", Price: 350000, Duration: 90 },
+    { ServiceID: 5, ServiceName: "Đánh bóng & bảo vệ sơn", ServiceCategory: "AddOn", Description: "Đánh bóng lớp sơn + phủ ceramic nano", Price: 200000, Duration: 45 }
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -24,14 +24,14 @@ const generateMockTimeSlots = () => {
         const d = new Date();
         d.setDate(d.getDate() + i);
 
-        const year     = d.getFullYear();
-        const month    = String(d.getMonth() + 1).padStart(2, '0');
-        const dateVal  = String(d.getDate()).padStart(2, '0');
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const dateVal = String(d.getDate()).padStart(2, '0');
         const fullDateStr = `${year}-${month}-${dateVal}`;
 
         mockData.push({
-            dateStr:   fullDateStr,
-            label:     dateVal,
+            dateStr: fullDateStr,
+            label: dateVal,
             dayOfWeek: daysOfWeek[d.getDay()],
             slots: [
                 { time: "07:30", isAvailable: true },
@@ -185,9 +185,9 @@ export const bookingService = {
                 scheduledTime: bookingData.scheduledTime,
                 status: 'Pending',
                 invoice: {
-                    baseAmount:      bookingData.baseAmount      || 150000,
+                    baseAmount: bookingData.baseAmount || 150000,
                     discountApplied: bookingData.discountApplied || 0,
-                    finalAmount:     bookingData.finalAmount      || 150000,
+                    finalAmount: bookingData.finalAmount || 150000,
                 }
             };
         }
@@ -197,31 +197,61 @@ export const bookingService = {
 
     // ── FE-ISSUE-05: Lấy danh sách booking của member ────────────────────────
     // GET /api/bookings?status=xxx&page=x
-    getMyBookings: async ({ status = 'all', page = 1, pageSize = 5 } = {}) => {
+    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
+    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
+    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
+    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
+    getMyBookings: async ({ status, page = 1, pageSize = 5 }) => {
+        // 🚀 LUỒNG 1: CHẠY MOCK DATA (Tối ưu hiệu năng, sạch sẽ)
         if (USE_MOCK_DATA) {
-            await delay(600);
-            const filtered = status === 'all'
-                ? MOCK_BOOKINGS
-                : MOCK_BOOKINGS.filter(b => b.status === status);
-            const total = filtered.length;
+            await delay(400);
+
+            // Lấy thông tin user đăng nhập thực tế (Issue 2 lưu vào 'user')
+            const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+            const currentCustomerId = storedUser?.customerId || 'CUS-0001';
+
+            // TỐI ƯU HIỆU NĂNG: Lọc trực tiếp bằng biểu thức điều kiện, không dùng .map() lãng phí bộ nhớ
+            let filtered = MOCK_BOOKINGS.filter(b => {
+                // Điều kiện 1: Khớp với chính tài khoản đang login (hoặc tài khoản mẫu)
+                const isMyBooking = b.customerId === currentCustomerId || b.customerId === 'CUS-0001';
+
+                // Điều kiện 2: Khớp với Tab trạng thái được bấm
+                if (status && status !== 'all' && status !== 'Tất cả') {
+                    return isMyBooking && b.status.toLowerCase() === status.toLowerCase();
+                }
+                return isMyBooking;
+            });
+
+            // Phân trang chuẩn thuật toán toán học
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / pageSize);
             const start = (page - 1) * pageSize;
+            const paginatedData = filtered.slice(start, start + pageSize);
+
             return {
-                data: filtered.slice(start, start + pageSize),
-                pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+                data: paginatedData,
+                pagination: {
+                    page,
+                    pageSize,
+                    totalItems,
+                    totalPages
+                }
             };
         }
-        const params = new URLSearchParams({ page, pageSize });
-        if (status !== 'all') params.append('status', status);
-        const response = await axios.get(`/api/bookings?${params}`);
+
+        // 🚀 LUỒNG 2: CHẠY API THẬT KẾT NỐI DATABASE (Cam kết không lỗi)
+        // Khi gạt USE_MOCK_DATA = false, Axios sẽ bắn request lên Backend.
+        // Backend (SQL/Supabase) sẽ tự dùng câu lệnh "WHERE CustomerID = ..." để lọc dưới DB và trả về.
+        const response = await axios.get('/api/bookings/my-bookings', { params: { status, page, pageSize } });
         return response.data;
     },
-
     // ── FE-ISSUE-05: Lấy chi tiết một booking ────────────────────────────────
     // GET /api/bookings/{id}
     getBookingDetail: async (id) => {
         if (USE_MOCK_DATA) {
             await delay(400);
-            const booking = MOCK_BOOKINGS.find(b => b.bookingId === id);
+            // SỬA TẠI ĐÂY: Đổi từ === sang == để so sánh linh hoạt giữa Số và Chuỗi
+            const booking = MOCK_BOOKINGS.find(b => b.bookingId == id);
             if (!booking) throw { response: { data: { code: 'BOOKING_NOT_FOUND' } } };
             return booking;
         }
@@ -236,7 +266,7 @@ export const bookingService = {
     cancelBooking: async (id) => {
         if (USE_MOCK_DATA) {
             await delay(800);
-            const booking = MOCK_BOOKINGS.find(b => b.bookingId === id);
+            const booking = MOCK_BOOKINGS.find(b => b.bookingId == id);
             if (!booking) throw { response: { data: { code: 'BOOKING_NOT_FOUND' } } };
             if (booking.status !== 'Pending') throw { response: { data: { code: 'BOOKING_NOT_CANCELLABLE' } } };
             const diffHours = (new Date(booking.scheduledTime) - new Date()) / (1000 * 60 * 60);
