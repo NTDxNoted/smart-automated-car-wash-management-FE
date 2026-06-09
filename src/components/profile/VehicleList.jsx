@@ -77,12 +77,12 @@ export default function VehicleList() {
 
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <p className="text-sm text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
           {vehicles.length} xe đã đăng ký
         </p>
         <button
           onClick={() => setModal({ mode: 'add' })}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-black transition-all duration-200 hover:brightness-110 active:scale-95"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95"
           style={{
             fontFamily: "'Syne', sans-serif",
             background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
@@ -98,7 +98,7 @@ export default function VehicleList() {
       {loading && (
         <div className="space-y-3">
           {[1, 2].map(i => (
-            <div key={i} className="h-20 rounded-xl bg-white/5 animate-pulse" />
+            <div key={i} className="h-20 rounded-xl bg-slate-200 animate-pulse" />
           ))}
         </div>
       )}
@@ -117,18 +117,18 @@ export default function VehicleList() {
       {!loading && vehicles.map(v => (
         <div
           key={v.id}
-          className="flex items-center justify-between rounded-xl border border-white/8 px-5 py-4 transition-all duration-200 hover:border-white/15"
-          style={{ background: 'rgba(255,255,255,0.03)' }}
+          className="flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition-all duration-200 hover:border-slate-300"
+          style={{ background: '#ffffff' }}
         >
           <div className="space-y-0.5">
             <p
-              className="text-white font-bold tracking-widest text-base"
+              className="text-slate-800 font-bold tracking-widest text-base"
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
               {v.licensePlate}
             </p>
             {v.model && v.model !== 'Chưa cập nhật' && (
-              <p className="text-slate-400 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <p className="text-slate-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 {v.model}
               </p>
             )}
@@ -138,7 +138,7 @@ export default function VehicleList() {
             {/* Edit */}
             <button
               onClick={() => setModal({ mode: 'edit', vehicle: v })}
-              className="p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/10 transition-all duration-200"
+              className="p-2 rounded-lg text-slate-500 hover:text-cyan-600 hover:bg-cyan-50 transition-all duration-200"
               title="Sửa biển số"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -148,7 +148,7 @@ export default function VehicleList() {
             {/* Delete */}
             <button
               onClick={() => setDeleteConfirm(v.id)}
-              className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-all duration-200"
+              className="p-2 rounded-lg text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all duration-200"
               title="Xóa xe"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -173,23 +173,23 @@ export default function VehicleList() {
       {deleteConfirm && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}
+          style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(6px)' }}
         >
           <div
-            className="w-full max-w-sm rounded-2xl border border-white/10 p-6 space-y-5"
+            className="w-full max-w-sm rounded-2xl border border-slate-200 p-6 space-y-5"
             style={{
-              background: 'linear-gradient(135deg, rgba(15,23,42,0.97), rgba(8,15,30,0.99))',
-              boxShadow: '0 0 40px rgba(239,68,68,0.08), 0 24px 64px rgba(0,0,0,0.6)',
+              background: '#ffffff',
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
             }}
           >
             <div className="space-y-1">
               <h3
-                className="text-base font-bold text-white"
+                className="text-base font-bold text-slate-800"
                 style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 Xác nhận xóa xe
               </h3>
-              <p className="text-sm text-slate-400" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <p className="text-sm text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 Xe sẽ bị xóa khỏi danh sách. Hành động này không thể hoàn tác.
               </p>
             </div>
@@ -197,7 +197,7 @@ export default function VehicleList() {
               <button
                 onClick={() => setDeleteConfirm(null)}
                 disabled={deleting}
-                className="flex-1 py-2.5 rounded-lg border border-white/10 text-slate-400 text-sm hover:border-white/20 hover:text-white transition-all duration-200"
+                className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Hủy

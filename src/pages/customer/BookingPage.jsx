@@ -40,12 +40,12 @@ export default function BookingPage() {
 
   return (
     // 1. Thêm "justify-center" vào thẻ cha để ép nội dung con căn giữa theo chiều dọc
-    <div className="w-full min-h-screen bg-neutral-950 text-white font-sans py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
+    <div className="w-full min-h-screen bg-slate-50 text-slate-800 font-sans py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
 
       {/* 2. Đổi "mt-6" thành "my-8" (khoảng cách đều cả trên lẫn dưới để hộp không bị dính biên) */}
-      <div className="w-full max-w-4xl backdrop-blur-md bg-neutral-900/60 border border-white/10 p-6 md:p-10 rounded-2xl shadow-[0_0_50px_-12px_rgba(6,182,212,0.15)] my-8">
+      <div className="w-full max-w-4xl bg-white border border-slate-200 p-6 md:p-10 rounded-2xl shadow-xl my-8">
 
-        <h1 className="text-2xl md:text-3xl font-bold font-syne text-center mb-10 bg-gradient-to-r from-white via-neutral-200 to-cyan-400 bg-clip-text text-transparent tracking-wide uppercase">
+        <h1 className="text-2xl md:text-3xl font-bold font-syne text-center mb-10 bg-gradient-to-r from-slate-800 via-slate-600 to-cyan-600 bg-clip-text text-transparent tracking-wide uppercase">
           ĐẶT LỊCH DỊCH VỤ LUXURY
         </h1>
 
@@ -55,7 +55,7 @@ export default function BookingPage() {
         </div>
 
         {/* Khung chứa các Step Component nội dung bên dưới */}
-        <div className="w-full border-t border-white/5 pt-8">
+        <div className="w-full border-t border-slate-200 pt-8">
           {currentStep === 1 && (
             <StepSelectService
               bookingData={bookingData}

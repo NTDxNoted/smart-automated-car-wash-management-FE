@@ -32,8 +32,8 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
     <div
       onClick={() => onOpenDetail(booking)}
       style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(0, 220, 220, 0.12)",
+        background: "#ffffff",
+        border: "1px solid rgba(0,0,0,0.1)",
         borderRadius: "14px",
         padding: "18px 22px",
         cursor: "pointer",
@@ -41,12 +41,12 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
         position: "relative",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "rgba(0, 220, 220, 0.35)";
-        e.currentTarget.style.background = "rgba(255,255,255,0.055)";
+        e.currentTarget.style.borderColor = "rgba(8, 145, 178, 0.4)";
+        e.currentTarget.style.background = "#f8fafc";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(0, 220, 220, 0.12)";
-        e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+        e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)";
+        e.currentTarget.style.background = "#ffffff";
       }}
     >
       {/* Row 1: Biển số + Service + Badge */}
@@ -59,9 +59,9 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
                 fontFamily: "'Syne', sans-serif",
                 fontSize: "15px",
                 fontWeight: 700,
-                color: "#00DCDC",
-                background: "rgba(0,220,220,0.08)",
-                border: "1px solid rgba(0,220,220,0.25)",
+                color: "#0891b2",
+                background: "rgba(8, 145, 178, 0.1)",
+                border: "1px solid rgba(8, 145, 178, 0.3)",
                 borderRadius: "6px",
                 padding: "2px 9px",
                 letterSpacing: "0.06em",
@@ -75,7 +75,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: "14px",
-              color: "rgba(255,255,255,0.75)",
+              color: "rgba(0,0,0,0.6)",
               margin: "6px 0 0",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -93,7 +93,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
               fontFamily: "'Syne', sans-serif",
               fontSize: "16px",
               fontWeight: 700,
-              color: "#fff",
+              color: "#0f172a",
             }}
           >
             {formatVND(booking.finalAmount)}
@@ -104,10 +104,10 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
       {/* Row 2: Giờ hẹn + ID + Nút hủy */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: "18px" }}>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
             🕐 {formatDateTime(booking.scheduledTime)}
           </span>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
             #{booking.bookingId}
           </span>
         </div>

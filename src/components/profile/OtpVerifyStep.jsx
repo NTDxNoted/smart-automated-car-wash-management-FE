@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { vehicleService } from '../../services/vehicleService';
 
 /**
@@ -21,6 +21,13 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
   const [countdown, setCountdown] = useState(0); // giây đếm ngược resend
   const [error, setError] = useState('');
   const otpRefs = useRef([]);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
 
   // ── Bước 1: gửi OTP ────────────────────────────────────────────────────────
   const handleSendOtp = async () => {
@@ -35,9 +42,10 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
       setStep(2);
       // Countdown 60s để cho phép resend
       setCountdown(60);
-      const timer = setInterval(() => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
         setCountdown(prev => {
-          if (prev <= 1) { clearInterval(timer); return 0; }
+          if (prev <= 1) { clearInterval(timerRef.current); return 0; }
           return prev - 1;
         });
       }, 1000);
@@ -84,9 +92,9 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
   };
 
   const inputClass = `
-    w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
-    text-white placeholder-slate-500 text-sm
-    focus:outline-none focus:border-cyan-400/60 focus:bg-white/8
+    w-full bg-white border border-slate-300 rounded-lg px-4 py-3
+    text-slate-800 placeholder-slate-400 text-sm
+    focus:outline-none focus:border-cyan-500 focus:bg-white
     transition-all duration-200
   `;
 
@@ -97,7 +105,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
         <div className="space-y-4">
           <div>
             <label
-              className="block text-xs text-slate-400 uppercase tracking-widest mb-2"
+              className="block text-xs text-slate-500 uppercase tracking-widest mb-2"
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
               Biển số xe
@@ -122,7 +130,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
           <div className="flex gap-3 pt-1">
             <button
               onClick={onCancel}
-              className="flex-1 py-2.5 rounded-lg border border-white/10 text-slate-400 text-sm hover:border-white/20 hover:text-white transition-all duration-200"
+              className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Hủy
@@ -130,7 +138,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
             <button
               onClick={handleSendOtp}
               disabled={sendingOtp}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-black transition-all duration-200 disabled:opacity-50"
+              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
               style={{
                 fontFamily: "'Syne', sans-serif",
                 background: sendingOtp
@@ -159,7 +167,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
               className="text-xs text-slate-500"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Biển số: <span className="text-cyan-400 font-semibold">{plate}</span>
+              Biển số: <span className="text-cyan-600 font-semibold">{plate}</span>
             </p>
           </div>
 
@@ -177,8 +185,8 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
                 onKeyDown={e => handleOtpKeyDown(i, e)}
                 className="
                   w-11 h-12 text-center text-xl font-bold
-                  bg-white/5 border border-white/10 rounded-lg
-                  text-white focus:outline-none focus:border-cyan-400/70
+                  bg-white border border-slate-300 rounded-lg
+                  text-slate-800 focus:outline-none focus:border-cyan-500
                   transition-all duration-150
                 "
                 style={{ fontFamily: "'Syne', sans-serif" }}
@@ -189,11 +197,11 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
           {/* Resend countdown */}
           <p className="text-xs text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             {countdown > 0 ? (
-              <>Gửi lại sau <span className="text-cyan-400">{countdown}s</span></>
+              <>Gửi lại sau <span className="text-cyan-600">{countdown}s</span></>
             ) : (
               <button
                 onClick={() => { setStep(1); setOtp(['', '', '', '', '', '']); setError(''); }}
-                className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="text-cyan-600 hover:text-cyan-500 transition-colors"
               >
                 Gửi lại OTP
               </button>
@@ -209,7 +217,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
           <div className="flex gap-3 pt-1">
             <button
               onClick={() => { setStep(1); setOtp(['', '', '', '', '', '']); setError(''); }}
-              className="flex-1 py-2.5 rounded-lg border border-white/10 text-slate-400 text-sm hover:border-white/20 hover:text-white transition-all duration-200"
+              className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Quay lại
@@ -217,7 +225,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
             <button
               onClick={handleConfirm}
               disabled={isLoading || otp.join('').length < 6}
-              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-black transition-all duration-200 disabled:opacity-50"
+              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
               style={{
                 fontFamily: "'Syne', sans-serif",
                 background: 'linear-gradient(135deg, #06b6d4, #0891b2)',

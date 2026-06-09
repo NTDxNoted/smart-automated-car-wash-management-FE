@@ -41,35 +41,35 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
     // Backdrop
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+      style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(6px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       {/* Modal panel */}
       <div
-        className="w-full max-w-sm rounded-2xl border border-white/10 p-6 space-y-5"
+        className="w-full max-w-sm rounded-2xl border border-slate-200 p-6 space-y-5"
         style={{
-          background: 'linear-gradient(135deg, rgba(15,23,42,0.95), rgba(8,15,30,0.98))',
-          boxShadow: '0 0 40px rgba(6,182,212,0.1), 0 24px 64px rgba(0,0,0,0.6)',
+          background: '#ffffff',
+          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between">
           <h3
-            className="text-lg font-bold text-white tracking-wide"
+            className="text-lg font-bold text-slate-800 tracking-wide"
             style={{ fontFamily: "'Syne', sans-serif" }}
           >
             {title}
           </h3>
           <button
             onClick={onClose}
-            className="text-slate-500 hover:text-white transition-colors text-xl leading-none"
+            className="text-slate-500 hover:text-slate-800 transition-colors text-xl leading-none"
           >
             ✕
           </button>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-white/5" />
+        <div className="h-px bg-slate-200" />
 
         {/* Error toàn modal (từ API) */}
         {errorMsg && (

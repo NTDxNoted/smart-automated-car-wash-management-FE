@@ -37,7 +37,7 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
   if (!threshold) {
     return (
       <div className="flex items-center gap-2 mt-2">
-        <span className="text-cyan-400 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <span className="text-cyan-600 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
           ✦ Bạn đang ở hạng cao nhất
         </span>
       </div>
@@ -52,13 +52,13 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
       {/* Header row */}
       <div className="flex justify-between items-center">
         <span
-          className="text-xs text-slate-400 uppercase tracking-widest"
+          className="text-xs text-slate-500 uppercase tracking-widest"
           style={{ fontFamily: "'Syne', sans-serif" }}
         >
           Tiến trình lên {NEXT_TIER_LABEL[threshold.nextTier]}
         </span>
         <span
-          className="text-xs font-semibold text-cyan-400"
+          className="text-xs font-semibold text-cyan-600"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {pct}%
@@ -66,27 +66,27 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
       </div>
 
       {/* Progress track */}
-      <div className="relative w-full h-2 rounded-full bg-white/5 overflow-hidden">
+      <div className="relative w-full h-2 rounded-full bg-slate-200 overflow-hidden">
         {/* Glow fill */}
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
           style={{
             width: `${pct}%`,
-            background: 'linear-gradient(90deg, #06b6d4, #22d3ee, #67e8f9)',
-            boxShadow: '0 0 8px rgba(6, 182, 212, 0.7)',
+            background: 'linear-gradient(90deg, #0891b2, #06b6d4)',
+            boxShadow: 'none',
           }}
         />
       </div>
 
       {/* Sub-label */}
       <p
-        className="text-xs text-slate-500"
+        className="text-xs text-slate-600"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         {formatVND(totalSpending)} / {formatVND(threshold.minSpending)}
         {remaining > 0 && (
-          <span className="text-slate-400 ml-1">
-            — còn <span className="text-cyan-400/80">{formatVND(remaining)}</span> nữa
+          <span className="text-slate-500 ml-1">
+            — còn <span className="text-cyan-600">{formatVND(remaining)}</span> nữa
           </span>
         )}
       </p>

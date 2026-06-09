@@ -82,10 +82,10 @@ export default function ProfilePage() {
   // ── Loading skeleton ────────────────────────────────────────────────────────
   if (loadingProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#080f1e' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#f8fafc' }}>
         <div className="space-y-3 w-full max-w-md px-6">
           {[80, 120, 60, 100].map((h, i) => (
-            <div key={i} className="rounded-xl bg-white/5 animate-pulse" style={{ height: h }} />
+            <div key={i} className="rounded-xl bg-slate-200 animate-pulse" style={{ height: h }} />
           ))}
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function ProfilePage() {
     <div
       className="min-h-screen flex flex-col items-center"
       style={{
-        background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(6,182,212,0.07) 0%, transparent 70%), #080f1e',
+        background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(6,182,212,0.1) 0%, transparent 70%), #f8fafc',
         fontFamily: "'DM Sans', sans-serif",
       }}
     >
@@ -112,9 +112,9 @@ export default function ProfilePage() {
 
         {/* Profile hero */}
         <div
-          className="rounded-2xl border border-white/8 p-6 space-y-5"
+          className="rounded-2xl border border-slate-200 p-6 space-y-5"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+            background: '#ffffff',
             boxShadow: '0 0 40px rgba(6,182,212,0.06)',
           }}
         >
@@ -140,7 +140,7 @@ export default function ProfilePage() {
               {!editMode ? (
                 <div className="flex items-center gap-2">
                   <h1
-                    className="text-xl font-bold text-white truncate"
+                    className="text-xl font-bold text-slate-800 truncate"
                     style={{ fontFamily: "'Syne', sans-serif" }}
                   >
                     {profile?.fullName}
@@ -162,7 +162,7 @@ export default function ProfilePage() {
                       type="text"
                       value={nameInput}
                       onChange={e => { setNameInput(e.target.value); setSaveError(''); }}
-                      className="flex-1 bg-white/5 border border-cyan-400/40 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-cyan-400/70 transition-all"
+                      className="flex-1 bg-white border border-cyan-500 rounded-lg px-3 py-1.5 text-slate-800 text-sm focus:outline-none focus:border-cyan-600 transition-all"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                       autoFocus
                       onKeyDown={e => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') handleCancelEdit(); }}
@@ -170,14 +170,14 @@ export default function ProfilePage() {
                     <button
                       onClick={handleSaveName}
                       disabled={saving}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold text-black disabled:opacity-50 transition-all"
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white disabled:opacity-50 transition-all"
                       style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', fontFamily: "'Syne', sans-serif" }}
                     >
                       {saving ? '...' : 'Lưu'}
                     </button>
                     <button
                       onClick={handleCancelEdit}
-                      className="px-3 py-1.5 rounded-lg text-xs text-slate-400 border border-white/10 hover:text-white transition-all"
+                      className="px-3 py-1.5 rounded-lg text-xs text-slate-600 border border-slate-300 hover:text-slate-800 transition-all"
                     >
                       Hủy
                     </button>
@@ -193,7 +193,7 @@ export default function ProfilePage() {
 
               {/* Save success toast inline */}
               {saveSuccess && (
-                <p className="text-cyan-400 text-xs">✓ Cập nhật thành công</p>
+                <p className="text-cyan-600 text-xs">✓ Cập nhật thành công</p>
               )}
             </div>
           </div>
@@ -201,24 +201,24 @@ export default function ProfilePage() {
           {/* ── Stats row ── */}
           <div className="grid grid-cols-2 gap-4">
             <div
-              className="rounded-xl border border-white/6 p-4 space-y-1"
-              style={{ background: 'rgba(255,255,255,0.02)' }}
+              className="rounded-xl border border-slate-200 p-4 space-y-1"
+              style={{ background: '#ffffff' }}
             >
               <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Syne', sans-serif" }}>
                 Tổng chi tiêu
               </p>
-              <p className="text-lg font-bold text-white" style={{ fontFamily: "'Syne', sans-serif" }}>
+              <p className="text-lg font-bold text-slate-800" style={{ fontFamily: "'Syne', sans-serif" }}>
                 {formatVND(profile?.totalSpending)}
               </p>
             </div>
             <div
-              className="rounded-xl border border-white/6 px-4 py-6 space-y-1"
-              style={{ background: 'rgba(255,255,255,0.02)' }}
+              className="rounded-xl border border-slate-200 px-4 py-6 space-y-1"
+              style={{ background: '#ffffff' }}
             >
               <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Syne', sans-serif" }}>
                 Điểm tích lũy
               </p>
-              <p className="text-lg font-bold text-cyan-400" style={{ fontFamily: "'Syne', sans-serif" }}>
+              <p className="text-lg font-bold text-cyan-600" style={{ fontFamily: "'Syne', sans-serif" }}>
                 {profile?.loyaltyPoints?.toLocaleString('vi-VN')} điểm
               </p>
             </div>
@@ -230,8 +230,8 @@ export default function ProfilePage() {
 
         {/* ── TAB BAR ── */}
         <div
-          className="flex h-12 rounded-xl border border-white/8 overflow-hidden"
-          style={{ background: 'rgba(255,255,255,0.02)' }}
+          className="flex h-12 rounded-xl border border-slate-200 overflow-hidden"
+          style={{ background: '#ffffff' }}
         >
           {TABS.map(tab => (
             <button
@@ -240,8 +240,8 @@ export default function ProfilePage() {
               className={`
                 flex-1 py-3 text-sm font-semibold transition-all duration-200
                 ${activeTab === tab.key
-                  ? 'text-cyan-400 border-b-2 border-cyan-400'
-                  : 'text-slate-400 border-b-2 border-transparent hover:text-slate-200'
+                  ? 'text-cyan-600 border-b-2 border-cyan-600'
+                  : 'text-slate-500 border-b-2 border-transparent hover:text-slate-700'
                 }
               `}
               style={{ fontFamily: "'Syne', sans-serif", letterSpacing: '0.05em' }}
@@ -253,15 +253,15 @@ export default function ProfilePage() {
 
         {/* ── TAB CONTENT ── */}
         <div
-          className="rounded-2xl border border-white/8 px-6 py-9"
+          className="rounded-2xl border border-slate-200 px-6 py-9"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
+            background: '#ffffff',
           }}
         >
           {activeTab === 'info' && (
             <div className="space-y-4">
               <h2
-                className="text-sm uppercase tracking-widest text-slate-400"
+                className="text-sm uppercase tracking-widest text-slate-500"
                 style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 Thông tin tài khoản
@@ -275,15 +275,15 @@ export default function ProfilePage() {
                 ].map(row => (
                   <div
                     key={row.label}
-                    className="flex justify-between items-center py-3 border-b border-white/5 last:border-0"
+                    className="flex justify-between items-center py-3 border-b border-slate-200 last:border-0"
                   >
-                    <span className="text-sm text-slate-400">{row.label}</span>
+                    <span className="text-sm text-slate-500">{row.label}</span>
                     <div className="text-right">
-                      <span className="text-sm text-white font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      <span className="text-sm text-slate-800 font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {row.value}
                       </span>
                       {row.note && (
-                        <p className="text-xs text-slate-600">{row.note}</p>
+                        <p className="text-xs text-slate-500">{row.note}</p>
                       )}
                     </div>
                   </div>

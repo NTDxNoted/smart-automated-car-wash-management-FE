@@ -7,15 +7,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --clr-bg: #0d111a;
-  --clr-surface: #161b26;
-  --clr-primary: #1f2635;
-  --clr-accent: #ff2a3b;
-  --clr-accent-2: #ff9f43;
-  --clr-text: #f3f4f6;
-  --clr-muted: #9ca3af;
-  --clr-border: rgba(255, 255, 255, 0.08);
-  --clr-skeleton: #222a3a;
+  --clr-bg: #f8fafc; /* slate-50 */
+  --clr-surface: #ffffff; /* white */
+  --clr-primary: #06b6d4; /* cyan-500 (buttons) */
+  --clr-accent: #0891b2; /* cyan-600 (texts, accents) */
+  --clr-accent-2: #22d3ee; /* cyan-400 */
+  --clr-text: #0f172a; /* slate-900 */
+  --clr-muted: #64748b; /* slate-500 */
+  --clr-border: #e2e8f0; /* slate-200 */
+  --clr-skeleton: #cbd5e1; /* slate-300 */
 
   --radius-card: 16px;
   --radius-btn: 10px;
@@ -70,15 +70,13 @@ header.sticky div.w-full {
 /* 1. Đảm bảo thanh Header là một tấm kính mờ tinh tế đè lên ảnh nền */
 header.sticky {
   position: fixed !important;
-  /* Hoặc giữ sticky nhưng đảm bảo không có margin/padding ngoài */
   top: 0 !important;
   left: 0 !important;
   width: 100% !important;
   z-index: 50 !important;
-  background: rgba(10, 14, 26, 0.75) !important;
-  /* Nền tối mờ xuyên thấu */
+  background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(12px) !important;
-  /* Hiệu ứng mờ kính */
+  border-bottom: 1px solid var(--clr-border) !important;
 }
 
 /* 2. Bạn tự Padding nội dung thoải mái ở đây */
@@ -116,8 +114,8 @@ header.sticky div.w-full {
   justify-content: center;
   overflow: hidden;
   background:
-    radial-gradient(circle at 80% 20%, rgba(255, 42, 59, 0.08) 0%, transparent 50%),
-    #0d111a;
+    radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+    var(--clr-bg);
   padding: 80px 24px;
 }
 
@@ -136,10 +134,10 @@ header.sticky div.w-full {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--clr-accent);
-  background: rgba(255, 42, 59, 0.1);
+  background: rgba(6, 182, 212, 0.1);
   padding: 6px 16px;
   border-radius: 99px;
-  border: 1px solid rgba(255, 42, 59, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.2);
   margin-bottom: 24px;
 }
 
@@ -148,7 +146,7 @@ header.sticky div.w-full {
   font-size: clamp(2.5rem, 5.5vw, 4.2rem);
   font-weight: 800;
   line-height: 1.2;
-  color: #ffffff;
+  color: var(--clr-text);
   letter-spacing: -0.02em;
   margin-bottom: 24px;
 }
@@ -171,7 +169,7 @@ header.sticky div.w-full {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--clr-accent);
+  background: var(--clr-primary);
   color: #ffffff;
   font-family: var(--font-head);
   font-size: 1rem;
@@ -179,14 +177,14 @@ header.sticky div.w-full {
   padding: 14px 32px;
   border-radius: var(--radius-btn);
   text-decoration: none;
-  box-shadow: 0 4px 20px rgba(255, 42, 59, 0.3);
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
   transition: all 0.25s ease;
 }
 
 .hero__cta:hover {
-  background: #ff4757;
+  background: var(--clr-accent);
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(255, 42, 59, 0.45);
+  box-shadow: 0 6px 24px rgba(6, 182, 212, 0.45);
 }
 
 /* ════════════════════════════════════════════
@@ -211,7 +209,7 @@ header.sticky div.w-full {
   font-family: var(--font-head);
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 800;
-  color: #ffffff;
+  color: var(--clr-text);
   margin-bottom: 12px;
 }
 
@@ -251,7 +249,7 @@ header.sticky div.w-full {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--clr-muted);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--clr-surface);
   border: 1px solid var(--clr-border);
   padding: 10px 20px;
   border-radius: 999px;
@@ -261,16 +259,16 @@ header.sticky div.w-full {
 }
 
 .filter-tab:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--clr-text);
+  background: var(--clr-bg);
+  border-color: var(--clr-accent);
 }
 
 .filter-tab--active {
   color: #ffffff;
-  background: var(--clr-accent);
-  border-color: var(--clr-accent);
-  box-shadow: 0 4px 12px rgba(255, 42, 59, 0.2);
+  background: var(--clr-primary);
+  border-color: var(--clr-primary);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
 }
 
 /* ════════════════════════════════════════════
@@ -301,7 +299,7 @@ header.sticky div.w-full {
   font-family: var(--font-head);
   font-size: 1.2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--clr-text);
   margin-bottom: 6px;
 }
 
@@ -328,7 +326,7 @@ header.sticky div.w-full {
 
 .service-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 42, 59, 0.3);
+  border-color: rgba(6, 182, 212, 0.3);
   box-shadow: var(--shadow-hover);
 }
 
@@ -382,7 +380,7 @@ header.sticky div.w-full {
   font-family: var(--font-head);
   font-size: 1.25rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--clr-text);
   line-height: 1.3;
   margin-bottom: 8px;
 }
@@ -457,7 +455,7 @@ header.sticky div.w-full {
 .service-card__cta:hover {
   background: var(--clr-accent);
   border-color: var(--clr-accent);
-  box-shadow: 0 4px 12px rgba(255, 42, 59, 0.25);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
 }
 
 .service-card__cta:active {
@@ -478,7 +476,7 @@ header.sticky div.w-full {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #1f2635 25%, #2a3347 50%, #1f2635 75%);
+  background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%);
   background-size: 800px 100%;
   animation: shimmer 1.4s infinite linear;
   border-radius: 4px;

@@ -86,17 +86,17 @@ export default function BookingHistoryPage() {
   const TABS = ["Tất cả", "Pending", "Completed", "Cancelled", "Failed", "No-show"];
 
   return (
-    <div style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto", background: "#060B0B", minHeight: "100vh", color: "#fff" }}>
+    <div style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto", background: "#f8fafc", minHeight: "100vh", color: "#0f172a" }}>
 
       {/* 💡 HỘP ĐỆM TÀNG HÌNH: Chỉ chiếm diện tích lúc đầu để đẩy chữ xuống, khi cuộn trang nó sẽ trượt lên và biến mất */}
       <div className="h-16 w-full block" aria-hidden="true"></div>
 
-      <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "28px", fontWeight: 700, color: "#00DCDC", textShadow: "0 0 10px rgba(0,220,220,0.3)", marginBottom: "24px" }}>
+      <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "28px", fontWeight: 700, color: "#0891b2", marginBottom: "24px" }}>
         Lịch Sử Đặt Lịch Của Tôi
       </h1>
 
       {/* 1. Thanh Filter Tabs */}
-      <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "12px", marginBottom: "24px", overflowX: "auto" }}>
+      <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid rgba(0,0,0,0.1)", paddingBottom: "12px", marginBottom: "24px", overflowX: "auto" }}>
         {TABS.map((tab) => (
           <button
             key={tab}
@@ -108,9 +108,9 @@ export default function BookingHistoryPage() {
               padding: "8px 16px",
               borderRadius: "8px",
               border: "1px solid",
-              borderColor: filter === tab ? "rgba(0, 220, 220, 0.4)" : "transparent",
-              background: filter === tab ? "rgba(0, 220, 220, 0.08)" : "transparent",
-              color: filter === tab ? "#00DCDC" : "rgba(255,255,255,0.6)",
+              borderColor: filter === tab ? "rgba(8, 145, 178, 0.4)" : "transparent",
+              background: filter === tab ? "rgba(8, 145, 178, 0.1)" : "transparent",
+              color: filter === tab ? "#0891b2" : "rgba(0,0,0,0.6)",
               cursor: "pointer",
               transition: "all 0.2s",
             }}
@@ -121,14 +121,14 @@ export default function BookingHistoryPage() {
       </div>
 
       {/* Giao diện Trạng thái Loading hoặc báo lỗi */}
-      {isLoading && <div style={{ textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.4)" }}>Đang tải lịch sử đặt lịch...</div>}
+      {isLoading && <div style={{ textAlign: "center", padding: "40px", color: "rgba(0,0,0,0.5)" }}>Đang tải lịch sử đặt lịch...</div>}
       {errorMsg && <div style={{ color: "#FF5C5C", padding: "20px", background: "rgba(255,92,92,0.05)", borderRadius: "8px", marginBottom: "20px" }}>{errorMsg}</div>}
 
       {/* 2. Danh sách hiển thị các Booking Card */}
       {!isLoading && !errorMsg && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {bookings.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "60px 20px", background: "rgba(255,255,255,0.01)", borderRadius: "14px", border: "1px dashed rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.3)" }}>
+            <div style={{ textAlign: "center", padding: "60px 20px", background: "#ffffff", borderRadius: "14px", border: "1px dashed rgba(0,0,0,0.2)", color: "rgba(0,0,0,0.5)" }}>
               Không tìm thấy lịch sử đặt lịch nào ứng với trạng thái này.
             </div>
           ) : (
@@ -150,15 +150,15 @@ export default function BookingHistoryPage() {
           <button
             disabled={pagi.page === 1}
             onClick={() => fetchBookings(filter, pagi.page - 1)}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: pagi.page === 1 ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.7)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page === 1 ? "default" : "pointer" }}
+            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: pagi.page === 1 ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page === 1 ? "default" : "pointer" }}
           >
             ← Trước
           </button>
-          <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>Trang {pagi.page} / {pagi.totalPages}</span>
+          <span style={{ fontSize: "13px", color: "rgba(0,0,0,0.5)" }}>Trang {pagi.page} / {pagi.totalPages}</span>
           <button
             disabled={pagi.page >= pagi.totalPages}
             onClick={() => fetchBookings(filter, pagi.page + 1)}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: pagi.page >= pagi.totalPages ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.7)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page >= pagi.totalPages ? "default" : "pointer" }}
+            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: pagi.page >= pagi.totalPages ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page >= pagi.totalPages ? "default" : "pointer" }}
           >
             Sau →
           </button>

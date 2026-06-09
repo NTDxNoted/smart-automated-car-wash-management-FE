@@ -106,56 +106,56 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
     return (
         <div className="space-y-6">
-            <h3 className="text-xl font-syne text-cyan-400 font-semibold mb-4">Bước 2: Thông tin xe và Thời gian đặt lịch</h3>
+            <h3 className="text-xl font-syne text-cyan-600 font-semibold mb-4">Bước 2: Thông tin xe và Thời gian đặt lịch</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {!user ? (
                     <>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">Số điện thoại khách hàng</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Số điện thoại khách hàng</label>
                             <input
                                 type="text"
                                 placeholder="Nhập số điện thoại"
                                 value={bookingData.phone}
                                 onChange={e => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
-                                className="w-full bg-neutral-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                                className="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                             />
-                            {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
+                            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">Biển số xe</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Biển số xe</label>
                             <input
                                 type="text"
                                 placeholder="Ví dụ: 30F-12345"
                                 value={bookingData.licensePlate}
                                 onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value }))}
-                                className="w-full bg-neutral-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+                                className="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                             />
-                            {errors.licensePlate && <p className="text-red-400 text-xs mt-1">{errors.licensePlate}</p>}
+                            {errors.licensePlate && <p className="text-red-500 text-xs mt-1">{errors.licensePlate}</p>}
                         </div>
                     </>
                 ) : (
                     <>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">Số điện thoại</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Số điện thoại</label>
                             <input
                                 type="text"
                                 value={bookingData.phone}
                                 disabled
-                                className="w-full bg-neutral-900/50 border border-white/5 rounded-lg p-3 text-neutral-400 cursor-not-allowed"
+                                className="w-full bg-slate-100 border border-slate-200 rounded-lg p-3 text-slate-500 cursor-not-allowed"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">Chọn Xe Của Bạn</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Chọn Xe Của Bạn</label>
                             <select
                                 value={bookingData.selectedVehicleId}
                                 onChange={e => handleVehicleChange(e.target.value)}
-                                className="w-full bg-neutral-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500"
+                                className="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-cyan-500"
                             >
                                 {vehicles.map(v => (
-                                    <option key={v.id} value={v.id} className="bg-neutral-950">{v.model} ({v.licensePlate})</option>
+                                    <option key={v.id} value={v.id} className="bg-white">{v.model} ({v.licensePlate})</option>
                                 ))}
                             </select>
                         </div>
@@ -164,8 +164,8 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
                 {/* --- [VỊ TRÍ THAY ĐỔI 3: THAY ĐỔI TOÀN BỘ Ô INPUT DATETIME BẰNG GRID ĐẸP MẮT] --- */}
                 <div className="md:col-span-2 space-y-4">
-                    <label className="block text-sm font-medium text-neutral-300">
-                        Lịch hẹn thời gian khả dụng <span className="text-xs text-neutral-400">(Tối đa đặt trước {bookingWindowDays} ngày theo hạng {user?.tier || 'GUEST'})</span>
+                    <label className="block text-sm font-medium text-slate-600">
+                        Lịch hẹn thời gian khả dụng <span className="text-xs text-slate-400">(Tối đa đặt trước {bookingWindowDays} ngày theo hạng {user?.tier || 'GUEST'})</span>
                     </label>
 
                     {loadingSlots ? (
@@ -186,11 +186,11 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                                                 setSelectedTime(''); // Reset giờ về trống khi chuyển đổi sang ngày khác
                                             }}
                                             className={`p-3 rounded-xl border flex flex-col items-center justify-center space-y-1 transition-all ${isDaySelected
-                                                    ? 'bg-cyan-500 border-cyan-400 text-black font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)]'
-                                                    : 'bg-neutral-950 border-white/10 hover:border-white/20 text-white'
+                                                    ? 'bg-cyan-500 border-cyan-400 text-white font-bold shadow-md'
+                                                    : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
                                                 }`}
                                         >
-                                            <span className={`text-[10px] uppercase tracking-wider ${isDaySelected ? 'text-black/60' : 'text-neutral-500'}`}>
+                                            <span className={`text-[10px] uppercase tracking-wider ${isDaySelected ? 'text-white' : 'text-slate-500'}`}>
                                                 {day.dayOfWeek}
                                             </span>
                                             <span className="text-base font-bold font-mono">
@@ -203,8 +203,8 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
                             {/* Khung lưới hiển thị danh sách giờ tương ứng */}
                             <div className="pt-2">
-                                <span className="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">
-                                    Khung giờ trống trong ngày: {selectedDate ? <span className="text-cyan-400 font-mono font-bold">{selectedDate}</span> : <span className="text-amber-400 italic font-normal">(Hãy bấm chọn một ngày ở trên)</span>}
+                                <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+                                    Khung giờ trống trong ngày: {selectedDate ? <span className="text-cyan-600 font-mono font-bold">{selectedDate}</span> : <span className="text-amber-500 italic font-normal">(Hãy bấm chọn một ngày ở trên)</span>}
                                 </span>
 
                                 {selectedDate && (
@@ -217,7 +217,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                                                     <button
                                                         key={index}
                                                         disabled
-                                                        className="p-2 text-xs rounded-lg bg-neutral-950/40 border border-dashed border-white/5 text-neutral-600 cursor-not-allowed text-center"
+                                                        className="p-2 text-xs rounded-lg bg-slate-100 border border-dashed border-slate-300 text-slate-400 cursor-not-allowed text-center"
                                                     >
                                                         {slot.time} (Kín)
                                                     </button>
@@ -230,8 +230,8 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                                                     type="button"
                                                     onClick={() => handleSelectSlot(selectedDate, slot.time)}
                                                     className={`p-2 text-xs font-mono font-semibold rounded-lg border transition-all text-center ${isTimeSelected
-                                                            ? 'bg-cyan-950 text-cyan-400 border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.15)]'
-                                                            : 'bg-neutral-950 border-white/10 hover:border-white/30 text-neutral-200'
+                                                            ? 'bg-cyan-50 text-cyan-600 border-cyan-500 shadow-sm'
+                                                            : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
                                                         }`}
                                                 >
                                                     {slot.time}
@@ -247,16 +247,16 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                 </div>
             </div>
 
-            <div className="flex justify-between pt-6 border-t border-white/10">
+            <div className="flex justify-between pt-6 border-t border-slate-200">
                 <button
                     onClick={onBack}
-                    className="px-6 py-3 border border-white/20 text-neutral-300 hover:text-white hover:bg-white/5 font-medium rounded-lg transition-all"
+                    className="px-6 py-3 border border-slate-300 text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-medium rounded-lg transition-all"
                 >
                     Quay lại
                 </button>
                 <button
                     onClick={handleNext}
-                    className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(6,182,212,0.25)]"
+                    className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-md"
                 >
                     Tiếp tục
                 </button>
