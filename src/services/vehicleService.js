@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
-const USE_MOCK_DATA = true; // Gạt thành false khi backend deploy API thật
+const USE_MOCK_DATA = false; // Gạt thành false khi backend deploy API thật
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 📦 MOCK DATA VEHICLES
@@ -34,7 +34,7 @@ export const vehicleService = {
       await delay(400);
       return MOCK_VEHICLES.filter(v => v.isActive);
     }
-    const response = await axios.get('/api/vehicles');
+    const response = await axiosInstance.get('/vehicles');
     return response.data;
   },
 
@@ -51,7 +51,7 @@ export const vehicleService = {
       }
       return { message: 'OTP đã được gửi đến SĐT của bạn' };
     }
-    const response = await axios.post('/api/vehicles/request-otp', { licensePlate });
+    const response = await axiosInstance.post('/vehicles/request-otp', { licensePlate });
     return response.data;
   },
 
@@ -80,7 +80,7 @@ export const vehicleService = {
       MOCK_VEHICLES.push(newVehicle);
       return newVehicle;
     }
-    const response = await axios.post('/api/vehicles', { licensePlate, otp });
+    const response = await axiosInstance.post('/vehicles', { licensePlate, otp });
     return response.data;
   },
 
@@ -128,3 +128,4 @@ export const vehicleService = {
     return response.data;
   },
 };
+
