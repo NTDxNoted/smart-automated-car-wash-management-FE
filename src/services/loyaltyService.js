@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 
 // TODO: Thay thế bằng API thật khi Backend sẵn sàng
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const mockWallet = {
   totalPoints: 125,
