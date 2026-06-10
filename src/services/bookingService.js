@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
-const USE_MOCK_DATA = true; // Gạt thành false khi backend deploy API thật
+const USE_MOCK_DATA = false; // Gạt thành false khi backend deploy API thật
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 📦 1. KHO DỮ LIỆU ẢO MOCK DỊCH VỤ CHUẨN THEO DATABASE SQL CỦA BẠN
@@ -129,7 +129,7 @@ export const bookingService = {
             await delay(400);
             return generateMockTimeSlots();
         }
-        const response = await axios.get('/api/bookings/available-slots', { params: { startDate } });
+        const response = await axiosInstance.get('/bookings/available-slots', { params: { startDate } });
         return response.data;
     },
 
@@ -140,7 +140,7 @@ export const bookingService = {
             await delay(300);
             return MOCK_SERVICES;
         }
-        const response = await axios.get('/api/services');
+        const response = await axiosInstance.get('/services');
         return response.data;
     },
 
@@ -154,7 +154,7 @@ export const bookingService = {
                 { id: 'v2', licensePlate: '30H-99999', model: 'Porsche Taycan' },
             ];
         }
-        const response = await axios.get('/api/vehicles');
+        const response = await axiosInstance.get('/vehicles');
         return response.data;
     },
 
@@ -191,7 +191,7 @@ export const bookingService = {
                 }
             };
         }
-        const response = await axios.post('/api/bookings', bookingData);
+        const response = await axiosInstance.post('/bookings', bookingData);
         return response.data;
     },
 
@@ -242,7 +242,7 @@ export const bookingService = {
         // 🚀 LUỒNG 2: CHẠY API THẬT KẾT NỐI DATABASE (Cam kết không lỗi)
         // Khi gạt USE_MOCK_DATA = false, Axios sẽ bắn request lên Backend.
         // Backend (SQL/Supabase) sẽ tự dùng câu lệnh "WHERE CustomerID = ..." để lọc dưới DB và trả về.
-        const response = await axios.get('/api/bookings/my-bookings', { params: { status, page, pageSize } });
+        const response = await axiosInstance.get('/bookings/my-bookings', { params: { status, page, pageSize } });
         return response.data;
     },
     // ── FE-ISSUE-05: Lấy chi tiết một booking ────────────────────────────────
@@ -282,3 +282,4 @@ export const bookingService = {
         return response.data;
     },
 };
+
