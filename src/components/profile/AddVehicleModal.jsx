@@ -56,7 +56,7 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
         <div className="flex items-center justify-between">
           <h3
             className="text-lg font-bold text-slate-800 tracking-wide"
-            style={{ fontFamily: "'Syne', sans-serif" }}
+            style={{ fontFamily: "'Archivo', sans-serif" }}
           >
             {title}
           </h3>
@@ -74,7 +74,7 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
         {/* Error toàn modal (từ API) */}
         {errorMsg && (
           <div className="rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-2">
-            <p className="text-red-400 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <p className="text-red-400 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
               {errorMsg}
             </p>
           </div>

@@ -2,12 +2,12 @@
    serviceService.js — Cấu hình Kết Nối API & Mock Data
    ════════════════════════════════════════════ */
 
-const BASE_URL = '/api';
+import axiosInstance from '../api/axiosInstance';
 
 // 🎛️ CÔNG TẮC CHUYỂN ĐỔI (BẬT/TẮT DỮ LIỆU ẢO)
 // - Đổi thành true: Chạy dữ liệu ảo (Frontend thuần, test UI)
 // - Đổi thành false: Chạy API thật (Khi Backend đã deploy xong)
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = false;
 
 
 // 📦 KHO DỮ LIỆU ẢO (MOCK DATA) ĐỂ DEMO
@@ -77,9 +77,8 @@ export async function getServices() {
   }
 
   // Nếu công tắc dữ liệu ảo OFF -> Tự động chạy API Thật
-  const res = await fetch(`${BASE_URL}/services`);
-  if (!res.ok) throw new Error(`Failed to fetch services: ${res.status}`);
-  return res.json();
+  const res = await axiosInstance.get('/services');
+  return res.data.data;
 }
 
 /**
@@ -97,9 +96,8 @@ export async function getServiceById(id) {
     });
   }
 
-  const res = await fetch(`${BASE_URL}/services/${id}`);
-  if (!res.ok) throw new Error(`Failed to fetch service ${id}: ${res.status}`);
-  return res.json();
+  const res = await axiosInstance.get(`/services/${id}`);
+  return res.data;
 }
 
 /**

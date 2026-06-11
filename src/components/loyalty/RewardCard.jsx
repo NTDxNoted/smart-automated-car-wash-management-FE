@@ -33,11 +33,11 @@ export default function RewardCard({ reward }) {
         <div>
           <h4 
             className="text-lg font-bold text-slate-800 mb-1 group-hover:text-cyan-600 transition-colors"
-            style={{ fontFamily: "'Syne', sans-serif" }}
+            style={{ fontFamily: "'Archivo', sans-serif" }}
           >
             {reward.name}
           </h4>
-          <p className="text-xs text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-xs text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
             Trị giá giảm: <span className="font-semibold text-slate-800">{formatVND(reward.discountValue)}</span>
           </p>
         </div>
@@ -48,7 +48,7 @@ export default function RewardCard({ reward }) {
           <div className="flex items-baseline gap-1">
             <span 
               className="text-xl font-bold text-cyan-600"
-              style={{ fontFamily: "'Syne', sans-serif" }}
+              style={{ fontFamily: "'Archivo', sans-serif" }}
             >
               {reward.pointsRequired}
             </span>
@@ -59,7 +59,7 @@ export default function RewardCard({ reward }) {
             onClick={handleUseReward}
             className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95"
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Archivo', sans-serif",
               background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
               boxShadow: '0 0 14px rgba(6,182,212,0.2)',
             }}

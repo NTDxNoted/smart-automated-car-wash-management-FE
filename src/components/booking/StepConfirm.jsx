@@ -95,7 +95,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                 </div>
             )}
 
-            <h3 className="text-xl font-syne text-cyan-600 font-semibold mb-4">Bước 3: Kiểm tra hóa đơn & Xác nhận</h3>
+            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">Bước 3: Kiểm tra hóa đơn & Xác nhận</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
                 <div><span className="text-slate-500">Dịch vụ:</span> <strong className="text-slate-800">{bookingData.service?.name}</strong></div>

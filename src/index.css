@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  --font-archivo: "Archivo", sans-serif;
+  --font-bevietnam: "Be Vietnam Pro", sans-serif;
+  --font-heading: "Archivo", sans-serif;
+  --font-heading: "Archivo", sans-serif;
+  --font-sans: "Be Vietnam Pro", sans-serif;
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}

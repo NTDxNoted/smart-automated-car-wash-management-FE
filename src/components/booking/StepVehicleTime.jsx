@@ -106,7 +106,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
     return (
         <div className="space-y-6">
-            <h3 className="text-xl font-syne text-cyan-600 font-semibold mb-4">Bước 2: Thông tin xe và Thời gian đặt lịch</h3>
+            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">Bước 2: Thông tin xe và Thời gian đặt lịch</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {!user ? (

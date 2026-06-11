@@ -91,7 +91,7 @@ export default function BookingHistoryPage() {
       {/* 💡 HỘP ĐỆM TÀNG HÌNH: Chỉ chiếm diện tích lúc đầu để đẩy chữ xuống, khi cuộn trang nó sẽ trượt lên và biến mất */}
       <div className="h-16 w-full block" aria-hidden="true"></div>
 
-      <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "28px", fontWeight: 700, color: "#0891b2", marginBottom: "24px" }}>
+      <h1 style={{ fontFamily: "'Archivo', sans-serif", fontSize: "28px", fontWeight: 700, color: "#0891b2", marginBottom: "24px" }}>
         Lịch Sử Đặt Lịch Của Tôi
       </h1>
 
@@ -102,7 +102,7 @@ export default function BookingHistoryPage() {
             key={tab}
             onClick={() => setFilter(tab)}
             style={{
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Be Vietnam Pro', sans-serif",
               fontSize: "14px",
               fontWeight: 600,
               padding: "8px 16px",
@@ -150,7 +150,7 @@ export default function BookingHistoryPage() {
           <button
             disabled={pagi.page === 1}
             onClick={() => fetchBookings(filter, pagi.page - 1)}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: pagi.page === 1 ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page === 1 ? "default" : "pointer" }}
+            style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "13px", color: pagi.page === 1 ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page === 1 ? "default" : "pointer" }}
           >
             ← Trước
           </button>
@@ -158,7 +158,7 @@ export default function BookingHistoryPage() {
           <button
             disabled={pagi.page >= pagi.totalPages}
             onClick={() => fetchBookings(filter, pagi.page + 1)}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: pagi.page >= pagi.totalPages ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page >= pagi.totalPages ? "default" : "pointer" }}
+            style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "13px", color: pagi.page >= pagi.totalPages ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page >= pagi.totalPages ? "default" : "pointer" }}
           >
             Sau →
           </button>

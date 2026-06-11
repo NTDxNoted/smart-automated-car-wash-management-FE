@@ -3,7 +3,7 @@ import React from 'react';
 export default function StepSelectService({ bookingData, setBookingData, onNext, servicesList }) {
     return (
         <div className="space-y-6">
-            <h3 className="text-xl font-syne text-cyan-600 font-semibold mb-4">Bước 1: Chọn dịch vụ chăm sóc xe</h3>
+            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">Bước 1: Chọn dịch vụ chăm sóc xe</h3>
             <div className="grid grid-cols-1 gap-4">
                 {servicesList.map((service) => {
                     const isSelected = bookingData.service?.id === service.id;

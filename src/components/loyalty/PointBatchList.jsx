@@ -14,7 +14,7 @@ export default function PointBatchList({ batches = [] }) {
   if (!batches || batches.length === 0) {
     return (
       <div className="py-8 text-center border border-slate-200 rounded-xl bg-white">
-        <p className="text-slate-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <p className="text-slate-500 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
           Chưa có lô điểm nào trong ví
         </p>
       </div>
@@ -25,7 +25,7 @@ export default function PointBatchList({ batches = [] }) {
     <div className="space-y-4">
       <h3 
         className="text-sm uppercase tracking-widest text-slate-500 mb-3"
-        style={{ fontFamily: "'Syne', sans-serif" }}
+        style={{ fontFamily: "'Archivo', sans-serif" }}
       >
         Lô điểm chi tiết
       </h3>
@@ -49,7 +49,7 @@ export default function PointBatchList({ batches = [] }) {
                 <div className="flex items-center gap-2">
                   <span 
                     className={`text-lg font-bold ${isExpiringSoon ? 'text-red-600' : 'text-slate-800'}`}
-                    style={{ fontFamily: "'Syne', sans-serif" }}
+                    style={{ fontFamily: "'Archivo', sans-serif" }}
                   >
                     {batch.points} điểm
                   </span>
@@ -59,18 +59,18 @@ export default function PointBatchList({ batches = [] }) {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                <p className="text-xs text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
                   Tích lũy từ {formatDate(batch.earnedAt)}
                 </p>
               </div>
               
               <div className="text-right">
-                <p className="text-xs text-slate-500 mb-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                <p className="text-xs text-slate-500 mb-0.5" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
                   Hết hạn: <span className="text-slate-700">{formatDate(batch.expiredAt)}</span>
                 </p>
                 <p 
                   className={`text-sm font-semibold ${isExpiringSoon ? 'text-red-600' : 'text-cyan-600'}`}
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
                 >
                   Còn {batch.daysUntilExpiry} ngày
                 </p>
@@ -80,7 +80,7 @@ export default function PointBatchList({ batches = [] }) {
         })}
       </div>
       
-      <p className="text-xs text-slate-500 text-center mt-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <p className="text-xs text-slate-500 text-center mt-2" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
         * Điểm sau khi quá hạn sẽ tự động bị khấu trừ và không thể khôi phục.
       </p>
     </div>

@@ -57,7 +57,7 @@ export default function LoyaltyPage() {
       className="min-h-screen flex flex-col items-center"
       style={{
         background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(6,182,212,0.1) 0%, transparent 70%), #f8fafc',
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: "'Be Vietnam Pro', sans-serif",
       }}
     >
       {/* Navbar Spacer */}
@@ -87,7 +87,7 @@ export default function LoyaltyPage() {
                   : 'text-slate-500 border-b-2 border-transparent hover:text-slate-700'
                 }
               `}
-              style={{ fontFamily: "'Syne', sans-serif", letterSpacing: '0.05em' }}
+              style={{ fontFamily: "'Archivo', sans-serif", letterSpacing: '0.05em' }}
             >
               {tab.label}
             </button>
@@ -107,7 +107,7 @@ export default function LoyaltyPage() {
             <div className="lg:col-span-7">
               <h3 
                 className="text-sm uppercase tracking-widest text-slate-500 mb-4"
-                style={{ fontFamily: "'Syne', sans-serif" }}
+                style={{ fontFamily: "'Archivo', sans-serif" }}
               >
                 Phần thưởng có thể đổi
               </h3>
@@ -121,7 +121,7 @@ export default function LoyaltyPage() {
               ) : (
                 <div className="h-full flex flex-col items-center justify-center py-12 border border-slate-200 rounded-2xl bg-white">
                   <span className="text-4xl opacity-50 mb-3">🎁</span>
-                  <p className="text-slate-500 text-sm px-6 text-center" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <p className="text-slate-500 text-sm px-6 text-center" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
                     Bạn cần tối thiểu <strong className="text-slate-800">50 điểm</strong> để mở khóa danh sách phần thưởng.
                     Hãy đặt lịch rửa xe để tích lũy thêm nhé!
                   </p>

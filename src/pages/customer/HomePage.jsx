@@ -61,7 +61,7 @@ export default function HomePage() {
         <div className="hero__bg" aria-hidden="true" />
         <div className="hero__inner">
           <p className="hero__eyebrow">Dịch vụ chăm sóc xe chuyên nghiệp</p>
-          <h1 className="hero__title">
+          <h1 className="hero__title tracking-wide antialiased">
             Xe sạch — <br />
             <span className="hero__title-accent">Lái tự tin</span>
           </h1>
