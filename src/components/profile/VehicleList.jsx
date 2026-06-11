@@ -68,7 +68,7 @@ export default function VehicleList() {
               : 'bg-red-950/90 border-red-500/30 text-red-300'
             }
           `}
-          style={{ fontFamily: "'DM Sans', sans-serif", backdropFilter: 'blur(8px)' }}
+          style={{ fontFamily: "'Be Vietnam Pro', sans-serif", backdropFilter: 'blur(8px)' }}
         >
           <span>{toast.type === 'success' ? '✓' : '✕'}</span>
           {toast.msg}
@@ -77,14 +77,14 @@ export default function VehicleList() {
 
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <p className="text-sm text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
           {vehicles.length} xe đã đăng ký
         </p>
         <button
           onClick={() => setModal({ mode: 'add' })}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95"
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Archivo', sans-serif",
             background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
             boxShadow: '0 0 14px rgba(6,182,212,0.3)',
           }}
@@ -107,7 +107,7 @@ export default function VehicleList() {
       {!loading && vehicles.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
           <span className="text-4xl opacity-20">🚗</span>
-          <p className="text-slate-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-slate-500 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
             Chưa có xe nào được đăng ký
           </p>
         </div>
@@ -123,12 +123,12 @@ export default function VehicleList() {
           <div className="space-y-0.5">
             <p
               className="text-slate-800 font-bold tracking-widest text-base"
-              style={{ fontFamily: "'Syne', sans-serif" }}
+              style={{ fontFamily: "'Archivo', sans-serif" }}
             >
               {v.licensePlate}
             </p>
             {v.model && v.model !== 'Chưa cập nhật' && (
-              <p className="text-slate-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <p className="text-slate-500 text-xs" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
                 {v.model}
               </p>
             )}
@@ -185,11 +185,11 @@ export default function VehicleList() {
             <div className="space-y-1">
               <h3
                 className="text-base font-bold text-slate-800"
-                style={{ fontFamily: "'Syne', sans-serif" }}
+                style={{ fontFamily: "'Archivo', sans-serif" }}
               >
                 Xác nhận xóa xe
               </h3>
-              <p className="text-sm text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <p className="text-sm text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
                 Xe sẽ bị xóa khỏi danh sách. Hành động này không thể hoàn tác.
               </p>
             </div>
@@ -198,7 +198,7 @@ export default function VehicleList() {
                 onClick={() => setDeleteConfirm(null)}
                 disabled={deleting}
                 className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
               >
                 Hủy
               </button>
@@ -207,7 +207,7 @@ export default function VehicleList() {
                 disabled={deleting}
                 className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
                 style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Archivo', sans-serif",
                   background: 'linear-gradient(135deg, #ef4444, #dc2626)',
                   boxShadow: '0 0 14px rgba(239,68,68,0.25)',
                 }}

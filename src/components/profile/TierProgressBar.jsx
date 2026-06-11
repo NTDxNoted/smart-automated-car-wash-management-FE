@@ -37,7 +37,7 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
   if (!threshold) {
     return (
       <div className="flex items-center gap-2 mt-2">
-        <span className="text-cyan-600 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <span className="text-cyan-600 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
           ✦ Bạn đang ở hạng cao nhất
         </span>
       </div>
@@ -53,13 +53,13 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
       <div className="flex justify-between items-center">
         <span
           className="text-xs text-slate-500 uppercase tracking-widest"
-          style={{ fontFamily: "'Syne', sans-serif" }}
+          style={{ fontFamily: "'Archivo', sans-serif" }}
         >
           Tiến trình lên {NEXT_TIER_LABEL[threshold.nextTier]}
         </span>
         <span
           className="text-xs font-semibold text-cyan-600"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
         >
           {pct}%
         </span>
@@ -81,7 +81,7 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
       {/* Sub-label */}
       <p
         className="text-xs text-slate-600"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
+        style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
       >
         {formatVND(totalSpending)} / {formatVND(threshold.minSpending)}
         {remaining > 0 && (
