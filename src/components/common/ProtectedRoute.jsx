@@ -3,16 +3,30 @@ import { useAuth } from '../../context/AuthContext'; // Đảm bảo đường d
 
 export default function ProtectedRoute({ children, requireAdmin = false }) {
   // Trích xuất chuẩn xác các biến trạng thái từ bộ nhớ loadFromStorage của nhóm
-  const { auth, isAdmin, isGuest } = useAuth();
+  const { auth } = useAuth();
 
-  // Khách vãng lai chưa đăng nhập hoặc không có mã Token -> Chuyển hướng về trang login
-  if (isGuest || !auth.token) {
-    return <Navigate to="/login" replace />;
+  if (requireAdmin) {
+    const token =
+      localStorage.getItem("admin_token");
+
+    if (
+      !token ||
+      auth.role !== "Admin"
+    ) {
+      return <Navigate to="/login" replace />;
+    }
+
+    return children;
   }
 
-  // Nếu route yêu cầu quyền quản trị viên mà tài khoản hiện tại không phải ADMIN
-  if (requireAdmin && !isAdmin) {
-    return <Navigate to="/" replace />;
+  const token =
+    localStorage.getItem("member_token");
+
+  if (
+    !token || auth.role !== "Member"
+  ) 
+  {
+    return <Navigate to="/login" replace />;
   }
 
   // Mọi điều kiện hợp lệ -> Cho phép truy cập vào trang con (History / Profile)
