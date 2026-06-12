@@ -141,7 +141,7 @@ export const bookingService = {
             return MOCK_SERVICES;
         }
         const response = await axiosInstance.get('/services');
-        return response.data;
+        return response.data.data || response.data;
     },
 
     // ── FE-ISSUE-04: Lấy danh sách xe của member ─────────────────────────────
@@ -155,7 +155,7 @@ export const bookingService = {
             ];
         }
         const response = await axiosInstance.get('/vehicles');
-        return response.data;
+        return response.data.data || response.data;
     },
 
     // ── FE-ISSUE-04: Validate mã khuyến mãi ──────────────────────────────────
