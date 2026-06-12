@@ -65,12 +65,12 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
         const payload = {
             serviceId: bookingData.service.id,
-            phone: bookingData.phone,
-            licensePlate: bookingData.licensePlate,
-            scheduledTime: bookingData.scheduledTime,
+            phone: bookingData.phone || null,
+            licensePlate: bookingData.licensePlate || null,
+            vehicleId: bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
+            scheduledTime: bookingData.scheduledTime, // ISO string e.g. "2025-06-13T08:00"
             promotionId: appliedPromo?.promotionId || null,
             rewardPointsUsed: selectedRewardOption,
-            ...invoice
         };
 
         try {
@@ -80,7 +80,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                 navigate('/bookings');
             }, 2000);
         } catch (err) {
-            const serverCode = err?.response?.data?.code;
+            const serverCode = err?.response?.data?.error || err?.response?.data?.code;
             setSubmitError(handleErrorResponse(serverCode));
         } finally {
             setLoading(false);

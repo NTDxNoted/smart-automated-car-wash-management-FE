@@ -35,7 +35,14 @@ export const vehicleService = {
       return MOCK_VEHICLES.filter(v => v.isActive);
     }
     const response = await axiosInstance.get('/vehicles');
-    return response.data;
+    const raw = response.data.data || response.data;
+    return raw.map(v => ({
+      id: String(v.vehicleId),
+      vehicleId: v.vehicleId,
+      licensePlate: v.licensePlate,
+      model: v.model || '',
+      isActive: v.isActive !== false,
+    }));
   },
 
   // POST /api/vehicles/request-otp
@@ -107,7 +114,7 @@ export const vehicleService = {
       vehicle.licensePlate = licensePlate.toUpperCase();
       return { ...vehicle };
     }
-    const response = await axios.put(`/api/vehicles/${id}`, { licensePlate, otp });
+    const response = await axiosInstance.put(`/vehicles/${id}`, { licensePlate, otp });
     return response.data;
   },
 
@@ -124,7 +131,7 @@ export const vehicleService = {
       vehicle.isActive = false;
       return { message: 'Đã xóa xe thành công' };
     }
-    const response = await axios.delete(`/api/vehicles/${id}`);
+    const response = await axiosInstance.delete(`/vehicles/${id}`);
     return response.data;
   },
 };

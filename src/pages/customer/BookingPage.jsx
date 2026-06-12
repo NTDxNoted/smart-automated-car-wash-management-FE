@@ -8,7 +8,7 @@ import StepConfirm from '../../components/booking/StepConfirm';
 import { bookingService } from '../../services/bookingService';
 
 export default function BookingPage() {
-  const { user } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [services, setServices] = useState([]);
@@ -17,8 +17,8 @@ export default function BookingPage() {
 
   const [bookingData, setBookingData] = useState({
     service: null,
-    customerType: user ? 'MEMBER' : 'GUEST',
-    phone: user?.phone || '',
+    customerType: auth?.token ? 'MEMBER' : 'GUEST',
+    phone: auth?.phone || '',
     licensePlate: '',
     selectedVehicleId: '',
     scheduledTime: '',
@@ -103,7 +103,7 @@ export default function BookingPage() {
               setBookingData={setBookingData}
               onNext={nextStep}
               onBack={prevStep}
-              user={user}
+              user={auth}
             />
           )}
 
@@ -111,7 +111,7 @@ export default function BookingPage() {
             <StepConfirm
               bookingData={bookingData}
               onBack={prevStep}
-              user={user}
+              user={auth}
             />
           )}
         </div>
