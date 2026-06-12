@@ -48,7 +48,7 @@ export const loyaltyService = {
       return new Promise(resolve => setTimeout(() => resolve(mockRewards), 800));
     }
     const response = await axiosInstance.get('/rewards');
-    return response.data;
+    return response.data.data || response.data;
   },
 
   simulateRedeem: async ({ rewardId, baseAmount }) => {
