@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import OtpVerifyStep from './OtpVerifyStep';
 import { vehicleService } from '../../services/vehicleService';
 
 /**
- * AddVehicleModal — Modal thêm xe mới hoặc sửa biển số (BR-10: OTP 2 bước)
+ * AddVehicleModal — Modal thêm xe mới hoặc sửa biển số (Bỏ qua bước OTP)
  *
  * Props:
  *   mode        : 'add' | 'edit'
@@ -12,21 +11,34 @@ import { vehicleService } from '../../services/vehicleService';
  *   onClose     : () => void
  */
 export default function AddVehicleModal({ mode = 'add', vehicle = null, onSuccess, onClose }) {
+  const [licensePlate, setLicensePlate] = useState(mode === 'edit' ? vehicle?.licensePlate ?? '' : '');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const isEdit = mode === 'edit';
   const title = isEdit ? 'Sửa biển số xe' : 'Thêm xe mới';
 
-  const handleConfirm = async ({ licensePlate, otp }) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!licensePlate.trim()) {
+      setErrorMsg('Vui lòng nhập biển số xe');
+      return;
+    }
+
     setErrorMsg('');
     try {
       setIsLoading(true);
       let result;
       if (isEdit) {
-        result = await vehicleService.updateVehicle(vehicle.id, { licensePlate, otp });
+        result = await vehicleService.updateVehicle(vehicle.id, { 
+          licensePlate: licensePlate.trim().toUpperCase(), 
+          otp: '123456' 
+        });
       } else {
-        result = await vehicleService.addVehicle({ licensePlate, otp });
+        result = await vehicleService.addVehicle({ 
+          licensePlate: licensePlate.trim().toUpperCase(), 
+          otp: '123456' 
+        });
       }
       onSuccess(result);
     } catch (err) {
@@ -37,6 +49,13 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
     }
   };
 
+  const inputClass = `
+    w-full bg-white border border-slate-300 rounded-lg px-4 py-3
+    text-slate-800 placeholder-slate-400 text-sm
+    focus:outline-none focus:border-cyan-500 focus:bg-white
+    transition-all duration-200
+  `;
+
   return (
     // Backdrop
     <div
@@ -45,7 +64,8 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       {/* Modal panel */}
-      <div
+      <form
+        onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-2xl border border-slate-200 p-6 space-y-5"
         style={{
           background: '#ffffff',
@@ -61,6 +81,7 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
             {title}
           </h3>
           <button
+            type="button"
             onClick={onClose}
             className="text-slate-500 hover:text-slate-800 transition-colors text-xl leading-none"
           >
@@ -71,7 +92,7 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
         {/* Divider */}
         <div className="h-px bg-slate-200" />
 
-        {/* Error toàn modal (từ API) */}
+        {/* Error total */}
         {errorMsg && (
           <div className="rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-2">
             <p className="text-red-400 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
@@ -80,14 +101,55 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
           </div>
         )}
 
-        {/* OTP Flow */}
-        <OtpVerifyStep
-          initialPlate={isEdit ? vehicle?.licensePlate ?? '' : ''}
-          onConfirm={handleConfirm}
-          onCancel={onClose}
-          isLoading={isLoading}
-        />
-      </div>
+        {/* Simple Input form */}
+        <div className="space-y-4">
+          <div>
+            <label
+              className="block text-xs text-slate-500 uppercase tracking-widest mb-2"
+              style={{ fontFamily: "'Archivo', sans-serif" }}
+            >
+              Biển số xe
+            </label>
+            <input
+              type="text"
+              value={licensePlate}
+              onChange={e => { setLicensePlate(e.target.value.toUpperCase()); setErrorMsg(''); }}
+              placeholder="VD: 51A-12345"
+              className={inputClass}
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
+              maxLength={10}
+              disabled={isLoading}
+              autoFocus
+            />
+          </div>
+
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200 disabled:opacity-50"
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
+              style={{
+                fontFamily: "'Archivo', sans-serif",
+                background: isLoading
+                  ? 'rgba(6,182,212,0.4)'
+                  : 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                boxShadow: isLoading ? 'none' : '0 0 16px rgba(6,182,212,0.35)',
+              }}
+            >
+              {isLoading ? 'Đang lưu...' : 'Xác nhận'}
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
