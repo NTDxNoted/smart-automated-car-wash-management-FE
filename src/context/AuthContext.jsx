@@ -18,6 +18,7 @@ import { logout as logoutService } from "../services/authService";
 const DEFAULT_AUTH = {
   token: null,
   customerId: null,
+  adminId: null,
   fullName: null,
   tier: null,
   suspendedUntil: null,
