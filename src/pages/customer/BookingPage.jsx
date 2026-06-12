@@ -6,6 +6,7 @@ import StepSelectService from '../../components/booking/StepSelectService';
 import StepVehicleTime from '../../components/booking/StepVehicleTime';
 import StepConfirm from '../../components/booking/StepConfirm';
 import { bookingService } from '../../services/bookingService';
+import { profileService } from '../../services/profileService';
 
 export default function BookingPage() {
   const { auth } = useContext(AuthContext);
@@ -14,15 +15,46 @@ export default function BookingPage() {
   const [services, setServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(true);
   const [error, setError] = useState(null);
+  const [memberProfile, setMemberProfile] = useState(null);
 
   const [bookingData, setBookingData] = useState({
     service: null,
     customerType: auth?.token ? 'MEMBER' : 'GUEST',
-    phone: auth?.phone || '',
+    phone: '',
     licensePlate: '',
     selectedVehicleId: '',
     scheduledTime: '',
   });
+
+  useEffect(() => {
+    async function loadMemberProfile() {
+      if (auth?.token) {
+        try {
+          const profile = await profileService.getProfile();
+          const normalizedProfile = {
+            ...profile,
+            points: profile.loyaltyPoints ?? profile.points ?? 0
+          };
+          setMemberProfile(normalizedProfile);
+          setBookingData(prev => ({
+            ...prev,
+            customerType: 'MEMBER',
+            phone: profile.phone || '',
+          }));
+        } catch (err) {
+          console.error("Failed to load member profile:", err);
+        }
+      } else {
+        setMemberProfile(null);
+        setBookingData(prev => ({
+          ...prev,
+          customerType: 'GUEST',
+          phone: '',
+        }));
+      }
+    }
+    loadMemberProfile();
+  }, [auth]);
 
   useEffect(() => {
     async function loadServices() {
@@ -103,7 +135,7 @@ export default function BookingPage() {
               setBookingData={setBookingData}
               onNext={nextStep}
               onBack={prevStep}
-              user={auth}
+              user={memberProfile}
             />
           )}
 
@@ -111,7 +143,7 @@ export default function BookingPage() {
             <StepConfirm
               bookingData={bookingData}
               onBack={prevStep}
-              user={auth}
+              user={memberProfile}
             />
           )}
         </div>
