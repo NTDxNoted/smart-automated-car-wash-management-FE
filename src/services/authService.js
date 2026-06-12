@@ -118,7 +118,7 @@ export async function login({ phone, password }) {
  * @param {{ fullName: string, phone: string, password: string }} payload
  * @returns {Promise<{ customerId: string, fullName: string, phone: string, tier: string, loyaltyPoints: number }>}
  */
-export async function register({ fullName, phone, password }) {
+export async function register({ fullName, phone, password, confirmPassword }) {
   if (USE_MOCK_DATA) {
     await delay(800);
 
@@ -144,7 +144,7 @@ export async function register({ fullName, phone, password }) {
 
   // ── Real API ──
   try {
-    const { data } = await authApi.post("/register", { fullName, phone, password });
+    const { data } = await authApi.post("/register", { fullName, phone, password, confirmPassword });
     return data;
   } catch (err) {
     const code = extractErrorCode(err);
