@@ -206,8 +206,8 @@ export const bookingService = {
         if (USE_MOCK_DATA) {
             await delay(400);
 
-            // Lấy thông tin user đăng nhập thực tế (Issue 2 lưu vào 'user')
-            const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+            // Lấy thông tin user đăng nhập thực tế (Issue 2 lưu vào 'aw_user')
+            const storedUser = localStorage.getItem('aw_user') ? JSON.parse(localStorage.getItem('aw_user')) : null;
             const currentCustomerId = storedUser?.customerId || 'CUS-0001';
 
             // TỐI ƯU HIỆU NĂNG: Lọc trực tiếp bằng biểu thức điều kiện, không dùng .map() lãng phí bộ nhớ
