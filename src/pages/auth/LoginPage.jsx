@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { login } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext";
+import { adminLogin } from "../../services/adminAuthService";
 import bg from "../../assets/img/bg-car.png";
 
 // ─── Validators ─────────────────────────────────────────────────────────────
@@ -130,36 +131,85 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    try {
-      const data = await login({ phone: form.phone.trim(), password: form.password });
+    
+try {
+   // ===== LOGIN ADMIN TRƯỚC =====
+  try {
+    const adminData = await adminLogin({
+      phone: form.phone.trim(),
+      password: form.password,
+    });
 
-      // Persist token (no password stored — BR-06)
-      localStorage.setItem("aw_token", data.token);
-      localStorage.setItem("aw_user", JSON.stringify({
-        customerId: data.customerId,
-        fullName: data.fullName,
-        tier: data.tier,
-        suspendedUntil: data.suspendedUntil ?? null,
-        role: data.role ?? "MEMBER",
-      }));
+    localStorage.setItem(
+      "admin_token",
+      adminData.token
+    );
 
-      setAuth({
-        token: data.token,
-        customerId: data.customerId,
-        fullName: data.fullName,
-        tier: data.tier,
-        suspendedUntil: data.suspendedUntil ?? null,
-        role: data.role ?? "MEMBER",
-      });
+    setAuth({
+      token: adminData.token,
+      adminId: adminData.adminId,
+      fullName: adminData.fullName,
+      role: "Admin",
+    });
 
+    toast.success(
+      `Xin chào Admin ${adminData.fullName}`
+    );
+
+    navigate("/admin/dashboard", {
+      replace: true,
+    });
+
+    return;
+  } catch {
+    // không phải admin => login member
+  }
+
+  // ===== LOGIN MEMBER =====
+  const data = await login({
+    phone: form.phone.trim(),
+    password: form.password,
+  });
+
+  localStorage.setItem(
+    "member_token",
+    data.token
+  );
+
+  localStorage.setItem(
+    "aw_user",
+    JSON.stringify({
+      customerId: data.customerId,
+      fullName: data.fullName,
+      tier: data.tier,
+      suspendedUntil:
+        data.suspendedUntil ?? null,
+      role: "Member",
+    })
+  );
+
+  setAuth({
+    token: data.token,
+    customerId: data.customerId,
+    fullName: data.fullName,
+    tier: data.tier,
+    suspendedUntil:
+      data.suspendedUntil ?? null,
+    role: "Member",
+  });
       toast.success(`Chào mừng, ${data.fullName}!`);
+      navigate("/bookings", {
+    replace: true,
+  });
+
+
 
       // Redirect: Admin → /admin/dashboard, Member → /
-      if (data.role === "ADMIN") {
-        navigate("/admin/dashboard", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      // if (data.role === "ADMIN") {
+      //   navigate("/admin/dashboard", { replace: true });
+      // } else {
+      //   navigate("/", { replace: true });
+      // }
     } catch (err) {
       // BR-13: ACCOUNT_LOCKED → toast dài
       if (err.code === "ACCOUNT_LOCKED") {
@@ -174,6 +224,7 @@ export default function LoginPage() {
       setLoading(false);
     }
   }
+  
 
   return (
     <>
@@ -347,4 +398,4 @@ export default function LoginPage() {
       `}</style>
     </>
   );
-}
+    }
