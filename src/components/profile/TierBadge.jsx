@@ -62,7 +62,7 @@ export default function TierBadge({ tier = 'MEMBER', size = 'md' }) {
         shadow-lg ${config.glow}
         ${sizeClass}
       `}
-      style={{ fontFamily: "'Syne', sans-serif", letterSpacing: '0.12em' }}
+      style={{ fontFamily: "'Archivo', sans-serif", letterSpacing: '0.12em' }}
     >
       <span className="opacity-80">{config.icon}</span>
       {config.label}

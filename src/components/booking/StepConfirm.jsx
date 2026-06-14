@@ -49,13 +49,13 @@ export default function StepConfirm({ bookingData, onBack, user }) {
     const finalAmount = Math.max(0, baseAmount - tierDiscount - promotionDiscount - rewardDiscount);
     const invoice = { baseAmount, tierDiscount, promotionDiscount, rewardDiscount, finalAmount };
 
-    const handleErrorResponse = (errCode) => {
+    const handleErrorResponse = (errCode, serverMessage) => {
         switch (errCode) {
             case 'PENDING_QUOTA_EXCEEDED': return "Bạn đã có lịch đặt đang chờ. Vui lòng hoàn thành trước khi đặt lịch mới.";
             case 'SLOT_NOT_AVAILABLE': return "Khung giờ này hiện tại đã có người đặt trước. Vui lòng chọn khung giờ khác.";
             case 'VEHICLE_BUFFER_VIOLATION': return "Xe này đã có lịch hẹn được đặt trong vòng 120 phút. Vui lòng đổi giờ.";
             case 'BOOKING_SUSPENDED': return "Tài khoản của bạn đang bị tạm khóa tính năng đặt lịch. Liên hệ Admin.";
-            default: return "Đã xảy ra lỗi hệ thống khi đặt lịch. Vui lòng thử lại.";
+            default: return serverMessage || "Đã xảy ra lỗi hệ thống khi đặt lịch. Vui lòng thử lại.";
         }
     };
 
@@ -65,12 +65,12 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
         const payload = {
             serviceId: bookingData.service.id,
-            phone: bookingData.phone,
-            licensePlate: bookingData.licensePlate,
-            scheduledTime: bookingData.scheduledTime,
+            phone: bookingData.phone || null,
+            licensePlate: bookingData.licensePlate || null,
+            vehicleId: bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
+            scheduledTime: bookingData.scheduledTime, // ISO string e.g. "2025-06-13T08:00"
             promotionId: appliedPromo?.promotionId || null,
             rewardPointsUsed: selectedRewardOption,
-            ...invoice
         };
 
         try {
@@ -80,8 +80,9 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                 navigate('/bookings');
             }, 2000);
         } catch (err) {
-            const serverCode = err?.response?.data?.code;
-            setSubmitError(handleErrorResponse(serverCode));
+            const serverCode = err?.response?.data?.error || err?.response?.data?.code;
+            const serverMessage = err?.response?.data?.message;
+            setSubmitError(handleErrorResponse(serverCode, serverMessage));
         } finally {
             setLoading(false);
         }
@@ -95,7 +96,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                 </div>
             )}
 
-            <h3 className="text-xl font-syne text-cyan-600 font-semibold mb-4">Bước 3: Kiểm tra hóa đơn & Xác nhận</h3>
+            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">Bước 3: Kiểm tra hóa đơn & Xác nhận</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
                 <div><span className="text-slate-500">Dịch vụ:</span> <strong className="text-slate-800">{bookingData.service?.name}</strong></div>

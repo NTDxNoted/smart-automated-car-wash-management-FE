@@ -56,7 +56,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
             {/* Biển số */}
             <span
               style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Archivo', sans-serif",
                 fontSize: "15px",
                 fontWeight: 700,
                 color: "#0891b2",
@@ -73,7 +73,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
           </div>
           <p
             style={{
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Be Vietnam Pro', sans-serif",
               fontSize: "14px",
               color: "rgba(0,0,0,0.6)",
               margin: "6px 0 0",
@@ -90,7 +90,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
         <div style={{ textAlign: "right", marginLeft: "16px", flexShrink: 0 }}>
           <span
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Archivo', sans-serif",
               fontSize: "16px",
               fontWeight: 700,
               color: "#0f172a",
@@ -104,10 +104,10 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
       {/* Row 2: Giờ hẹn + ID + Nút hủy */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: "18px" }}>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
+          <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
             🕐 {formatDateTime(booking.scheduledTime)}
           </span>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
+          <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
             #{booking.bookingId}
           </span>
         </div>
@@ -119,7 +119,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
               onCancel(booking);
             }}
             style={{
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Be Vietnam Pro', sans-serif",
               fontSize: "12px",
               fontWeight: 600,
               color: "#FF5C5C",

@@ -27,7 +27,7 @@ export default function PointHistoryTable({ history = [] }) {
   if (!history || history.length === 0) {
     return (
       <div className="py-12 text-center border border-slate-200 rounded-xl bg-white">
-        <p className="text-slate-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <p className="text-slate-500 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
           Chưa có lịch sử giao dịch điểm
         </p>
       </div>
@@ -37,9 +37,9 @@ export default function PointHistoryTable({ history = [] }) {
   return (
     <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <table className="w-full text-left border-collapse" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500" style={{ fontFamily: "'Syne', sans-serif" }}>
+            <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500" style={{ fontFamily: "'Archivo', sans-serif" }}>
               <th className="px-5 py-4 font-semibold">Thời gian</th>
               <th className="px-5 py-4 font-semibold">Giao dịch</th>
               <th className="px-5 py-4 font-semibold">Mã đặt lịch</th>
@@ -64,7 +64,7 @@ export default function PointHistoryTable({ history = [] }) {
                   <td className="px-5 py-4 text-sm text-slate-600 whitespace-nowrap">
                     {row.refBookingId || <span className="text-slate-400">-</span>}
                   </td>
-                  <td className={`px-5 py-4 text-sm font-bold text-right whitespace-nowrap ${style.color}`} style={{ fontFamily: "'Syne', sans-serif" }}>
+                  <td className={`px-5 py-4 text-sm font-bold text-right whitespace-nowrap ${style.color}`} style={{ fontFamily: "'Archivo', sans-serif" }}>
                     {isPositive ? '+' : ''}{row.points}
                   </td>
                 </tr>

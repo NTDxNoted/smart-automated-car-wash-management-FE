@@ -97,7 +97,7 @@ export default function ProfilePage() {
       className="min-h-screen flex flex-col items-center"
       style={{
         background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(6,182,212,0.1) 0%, transparent 70%), #f8fafc',
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: "'Be Vietnam Pro', sans-serif",
       }}
     >
       {/* 💡 1. HỘP ĐỆM TÀNG HÌNH: Giúp đẩy toàn bộ nội dung xuống dưới gầm Navbar */}
@@ -126,7 +126,7 @@ export default function ProfilePage() {
               style={{
                 background: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05))',
                 border: '1px solid rgba(6,182,212,0.2)',
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Archivo', sans-serif",
               }}
             >
               {profile?.fullName?.charAt(0)?.toUpperCase() ?? '?'}
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2">
                   <h1
                     className="text-xl font-bold text-slate-800 truncate"
-                    style={{ fontFamily: "'Syne', sans-serif" }}
+                    style={{ fontFamily: "'Archivo', sans-serif" }}
                   >
                     {profile?.fullName}
                   </h1>
@@ -163,7 +163,7 @@ export default function ProfilePage() {
                       value={nameInput}
                       onChange={e => { setNameInput(e.target.value); setSaveError(''); }}
                       className="flex-1 bg-white border border-cyan-500 rounded-lg px-3 py-1.5 text-slate-800 text-sm focus:outline-none focus:border-cyan-600 transition-all"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
+                      style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
                       autoFocus
                       onKeyDown={e => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') handleCancelEdit(); }}
                     />
@@ -171,7 +171,7 @@ export default function ProfilePage() {
                       onClick={handleSaveName}
                       disabled={saving}
                       className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white disabled:opacity-50 transition-all"
-                      style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', fontFamily: "'Syne', sans-serif" }}
+                      style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', fontFamily: "'Archivo', sans-serif" }}
                     >
                       {saving ? '...' : 'Lưu'}
                     </button>
@@ -204,10 +204,10 @@ export default function ProfilePage() {
               className="rounded-xl border border-slate-200 p-4 space-y-1"
               style={{ background: '#ffffff' }}
             >
-              <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Syne', sans-serif" }}>
+              <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Archivo', sans-serif" }}>
                 Tổng chi tiêu
               </p>
-              <p className="text-lg font-bold text-slate-800" style={{ fontFamily: "'Syne', sans-serif" }}>
+              <p className="text-lg font-bold text-slate-800" style={{ fontFamily: "'Archivo', sans-serif" }}>
                 {formatVND(profile?.totalSpending)}
               </p>
             </div>
@@ -215,10 +215,10 @@ export default function ProfilePage() {
               className="rounded-xl border border-slate-200 px-4 py-6 space-y-1"
               style={{ background: '#ffffff' }}
             >
-              <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Syne', sans-serif" }}>
+              <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Archivo', sans-serif" }}>
                 Điểm tích lũy
               </p>
-              <p className="text-lg font-bold text-cyan-600" style={{ fontFamily: "'Syne', sans-serif" }}>
+              <p className="text-lg font-bold text-cyan-600" style={{ fontFamily: "'Archivo', sans-serif" }}>
                 {profile?.loyaltyPoints?.toLocaleString('vi-VN')} điểm
               </p>
             </div>
@@ -244,7 +244,7 @@ export default function ProfilePage() {
                   : 'text-slate-500 border-b-2 border-transparent hover:text-slate-700'
                 }
               `}
-              style={{ fontFamily: "'Syne', sans-serif", letterSpacing: '0.05em' }}
+              style={{ fontFamily: "'Archivo', sans-serif", letterSpacing: '0.05em' }}
             >
               {tab.label}
             </button>
@@ -262,7 +262,7 @@ export default function ProfilePage() {
             <div className="space-y-4">
               <h2
                 className="text-sm uppercase tracking-widest text-slate-500"
-                style={{ fontFamily: "'Syne', sans-serif" }}
+                style={{ fontFamily: "'Archivo', sans-serif" }}
               >
                 Thông tin tài khoản
               </h2>
@@ -279,7 +279,7 @@ export default function ProfilePage() {
                   >
                     <span className="text-sm text-slate-500">{row.label}</span>
                     <div className="text-right">
-                      <span className="text-sm text-slate-800 font-medium" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      <span className="text-sm text-slate-800 font-medium" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
                         {row.value}
                       </span>
                       {row.note && (

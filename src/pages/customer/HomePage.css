@@ -4,7 +4,7 @@
    Fonts: Sora (headings) + DM Sans (body)
    ════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --clr-bg: #f8fafc; /* slate-50 */
@@ -23,8 +23,8 @@
   --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
   --shadow-hover: 0 20px 40px rgba(255, 42, 59, 0.15);
 
-  --font-head: 'Sora', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  --font-head: 'Archivo', sans-serif;
+  --font-body: 'Be Vietnam Pro', sans-serif;
 }
 
 /* ── Reset & Base Layout ── */
@@ -147,8 +147,10 @@ header.sticky div.w-full {
   font-weight: 800;
   line-height: 1.2;
   color: var(--clr-text);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.025em; /* tracking-wide */
   margin-bottom: 24px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .hero__title-accent {

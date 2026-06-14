@@ -63,7 +63,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
           </div>
           <h2
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Archivo', sans-serif",
               fontSize: "18px",
               fontWeight: 700,
               color: "#0f172a",
@@ -74,7 +74,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
           </h2>
           <p
             style={{
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Be Vietnam Pro', sans-serif",
               fontSize: "13px",
               color: "rgba(0,0,0,0.5)",
               margin: 0,
@@ -97,7 +97,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
             <span
               style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Archivo', sans-serif",
                 fontSize: "14px",
                 fontWeight: 700,
                 color: "#0891b2",
@@ -108,10 +108,10 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
             </span>
             <BookingStatusBadge status="Pending" size="sm" />
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.7)", margin: "0 0 4px" }}>
+          <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.7)", margin: "0 0 4px" }}>
             {booking.serviceName}
           </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", margin: 0 }}>
+          <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", margin: 0 }}>
             #{booking.bookingId}
           </p>
         </div>
@@ -133,7 +133,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
             <span style={{ fontSize: "18px" }}>💎</span>
             <p
               style={{
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: "'Be Vietnam Pro', sans-serif",
                 fontSize: "13px",
                 color: "#0891b2",
                 margin: 0,
@@ -152,7 +152,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
             disabled={isLoading}
             style={{
               flex: 1,
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Be Vietnam Pro', sans-serif",
               fontSize: "14px",
               fontWeight: 600,
               color: "rgba(0,0,0,0.6)",
@@ -171,7 +171,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
             disabled={isLoading}
             style={{
               flex: 1,
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Be Vietnam Pro', sans-serif",
               fontSize: "14px",
               fontWeight: 600,
               color: "#fff",

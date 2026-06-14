@@ -165,6 +165,7 @@ export default function RegisterPage() {
         fullName: form.fullName.trim(),
         phone: form.phone.trim(),
         password: form.password,
+        confirmPassword: form.confirmPassword,
       });
       toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
       navigate("/login");

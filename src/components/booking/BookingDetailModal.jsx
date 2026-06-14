@@ -39,7 +39,7 @@ function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highli
     >
       <span
         style={{
-          fontFamily: "'DM Sans', sans-serif",
+          fontFamily: "'Be Vietnam Pro', sans-serif",
           fontSize: isFinal ? "14px" : "13px",
           color: isFinal ? "#0f172a" : "rgba(0,0,0,0.6)",
           fontWeight: isFinal ? 600 : 400,
@@ -49,7 +49,7 @@ function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highli
       </span>
       <span
         style={{
-          fontFamily: "'DM Sans', sans-serif",
+          fontFamily: "'Be Vietnam Pro', sans-serif",
           fontSize: isFinal ? "16px" : "13px",
           fontWeight: isFinal ? 700 : 500,
           color: isFinal
@@ -109,7 +109,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
               <span
                 style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Archivo', sans-serif",
                   fontSize: "20px",
                   fontWeight: 700,
                   color: "#0891b2",
@@ -122,7 +122,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
             </div>
             <p
               style={{
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: "'Be Vietnam Pro', sans-serif",
                 fontSize: "15px",
                 color: "#0f172a",
                 margin: "0 0 4px",
@@ -131,7 +131,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
             >
               {booking.serviceName}
             </p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", margin: 0 }}>
+            <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", margin: 0 }}>
               #{booking.bookingId}
             </p>
           </div>
@@ -171,8 +171,8 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         >
           <span style={{ fontSize: "18px" }}>📅</span>
           <div>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "rgba(0,0,0,0.5)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Giờ hẹn</p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#0891b2", margin: 0, fontWeight: 500 }}>
+            <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "11px", color: "rgba(0,0,0,0.5)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Giờ hẹn</p>
+            <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "14px", color: "#0891b2", margin: 0, fontWeight: 500 }}>
               {formatDateTime(booking.scheduledTime)}
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
 
         {/* Invoice Breakdown */}
         <div style={{ marginBottom: "20px" }}>
-          <p style={{ fontFamily: "'Syne', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 12px" }}>
+          <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 12px" }}>
             Chi tiết hóa đơn
           </p>
           <div
@@ -220,13 +220,13 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ fontSize: "16px" }}>⭐</span>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.6)" }}>
+            <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.6)" }}>
               {booking.status === "Cancelled" ? "Điểm được hoàn trả" : "Điểm tích lũy"}
             </span>
           </div>
           <span
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Archivo', sans-serif",
               fontSize: "16px",
               fontWeight: 700,
               color: "#d97706",
@@ -249,7 +249,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
             }}
             style={{
               width: "100%",
-              fontFamily: "'DM Sans', sans-serif",
+              fontFamily: "'Be Vietnam Pro', sans-serif",
               fontSize: "14px",
               fontWeight: 600,
               color: "#FF5C5C",

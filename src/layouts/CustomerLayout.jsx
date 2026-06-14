@@ -32,7 +32,8 @@ export default function CustomerLayout() {
           {/* KHỐI TRÁI: LOGO */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 font-black text-xl tracking-wider uppercase text-cyan-600">
-              LUXEWASH <span className="text-slate-800 font-medium">AUTO</span>
+              <span className="text-cyan-500">⟡</span>
+              AutoWash <span className="text-slate-800 font-medium">Pro</span>
             </Link>
           </div>
 

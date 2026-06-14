@@ -1,11 +1,12 @@
 import axios from "axios";
 
-const USE_MOCK_DATA = true; // Gạt thành false khi backend deploy API thật
+const USE_MOCK_DATA = false; // Gạt thành false khi backend deploy API thật
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:59153";
+const baseURL = import.meta.env.VITE_API_BASE_URL ? `${API_BASE}/auth` : `${API_BASE}/api/auth`;
 
 const authApi = axios.create({
-  baseURL: `${API_BASE}/api/auth`,
+  baseURL: baseURL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -117,7 +118,7 @@ export async function login({ phone, password }) {
  * @param {{ fullName: string, phone: string, password: string }} payload
  * @returns {Promise<{ customerId: string, fullName: string, phone: string, tier: string, loyaltyPoints: number }>}
  */
-export async function register({ fullName, phone, password }) {
+export async function register({ fullName, phone, password, confirmPassword }) {
   if (USE_MOCK_DATA) {
     await delay(800);
 
@@ -143,7 +144,7 @@ export async function register({ fullName, phone, password }) {
 
   // ── Real API ──
   try {
-    const { data } = await authApi.post("/register", { fullName, phone, password });
+    const { data } = await authApi.post("/register", { fullName, phone, password, confirmPassword });
     return data;
   } catch (err) {
     const code = extractErrorCode(err);

@@ -19,7 +19,7 @@ export default function BookingStatusBadge({ status, size = "md" }) {
       style={{
         display: "inline-block",
         fontSize,
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: "'Be Vietnam Pro', sans-serif",
         fontWeight: 600,
         letterSpacing: "0.04em",
         padding,

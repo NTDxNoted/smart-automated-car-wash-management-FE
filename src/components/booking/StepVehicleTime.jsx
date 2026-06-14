@@ -47,8 +47,18 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         setLoadingSlots(true);
         bookingService.getAvailableSlots(todayStr)
             .then(data => {
-                // Giới hạn số ngày hiển thị theo đặc quyền phân hạng Tier của User (MEMBER=7 ngày, SILVER=10 ngày...)
-                const allowedDays = data.slice(0, bookingWindowDays);
+                const daysOfWeek = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+                const allowedDays = data.slice(0, bookingWindowDays).map(item => {
+                    const dateValStr = item.date || item.Date || item.dateStr;
+                    const d = new Date(dateValStr);
+                    const dateVal = String(d.getDate()).padStart(2, '0');
+                    return {
+                        dateStr: dateValStr,
+                        label: dateVal,
+                        dayOfWeek: daysOfWeek[d.getDay()],
+                        slots: item.slots || item.Slots || []
+                    };
+                });
                 setAvailableDays(allowedDays);
                 setLoadingSlots(false);
 
@@ -106,7 +116,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
     return (
         <div className="space-y-6">
-            <h3 className="text-xl font-syne text-cyan-600 font-semibold mb-4">Bước 2: Thông tin xe và Thời gian đặt lịch</h3>
+            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">Bước 2: Thông tin xe và Thời gian đặt lịch</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {!user ? (
