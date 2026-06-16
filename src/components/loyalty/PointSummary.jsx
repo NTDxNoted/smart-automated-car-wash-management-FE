@@ -1,10 +1,12 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * Hiển thị tổng điểm cực lớn và trạng thái "Có thể đổi thưởng"
  * BR-59: Tổng điểm < 50 → hiện "Cần thêm X điểm"
  */
 export default function PointSummary({ totalPoints = 0, canRedeem = false }) {
+  const { t, locale } = useLanguage();
   const pointsNeeded = Math.max(50 - totalPoints, 0);
 
   return (
@@ -27,7 +29,7 @@ export default function PointSummary({ totalPoints = 0, canRedeem = false }) {
         className="text-sm uppercase tracking-widest text-slate-500 z-10"
         style={{ fontFamily: "'Archivo', sans-serif" }}
       >
-        Tổng điểm hiện có
+        {t('loyaltySummaryTitle')}
       </h3>
 
       <div 
@@ -37,7 +39,7 @@ export default function PointSummary({ totalPoints = 0, canRedeem = false }) {
           fontFamily: "'Archivo', sans-serif" 
         }}
       >
-        {totalPoints.toLocaleString('vi-VN')}
+        {totalPoints.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN')}
       </div>
 
       <div className="z-10 mt-2">
@@ -47,11 +49,11 @@ export default function PointSummary({ totalPoints = 0, canRedeem = false }) {
               <path d="M14.667 8A6.667 6.667 0 111.333 8a6.667 6.667 0 0113.334 0z" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M5.333 8l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            Có thể đổi thưởng
+            {t('loyaltyCanRedeem')}
           </span>
         ) : (
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-300 text-slate-600 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-            Cần thêm <strong className="text-slate-800">{pointsNeeded} điểm</strong> để bắt đầu đổi thưởng
+            {t('loyaltyPointsNeeded').replace('{points}', pointsNeeded)}
           </span>
         )}
       </div>

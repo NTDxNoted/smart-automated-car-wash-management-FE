@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { vehicleService } from '../../services/vehicleService';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * AddVehicleModal — Modal thêm xe mới hoặc sửa biển số (Bỏ qua bước OTP)
@@ -11,17 +12,18 @@ import { vehicleService } from '../../services/vehicleService';
  *   onClose     : () => void
  */
 export default function AddVehicleModal({ mode = 'add', vehicle = null, onSuccess, onClose }) {
+  const { t } = useLanguage();
   const [licensePlate, setLicensePlate] = useState(mode === 'edit' ? vehicle?.licensePlate ?? '' : '');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const isEdit = mode === 'edit';
-  const title = isEdit ? 'Sửa biển số xe' : 'Thêm xe mới';
+  const title = isEdit ? t('modalEditVehicle') : t('modalAddVehicle');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!licensePlate.trim()) {
-      setErrorMsg('Vui lòng nhập biển số xe');
+      setErrorMsg(t('licensePlateRequired'));
       return;
     }
 
@@ -42,7 +44,7 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
       }
       onSuccess(result);
     } catch (err) {
-      const msg = err?.response?.data?.message ?? 'Đã có lỗi xảy ra, thử lại sau';
+      const msg = err?.response?.data?.message ?? t('profileUpdateFailed');
       setErrorMsg(msg);
     } finally {
       setIsLoading(false);
@@ -108,13 +110,13 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
               className="block text-xs text-slate-500 uppercase tracking-widest mb-2"
               style={{ fontFamily: "'Archivo', sans-serif" }}
             >
-              Biển số xe
+              {t('licensePlateLabel')}
             </label>
             <input
               type="text"
               value={licensePlate}
               onChange={e => { setLicensePlate(e.target.value.toUpperCase()); setErrorMsg(''); }}
-              placeholder="VD: 51A-12345"
+              placeholder={t('licensePlatePlaceholder')}
               className={inputClass}
               style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
               maxLength={10}
@@ -131,7 +133,7 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
               className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200 disabled:opacity-50"
               style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
             >
-              Hủy
+              {t('btnCancel')}
             </button>
             <button
               type="submit"
@@ -145,7 +147,7 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
                 boxShadow: isLoading ? 'none' : '0 0 16px rgba(6,182,212,0.35)',
               }}
             >
-              {isLoading ? 'Đang lưu...' : 'Xác nhận'}
+              {isLoading ? t('btnSaving') : t('btnConfirmModal')}
             </button>
           </div>
         </div>
@@ -153,3 +155,4 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
     </div>
   );
 }
+

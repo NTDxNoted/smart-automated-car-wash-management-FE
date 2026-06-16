@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { bookingService } from '../../services/bookingService';
 import InvoicePreview from './InvoicePreview';
 import PromoCodeInput from './PromoCodeInput';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function StepConfirm({ bookingData, onBack, user }) {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [submitError, setSubmitError] = useState('');
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
@@ -51,11 +53,11 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
     const handleErrorResponse = (errCode, serverMessage) => {
         switch (errCode) {
-            case 'PENDING_QUOTA_EXCEEDED': return "Bạn đã có lịch đặt đang chờ. Vui lòng hoàn thành trước khi đặt lịch mới.";
-            case 'SLOT_NOT_AVAILABLE': return "Khung giờ này hiện tại đã có người đặt trước. Vui lòng chọn khung giờ khác.";
-            case 'VEHICLE_BUFFER_VIOLATION': return "Xe này đã có lịch hẹn được đặt trong vòng 120 phút. Vui lòng đổi giờ.";
-            case 'BOOKING_SUSPENDED': return "Tài khoản của bạn đang bị tạm khóa tính năng đặt lịch. Liên hệ Admin.";
-            default: return serverMessage || "Đã xảy ra lỗi hệ thống khi đặt lịch. Vui lòng thử lại.";
+            case 'PENDING_QUOTA_EXCEEDED': return t('quotaExceeded');
+            case 'SLOT_NOT_AVAILABLE': return t('slotUnavailable');
+            case 'VEHICLE_BUFFER_VIOLATION': return t('bufferViolation');
+            case 'BOOKING_SUSPENDED': return t('bookingSuspended');
+            default: return serverMessage || t('genericBookingError');
         }
     };
 
@@ -75,7 +77,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
         try {
             const res = await bookingService.createBooking(payload);
-            setToast({ type: 'SUCCESS', message: `Đặt lịch thành công! Mã hóa đơn: ${res.bookingId}` });
+            setToast({ type: 'SUCCESS', message: t('bookingSuccessToast').replace('{id}', res.bookingId) });
             setTimeout(() => {
                 navigate('/bookings');
             }, 2000);
@@ -96,13 +98,13 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                 </div>
             )}
 
-            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">Bước 3: Kiểm tra hóa đơn & Xác nhận</h3>
+            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">{t('step3Title')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
-                <div><span className="text-slate-500">Dịch vụ:</span> <strong className="text-slate-800">{bookingData.service?.name}</strong></div>
-                <div><span className="text-slate-500">Thời gian:</span> <strong className="text-slate-800">{bookingData.scheduledTime?.replace('T', ' ')}</strong></div>
-                <div><span className="text-slate-500">Số điện thoại:</span> <strong className="text-slate-800">{bookingData.phone}</strong></div>
-                <div><span className="text-slate-500">Biển số xe:</span> <strong className="text-slate-800">{bookingData.licensePlate}</strong></div>
+                <div><span className="text-slate-500">{t('bookingServiceLabel')}</span> <strong className="text-slate-800">{bookingData.service?.name}</strong></div>
+                <div><span className="text-slate-500">{t('bookingTimeLabel')}</span> <strong className="text-slate-800">{bookingData.scheduledTime?.replace('T', ' ')}</strong></div>
+                <div><span className="text-slate-500">{t('bookingPhoneLabel')}</span> <strong className="text-slate-800">{bookingData.phone}</strong></div>
+                <div><span className="text-slate-500">{t('bookingPlateLabel')}</span> <strong className="text-slate-800">{bookingData.licensePlate}</strong></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -114,23 +116,23 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                     <div className="border border-slate-200 bg-white p-4 rounded-lg">
                         {!user || user.points < 50 ? (
                             <p className="text-xs text-slate-500 italic">
-                                Cần thêm {50 - (user?.points || 0)} điểm để đổi thưởng quà tặng thành viên.
+                                {t('rewardInsufficient').replace('{points}', 50 - (user?.points || 0))}
                             </p>
                         ) : (
                             <div className="space-y-2">
-                                <label className="block text-xs font-medium text-purple-600 uppercase tracking-wider">Đổi điểm tích lũy (Hiện có: {user.points} điểm)</label>
+                                <label className="block text-xs font-medium text-purple-600 uppercase tracking-wider">{t('rewardLabel').replace('{points}', user.points)}</label>
                                 <select
                                     value={selectedRewardOption}
                                     onChange={e => setSelectedRewardOption(Number(e.target.value))}
                                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm text-slate-800 focus:outline-none focus:border-purple-500"
                                 >
-                                    <option value={0}>Không đổi điểm</option>
-                                    {user.points >= 50 && <option value={50}>Dùng 50 điểm (-50.000đ)</option>}
-                                    {user.points >= 100 && <option value={100}>Dùng 100 điểm (-100.000đ)</option>}
+                                    <option value={0}>{t('rewardNoUse')}</option>
+                                    {user.points >= 50 && <option value={50}>{t('rewardUse50')}</option>}
+                                    {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
                                 </select>
                                 <p className="text-[11px] text-purple-300">
-                                    * Tối đa được giảm {maxRewardCap.toLocaleString('vi-VN')} đ (50% giá trị gốc).
-                                    {isRewardCapped && <span className="text-amber-400 block font-semibold">Hệ thống đã tự động áp mức giảm tối đa.</span>}
+                                    {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString('vi-VN'))}
+                                    {isRewardCapped && <span className="text-amber-400 block font-semibold">{t('rewardCappedMsg')}</span>}
                                 </p>
                             </div>
                         )}
@@ -153,14 +155,14 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                     disabled={loading}
                     className="px-6 py-3 border border-slate-300 text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-medium rounded-lg transition-all"
                 >
-                    Quay lại
+                    {t('btnBack')}
                 </button>
                 <button
                     onClick={handleBookingConfirm}
                     disabled={loading}
                     className="px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-md disabled:opacity-50"
                 >
-                    {loading ? 'Hệ thống đang xử lý...' : 'Xác nhận đặt lịch'}
+                    {loading ? t('btnProcessing') : t('btnConfirm')}
                 </button>
             </div>
         </div>

@@ -1,19 +1,19 @@
 // CancelConfirmDialog.jsx
 // Dialog xác nhận hủy lịch — hiển thị thông tin booking và cảnh báo trước khi submit
 
+import React from 'react';
 import BookingStatusBadge from "./BookingStatusBadge";
-
-function formatVND(amount) {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
-}
+import { useLanguage } from "../../context/LanguageContext";
 
 function estimatePointsRefund(finalAmount) {
   return Math.floor(finalAmount / 10000);
 }
 
 export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoading }) {
+  const { t } = useLanguage();
   if (!booking) return null;
   const estimatedPoints = estimatePointsRefund(booking.finalAmount);
+  const refundParts = t('confirmCancelRefundMsg').split('{points}');
 
   return (
     // Faux viewport overlay — dùng normal-flow div để tránh position:fixed collapse iframe
@@ -70,7 +70,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
               margin: "0 0 6px",
             }}
           >
-            Xác nhận hủy lịch hẹn
+            {t('confirmCancelTitle')}
           </h2>
           <p
             style={{
@@ -80,7 +80,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
               margin: 0,
             }}
           >
-            Hành động này không thể hoàn tác sau khi xác nhận.
+            {t('confirmCancelWarning')}
           </p>
         </div>
 
@@ -139,8 +139,9 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
                 margin: 0,
               }}
             >
-              Khi hủy, bạn sẽ nhận lại khoảng{" "}
-              <strong>{estimatedPoints} điểm</strong> Loyalty.
+              {refundParts[0]}
+              <strong>{estimatedPoints}</strong>
+              {refundParts[1]}
             </p>
           </div>
         )}
@@ -164,7 +165,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
               transition: "all 0.2s",
             }}
           >
-            Giữ lịch
+            {t('btnKeepAppointment')}
           </button>
           <button
             onClick={() => onConfirm(booking.bookingId)}
@@ -183,7 +184,7 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
               transition: "all 0.2s",
             }}
           >
-            {isLoading ? "Đang hủy..." : "Xác nhận hủy"}
+            {isLoading ? t('btnCancelling') : t('btnConfirmCancel')}
           </button>
         </div>
       </div>

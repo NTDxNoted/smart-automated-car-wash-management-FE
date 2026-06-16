@@ -4,8 +4,10 @@ import { bookingService } from "../../services/bookingService";
 import BookingCard from "../../components/booking/BookingCard";
 import BookingDetailModal from "../../components/booking/BookingDetailModal";
 import CancelConfirmDialog from "../../components/booking/CancelConfirmDialog";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function BookingHistoryPage() {
+  const { t } = useLanguage();
   // ─── States Quản lý Dữ liệu & UI ──────────────────────────────────────────
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState("Tất cả"); // Tất cả / Pending / Completed...
@@ -42,11 +44,11 @@ export default function BookingHistoryPage() {
       });
     } catch (err) {
       console.error("Lỗi khi tải lịch sử booking:", err);
-      setErrorMsg("Không thể tải danh sách đặt lịch. Vui lòng thử lại.");
+      setErrorMsg(t('errHistoryLoad'));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   // Tự động gọi lại hàm fetch mỗi khi người dùng đổi Tab Filter
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function BookingHistoryPage() {
       const res = await bookingService.cancelBooking(id);
 
       // Hiển thị thông báo Toast thành công lấy số điểm hoàn trả thực tế từ API trả về
-      alert(`Hủy lịch đặt thành công! Thao tác đã được xử lý. Bạn được hoàn trả ${res.pointsRefunded} điểm Loyalty.`);
+      alert(t('cancelSuccessMsg').replace('{points}', res.pointsRefunded));
 
       // Đóng các modal và dialog sau khi xử lý thành công
       setBookingToCancel(null);
@@ -73,9 +75,9 @@ export default function BookingHistoryPage() {
       console.error("Lỗi khi hủy đặt lịch:", err);
       const serverCode = err?.response?.data?.code;
       if (serverCode === "CANCELLATION_TIME_EXCEEDED") {
-        alert("Lỗi: Quá hạn hủy lịch (Phải hủy trước giờ hẹn tối thiểu 2 tiếng).");
+        alert(t('cancelTimeExceeded'));
       } else {
-        alert("Có lỗi xảy ra khi thực hiện hủy lịch đặt. Vui lòng kiểm tra lại.");
+        alert(t('cancelGenericError'));
       }
     } finally {
       setIsCancelling(false);
@@ -85,6 +87,18 @@ export default function BookingHistoryPage() {
   // ─── Danh sách các Tab trạng thái theo thiết kế đặc tả ──────────────────────
   const TABS = ["Tất cả", "Pending", "Completed", "Cancelled", "Failed", "No-show"];
 
+  const getTabLabel = (tab) => {
+    switch (tab) {
+      case "Tất cả": return t('historyStatusTabAll');
+      case "Pending": return t('statusPending');
+      case "Completed": return t('statusCompleted');
+      case "Cancelled": return t('statusCancelled');
+      case "Failed": return t('statusFailed');
+      case "No-show": return t('statusNoShow');
+      default: return tab;
+    }
+  };
+
   return (
     <div style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto", background: "#f8fafc", minHeight: "100vh", color: "#0f172a" }}>
 
@@ -92,7 +106,7 @@ export default function BookingHistoryPage() {
       <div className="h-16 w-full block" aria-hidden="true"></div>
 
       <h1 style={{ fontFamily: "'Archivo', sans-serif", fontSize: "28px", fontWeight: 700, color: "#0891b2", marginBottom: "24px" }}>
-        Lịch Sử Đặt Lịch Của Tôi
+        {t('historyTitle')}
       </h1>
 
       {/* 1. Thanh Filter Tabs */}
@@ -115,13 +129,13 @@ export default function BookingHistoryPage() {
               transition: "all 0.2s",
             }}
           >
-            {tab}
+            {getTabLabel(tab)}
           </button>
         ))}
       </div>
 
       {/* Giao diện Trạng thái Loading hoặc báo lỗi */}
-      {isLoading && <div style={{ textAlign: "center", padding: "40px", color: "rgba(0,0,0,0.5)" }}>Đang tải lịch sử đặt lịch...</div>}
+      {isLoading && <div style={{ textAlign: "center", padding: "40px", color: "rgba(0,0,0,0.5)" }}>{t('loadingHistory')}</div>}
       {errorMsg && <div style={{ color: "#FF5C5C", padding: "20px", background: "rgba(255,92,92,0.05)", borderRadius: "8px", marginBottom: "20px" }}>{errorMsg}</div>}
 
       {/* 2. Danh sách hiển thị các Booking Card */}
@@ -129,7 +143,7 @@ export default function BookingHistoryPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {bookings.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px 20px", background: "#ffffff", borderRadius: "14px", border: "1px dashed rgba(0,0,0,0.2)", color: "rgba(0,0,0,0.5)" }}>
-              Không tìm thấy lịch sử đặt lịch nào ứng với trạng thái này.
+              {t('emptyHistory')}
             </div>
           ) : (
             bookings.map((booking) => (
@@ -152,15 +166,15 @@ export default function BookingHistoryPage() {
             onClick={() => fetchBookings(filter, pagi.page - 1)}
             style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "13px", color: pagi.page === 1 ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page === 1 ? "default" : "pointer" }}
           >
-            ← Trước
+            ← {t('btnPrev')}
           </button>
-          <span style={{ fontSize: "13px", color: "rgba(0,0,0,0.5)" }}>Trang {pagi.page} / {pagi.totalPages}</span>
+          <span style={{ fontSize: "13px", color: "rgba(0,0,0,0.5)" }}>{t('pageLabel').replace('{page}', pagi.page).replace('{totalPages}', pagi.totalPages)}</span>
           <button
             disabled={pagi.page >= pagi.totalPages}
             onClick={() => fetchBookings(filter, pagi.page + 1)}
             style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "13px", color: pagi.page >= pagi.totalPages ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.7)", background: "#ffffff", border: "1px solid rgba(0,0,0,0.1)", borderRadius: "8px", padding: "8px 16px", cursor: pagi.page >= pagi.totalPages ? "default" : "pointer" }}
           >
-            Sau →
+            {t('btnNext')} →
           </button>
         </div>
       )}

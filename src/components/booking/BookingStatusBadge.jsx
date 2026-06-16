@@ -1,15 +1,18 @@
 // BookingStatusBadge.jsx
 // BR-64: Màu theo spec — Pending=vàng, Completed=xanh lá, Cancelled=xám, Failed=đỏ, No-show=cam
 
+import { useLanguage } from "../../context/LanguageContext";
+
 const STATUS_CONFIG = {
-  Pending:   { label: "Chờ xác nhận", bg: "#2D2500", color: "#FFD04A", border: "#5C4A00" },
-  Completed: { label: "Hoàn thành",   bg: "#0A2D1A", color: "#4AE082", border: "#0F5C31" },
-  Cancelled: { label: "Đã hủy",       bg: "#1C1C1C", color: "#A0A0A0", border: "#3A3A3A" },
-  Failed:    { label: "Thất bại",      bg: "#2D0A0A", color: "#FF5C5C", border: "#5C1A1A" },
-  "No-show": { label: "Vắng mặt",     bg: "#2D1500", color: "#FF8C42", border: "#5C2E00" },
+  Pending:   { key: "statusPending",   bg: "#2D2500", color: "#FFD04A", border: "#5C4A00" },
+  Completed: { key: "statusCompleted", bg: "#0A2D1A", color: "#4AE082", border: "#0F5C31" },
+  Cancelled: { key: "statusCancelled", bg: "#1C1C1C", color: "#A0A0A0", border: "#3A3A3A" },
+  Failed:    { key: "statusFailed",    bg: "#2D0A0A", color: "#FF5C5C", border: "#5C1A1A" },
+  "No-show": { key: "statusNoShow",    bg: "#2D1500", color: "#FF8C42", border: "#5C2E00" },
 };
 
 export default function BookingStatusBadge({ status, size = "md" }) {
+  const { t } = useLanguage();
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG["Cancelled"];
   const fontSize = size === "sm" ? "11px" : "12px";
   const padding  = size === "sm" ? "2px 8px" : "3px 10px";
@@ -30,7 +33,7 @@ export default function BookingStatusBadge({ status, size = "md" }) {
         whiteSpace: "nowrap",
       }}
     >
-      {cfg.label}
+      {t(cfg.key)}
     </span>
   );
 }
