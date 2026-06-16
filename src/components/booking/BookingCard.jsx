@@ -4,6 +4,7 @@
 // BR-63: nút Hủy chỉ hiện khi status=Pending VÀ scheduledTime - now >= 2h
 
 import BookingStatusBadge from "./BookingStatusBadge";
+import { useLanguage } from "../../context/LanguageContext";
 
 function canCancel(booking) {
   if (booking.status !== "Pending") return false;
@@ -11,12 +12,15 @@ function canCancel(booking) {
   return diffMs >= 2 * 60 * 60 * 1000; // >= 2 tiếng
 }
 
-function formatVND(amount) {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+function formatVND(amount, locale) {
+  return new Intl.NumberFormat(locale === 'en' ? "en-US" : "vi-VN", { 
+    style: "currency", 
+    currency: "VND" 
+  }).format(amount);
 }
 
-function formatDateTime(iso) {
-  return new Date(iso).toLocaleString("vi-VN", {
+function formatDateTime(iso, locale) {
+  return new Date(iso).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN', {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -26,6 +30,7 @@ function formatDateTime(iso) {
 }
 
 export default function BookingCard({ booking, onOpenDetail, onCancel }) {
+  const { t, locale } = useLanguage();
   const showCancelBtn = canCancel(booking);
 
   return (
@@ -96,7 +101,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
               color: "#0f172a",
             }}
           >
-            {formatVND(booking.finalAmount)}
+            {formatVND(booking.finalAmount, locale)}
           </span>
         </div>
       </div>
@@ -105,7 +110,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: "18px" }}>
           <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
-            🕐 {formatDateTime(booking.scheduledTime)}
+            🕐 {formatDateTime(booking.scheduledTime, locale)}
           </span>
           <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
             #{booking.bookingId}
@@ -139,7 +144,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
               e.currentTarget.style.borderColor = "rgba(255,92,92,0.3)";
             }}
           >
-            Hủy lịch
+            {t('btnCancel')}
           </button>
         )}
       </div>

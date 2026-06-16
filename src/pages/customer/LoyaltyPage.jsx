@@ -4,8 +4,10 @@ import PointSummary from '../../components/loyalty/PointSummary';
 import PointBatchList from '../../components/loyalty/PointBatchList';
 import PointHistoryTable from '../../components/loyalty/PointHistoryTable';
 import RewardCard from '../../components/loyalty/RewardCard';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function LoyaltyPage() {
+  const { t, locale } = useLanguage();
   const [activeTab, setActiveTab] = useState('wallet'); // 'wallet' | 'history'
   
   // Data states
@@ -52,6 +54,10 @@ export default function LoyaltyPage() {
     );
   }
 
+  const lockedTextParts = locale === 'en'
+    ? ["You need at least ", " to unlock rewards. Book a wash to accumulate more!"]
+    : ["Bạn cần tối thiểu ", " để mở khóa danh sách phần thưởng. Hãy đặt lịch rửa xe để tích lũy thêm nhé!"];
+
   return (
     <div
       className="min-h-screen flex flex-col items-center"
@@ -74,8 +80,8 @@ export default function LoyaltyPage() {
           style={{ background: '#ffffff' }}
         >
           {[
-            { key: 'wallet', label: 'Ví điểm & Đổi thưởng' },
-            { key: 'history', label: 'Lịch sử giao dịch' },
+            { key: 'wallet', label: t('loyaltyTabWallet') },
+            { key: 'history', label: t('loyaltyTabHistory') },
           ].map(tab => (
             <button
               key={tab.key}
@@ -109,7 +115,7 @@ export default function LoyaltyPage() {
                 className="text-sm uppercase tracking-widest text-slate-500 mb-4"
                 style={{ fontFamily: "'Archivo', sans-serif" }}
               >
-                Phần thưởng có thể đổi
+                {t('loyaltyAvailableRewards')}
               </h3>
               
               {wallet?.totalPoints >= 50 ? (
@@ -122,8 +128,9 @@ export default function LoyaltyPage() {
                 <div className="h-full flex flex-col items-center justify-center py-12 border border-slate-200 rounded-2xl bg-white">
                   <span className="text-4xl opacity-50 mb-3">🎁</span>
                   <p className="text-slate-500 text-sm px-6 text-center" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-                    Bạn cần tối thiểu <strong className="text-slate-800">50 điểm</strong> để mở khóa danh sách phần thưởng.
-                    Hãy đặt lịch rửa xe để tích lũy thêm nhé!
+                    {lockedTextParts[0]}
+                    <strong className="text-slate-800">{locale === 'en' ? '50 points' : '50 điểm'}</strong>
+                    {lockedTextParts[1]}
                   </p>
                 </div>
               )}

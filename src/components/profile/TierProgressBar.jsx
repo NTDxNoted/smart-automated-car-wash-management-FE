@@ -1,4 +1,4 @@
-import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * TierProgressBar — hiển thị tiến trình lên hạng tiếp theo.
@@ -27,10 +27,11 @@ const NEXT_TIER_LABEL = {
   PLATINUM: 'Platinum',
 };
 
-const formatVND = (amount) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+const formatVND = (amount, locale) =>
+  new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
 export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) {
+  const { t, locale } = useLanguage();
   const threshold = TIER_THRESHOLDS[tier];
 
   // Platinum — không render progress
@@ -38,7 +39,7 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
     return (
       <div className="flex items-center gap-2 mt-2">
         <span className="text-cyan-600 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-          ✦ Bạn đang ở hạng cao nhất
+          {t('profileHighestTier')}
         </span>
       </div>
     );
@@ -55,7 +56,7 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
           className="text-xs text-slate-500 uppercase tracking-widest"
           style={{ fontFamily: "'Archivo', sans-serif" }}
         >
-          Tiến trình lên {NEXT_TIER_LABEL[threshold.nextTier]}
+          {t('profileProgressTo')} {NEXT_TIER_LABEL[threshold.nextTier]}
         </span>
         <span
           className="text-xs font-semibold text-cyan-600"
@@ -83,13 +84,14 @@ export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) 
         className="text-xs text-slate-600"
         style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
       >
-        {formatVND(totalSpending)} / {formatVND(threshold.minSpending)}
+        {formatVND(totalSpending, locale)} / {formatVND(threshold.minSpending, locale)}
         {remaining > 0 && (
           <span className="text-slate-500 ml-1">
-            — còn <span className="text-cyan-600">{formatVND(remaining)}</span> nữa
+            {t('profileRemainingSpending').replace('{remaining}', formatVND(remaining, locale))}
           </span>
         )}
       </p>
     </div>
   );
 }
+

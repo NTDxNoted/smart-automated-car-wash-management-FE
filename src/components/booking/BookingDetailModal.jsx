@@ -3,13 +3,17 @@
 // BR-63: nút Hủy chỉ hiện khi status=Pending VÀ scheduledTime - now >= 2h
 
 import BookingStatusBadge from "./BookingStatusBadge";
+import { useLanguage } from "../../context/LanguageContext";
 
-function formatVND(amount) {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+function formatVND(amount, locale) {
+  return new Intl.NumberFormat(locale === 'en' ? "en-US" : "vi-VN", { 
+    style: "currency", 
+    currency: "VND" 
+  }).format(amount);
 }
 
-function formatDateTime(iso) {
-  return new Date(iso).toLocaleString("vi-VN", {
+function formatDateTime(iso, locale) {
+  return new Date(iso).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN', {
     weekday: "long",
     day: "2-digit",
     month: "2-digit",
@@ -25,7 +29,7 @@ function canCancel(booking) {
   return diffMs >= 2 * 60 * 60 * 1000;
 }
 
-function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highlight = false }) {
+function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highlight = false, locale }) {
   return (
     <div
       style={{
@@ -61,13 +65,14 @@ function InvoiceRow({ label, amount, isDiscount = false, isFinal = false, highli
             : "rgba(0,0,0,0.7)",
         }}
       >
-        {isDiscount && amount > 0 ? `−${formatVND(amount)}` : formatVND(amount)}
+        {isDiscount && amount > 0 ? `−${formatVND(amount, locale)}` : formatVND(amount, locale)}
       </span>
     </div>
   );
 }
 
 export default function BookingDetailModal({ booking, onClose, onCancel }) {
+  const { t, locale } = useLanguage();
   if (!booking) return null;
   const showCancel = canCancel(booking);
 
@@ -171,9 +176,11 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         >
           <span style={{ fontSize: "18px" }}>📅</span>
           <div>
-            <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "11px", color: "rgba(0,0,0,0.5)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Giờ hẹn</p>
+            <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "11px", color: "rgba(0,0,0,0.5)", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              {t('bookingTimeLabel').replace(':', '')}
+            </p>
             <p style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "14px", color: "#0891b2", margin: 0, fontWeight: 500 }}>
-              {formatDateTime(booking.scheduledTime)}
+              {formatDateTime(booking.scheduledTime, locale)}
             </p>
           </div>
         </div>
@@ -181,7 +188,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
         {/* Invoice Breakdown */}
         <div style={{ marginBottom: "20px" }}>
           <p style={{ fontFamily: "'Archivo', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 12px" }}>
-            Chi tiết hóa đơn
+            {t('invoiceTitle')}
           </p>
           <div
             style={{
@@ -191,17 +198,17 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
               padding: "14px 16px",
             }}
           >
-            <InvoiceRow label="Giá dịch vụ" amount={booking.baseAmount} />
+            <InvoiceRow label={t('invoiceBaseAmount').replace(':', '')} amount={booking.baseAmount} locale={locale} />
             {booking.tierDiscount > 0 && (
-              <InvoiceRow label="Giảm hạng thành viên (Tier)" amount={booking.tierDiscount} isDiscount />
+              <InvoiceRow label={t('invoiceTierDiscount').replace(':', '')} amount={booking.tierDiscount} isDiscount locale={locale} />
             )}
             {booking.promotionDiscount > 0 && (
-              <InvoiceRow label="Mã khuyến mãi" amount={booking.promotionDiscount} isDiscount />
+              <InvoiceRow label={t('invoicePromoDiscount').replace(':', '')} amount={booking.promotionDiscount} isDiscount locale={locale} />
             )}
             {booking.rewardDiscount > 0 && (
-              <InvoiceRow label="Đổi điểm thưởng (Reward)" amount={booking.rewardDiscount} isDiscount />
+              <InvoiceRow label={t('invoiceRewardDiscount').replace(':', '')} amount={booking.rewardDiscount} isDiscount locale={locale} />
             )}
-            <InvoiceRow label="Thành tiền" amount={booking.finalAmount} isFinal />
+            <InvoiceRow label={t('invoiceTotal').replace(':', '')} amount={booking.finalAmount} isFinal locale={locale} />
           </div>
         </div>
 
@@ -221,7 +228,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ fontSize: "16px" }}>⭐</span>
             <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.6)" }}>
-              {booking.status === "Cancelled" ? "Điểm được hoàn trả" : "Điểm tích lũy"}
+              {booking.status === "Cancelled" ? (locale === 'en' ? 'Points Refunded' : 'Điểm được hoàn trả') : t('profilePoints')}
             </span>
           </div>
           <span
@@ -267,7 +274,7 @@ export default function BookingDetailModal({ booking, onClose, onCancel }) {
               e.currentTarget.style.background = "rgba(255,92,92,0.08)";
             }}
           >
-            Hủy lịch hẹn này
+            {t('btnCancelModal')}
           </button>
         )}
       </div>

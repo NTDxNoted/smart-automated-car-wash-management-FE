@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { profileService } from '../../services/profileService';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import TierBadge from '../../components/profile/TierBadge';
 import TierProgressBar from '../../components/profile/TierProgressBar';
 import VehicleList from '../../components/profile/VehicleList';
 
-const TABS = [
-  { key: 'info', label: 'Thông tin' },
-  { key: 'vehicles', label: 'Xe của tôi' },
-];
-
-const formatVND = (amount) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-
 export default function ProfilePage() {
   const { auth, setAuth } = useAuth();
+  const { t, locale } = useLanguage();
   const [activeTab, setActiveTab] = useState('info');
+
+  const tabs = [
+    { key: 'info', label: t('profileTabInfo') },
+    { key: 'vehicles', label: t('profileTabVehicles') },
+  ];
+
+  const formatVND = (amount) =>
+    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
   // Profile state
   const [profile, setProfile] = useState(null);
@@ -48,7 +50,7 @@ export default function ProfilePage() {
   // ── Lưu fullName ────────────────────────────────────────────────────────────
   const handleSaveName = async () => {
     if (!nameInput.trim()) {
-      setSaveError('Tên không được để trống');
+      setSaveError(t('profileNameRequired'));
       return;
     }
     if (nameInput.trim() === profile.fullName) {
@@ -67,7 +69,7 @@ export default function ProfilePage() {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch {
-      setSaveError('Không thể cập nhật, thử lại sau');
+      setSaveError(t('profileUpdateFailed'));
     } finally {
       setSaving(false);
     }
@@ -148,7 +150,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => { setEditMode(true); setSaveError(''); }}
                     className="text-slate-500 hover:text-cyan-400 transition-colors flex-shrink-0"
-                    title="Chỉnh sửa tên"
+                    title={t('profileEditName')}
                   >
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                       <path d="M11.586 2a2 2 0 012.828 2.828l-7.9 7.9-3.414.586.586-3.414 7.9-7.9z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -173,13 +175,13 @@ export default function ProfilePage() {
                       className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white disabled:opacity-50 transition-all"
                       style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)', fontFamily: "'Archivo', sans-serif" }}
                     >
-                      {saving ? '...' : 'Lưu'}
+                      {saving ? '...' : t('btnSave')}
                     </button>
                     <button
                       onClick={handleCancelEdit}
                       className="px-3 py-1.5 rounded-lg text-xs text-slate-600 border border-slate-300 hover:text-slate-800 transition-all"
                     >
-                      Hủy
+                      {t('btnCancel')}
                     </button>
                   </div>
                   {saveError && (
@@ -193,7 +195,7 @@ export default function ProfilePage() {
 
               {/* Save success toast inline */}
               {saveSuccess && (
-                <p className="text-cyan-600 text-xs">✓ Cập nhật thành công</p>
+                <p className="text-cyan-600 text-xs">{t('profileUpdateSuccess')}</p>
               )}
             </div>
           </div>
@@ -205,7 +207,7 @@ export default function ProfilePage() {
               style={{ background: '#ffffff' }}
             >
               <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Archivo', sans-serif" }}>
-                Tổng chi tiêu
+                {t('profileTotalSpending')}
               </p>
               <p className="text-lg font-bold text-slate-800" style={{ fontFamily: "'Archivo', sans-serif" }}>
                 {formatVND(profile?.totalSpending)}
@@ -216,10 +218,10 @@ export default function ProfilePage() {
               style={{ background: '#ffffff' }}
             >
               <p className="text-xs text-slate-500 uppercase tracking-widest" style={{ fontFamily: "'Archivo', sans-serif" }}>
-                Điểm tích lũy
+                {t('profilePoints')}
               </p>
               <p className="text-lg font-bold text-cyan-600" style={{ fontFamily: "'Archivo', sans-serif" }}>
-                {profile?.loyaltyPoints?.toLocaleString('vi-VN')} điểm
+                {profile?.loyaltyPoints?.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN')} {t('loyaltyPoints')}
               </p>
             </div>
           </div>
@@ -233,7 +235,7 @@ export default function ProfilePage() {
           className="flex h-12 rounded-xl border border-slate-200 overflow-hidden"
           style={{ background: '#ffffff' }}
         >
-          {TABS.map(tab => (
+          {tabs.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
@@ -264,14 +266,14 @@ export default function ProfilePage() {
                 className="text-sm uppercase tracking-widest text-slate-500"
                 style={{ fontFamily: "'Archivo', sans-serif" }}
               >
-                Thông tin tài khoản
+                {t('profileAccountInfo')}
               </h2>
               <div className="space-y-3">
                 {[
-                  { label: 'Mã khách hàng', value: profile?.customerId },
-                  { label: 'Họ và tên', value: profile?.fullName },
-                  { label: 'Số điện thoại', value: profile?.phone, note: 'Không thể thay đổi' },
-                  { label: 'Hạng thành viên', value: profile?.tier },
+                  { label: t('profileCustomerId'), value: profile?.customerId },
+                  { label: t('profileFullName'), value: profile?.fullName },
+                  { label: t('profilePhone'), value: profile?.phone, note: t('profilePhoneNote') },
+                  { label: t('profileTier'), value: profile?.tier },
                 ].map(row => (
                   <div
                     key={row.label}
@@ -298,3 +300,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+

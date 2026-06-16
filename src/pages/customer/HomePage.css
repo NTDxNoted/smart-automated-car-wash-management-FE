@@ -527,3 +527,57 @@ header.sticky div.w-full {
   height: 44px;
   border-radius: var(--radius-btn);
 }
+
+/* ── Before & After Section (Light Theme Wrapper with Stitch mockup) ── */
+.ba-section {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  text-align: center !important;
+  margin: 40px auto !important;
+}
+
+/* Premium Scan Line Animation */
+.scan-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(6, 182, 212, 0), rgba(6, 182, 212, 0.5) 50%, rgba(6, 182, 212, 0));
+  pointer-events: none;
+  animation: scan-anim 6s ease-in-out infinite;
+  z-index: 15;
+}
+
+@keyframes scan-anim {
+  0% { left: 0%; opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* Make sure range input thumb handles events nicely */
+input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  cursor: ew-resize;
+}
+input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  cursor: ew-resize;
+}
+
+/* ── Custom Spacing for MembershipTiers (prevent badge overlapping) ── */
+.membership-tiers-header {
+  margin-bottom: 50px !important;
+}
+
+.membership-tiers-grid {
+  margin-top: 20px !important;
+}

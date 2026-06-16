@@ -1,10 +1,12 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function BookingStepper({ currentStep }) {
+    const { t } = useLanguage();
     const steps = [
-        { id: 1, title: 'Chọn Dịch Vụ' },
-        { id: 2, title: 'Thông Tin Đặt Lịch' },
-        { id: 3, title: 'Xác Nhận & Hoá Đơn' }
+        { id: 1, title: t('bookingStep1') },
+        { id: 2, title: t('bookingStep2') },
+        { id: 3, title: t('bookingStep3') }
     ];
 
     return (
