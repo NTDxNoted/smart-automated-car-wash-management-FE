@@ -104,9 +104,7 @@ export default function MembershipTiers() {
   ];
 
   return (
-    <section className="py-20 px-4 sm:px-6 w-full membership-tiers-section">
-
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="py-2 px-4 sm:px-6 w-full max-w-7xl mx-auto membership-tiers-section">
         {/* Section header — matches homepage style */}
         <div className="text-center membership-tiers-header">
           <span className="text-xs tracking-[0.15em] font-extrabold text-cyan-600 uppercase bg-cyan-50 px-4 py-1.5 rounded-full border border-cyan-200/60 inline-block mb-2 shadow-sm">
@@ -121,13 +119,13 @@ export default function MembershipTiers() {
         </div>
 
         {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-start justify-center membership-tiers-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch justify-center membership-tiers-grid">
           {tiers.map((tier) => (
             <div
               key={tier.id}
-              className={`relative flex flex-col items-center text-center rounded-2xl border bg-white p-8 transition-all duration-300 hover:-translate-y-2
+              className={`relative flex flex-col items-center text-center rounded-2xl border bg-white p-6 lg:p-8 min-h-[500px] lg:h-[540px] transition-all duration-300 hover:-translate-y-2
                 ${tier.cardBorder} ${tier.cardHover}
-                ${tier.popular ? 'lg:scale-[1.05] z-10 shadow-[0_4px_20px_rgba(245,158,11,0.10)]' : 'shadow-sm'}`}
+                ${tier.popular ? 'z-10 shadow-[0_10px_35px_rgba(245,158,11,0.18)] border-amber-400 ring-2 ring-amber-400/40' : 'shadow-sm'}`}
             >
               {/* Popular badge */}
               {tier.popular && (
@@ -136,48 +134,51 @@ export default function MembershipTiers() {
                 </div>
               )}
 
-              {/* Tier icon badge */}
-              <div className="mb-6 pt-2 flex flex-col items-center">
-                <div className={`w-14 h-14 rounded-2xl ${tier.iconBg} flex items-center justify-center mb-4 shadow-sm`}>
+              {/* Tier icon badge & titles */}
+              <div className="flex flex-col items-center gap-2 mb-3 shrink-0 w-full">
+                <div className={`w-14 h-14 rounded-full ${tier.iconBg} flex items-center justify-center shadow-sm mt-2`}>
                   <span className={`material-symbols-outlined text-3xl ${tier.iconColor}`}>
                     {tier.icon}
                   </span>
                 </div>
                 <h3 className="text-2xl font-extrabold text-slate-900 leading-tight">{tier.name}</h3>
-                <p className="text-xs text-slate-400 mt-1.5 font-medium">{tier.subtitle}</p>
+                <p className="text-xs text-slate-400 font-medium leading-normal">{tier.subtitle}</p>
               </div>
 
               {/* Requirement pill */}
-              <div className={`text-[11px] font-semibold rounded-lg px-3 py-2.5 mb-6 leading-snug border ${tier.requireBg}`}>
-                <span className="opacity-60 mr-1">{isVi ? 'Điều kiện:' : 'Requires:'}</span>
-                {tier.requireLabel}
+              <div className="flex flex-col items-center gap-1.5 py-1 mb-3 shrink-0 w-full">
+                <span className="text-[9px] uppercase font-black tracking-widest text-slate-400 leading-none">{isVi ? 'ĐIỀU KIỆN' : 'REQUIREMENT'}</span>
+                <span className="font-extrabold text-xs text-slate-600 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-100 leading-normal text-center max-w-[90%]">
+                  {tier.requireLabel}
+                </span>
               </div>
 
-              <div className="border-t border-slate-100 mb-6" />
+              <div className="border-t border-slate-100 w-full mb-3 shrink-0" />
 
               {/* Features */}
-              <ul className="flex-1 space-y-4 mb-8 w-full">
-                {tier.features.map((f, fi) => (
-                  <li key={fi} className="flex items-center justify-center gap-3 text-sm">
-                    <span className={`material-symbols-outlined text-[17px] shrink-0 ${tier.checkColor}`}>
-                      {f.icon}
-                    </span>
-                    <span className="text-slate-700 leading-snug">{f.label}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="w-full flex items-center justify-center my-3 shrink-0">
+                <div className="grid grid-cols-[auto_1fr] gap-x-3.5 gap-y-3 text-left w-fit">
+                  {tier.features.map((f, fi) => (
+                    <React.Fragment key={fi}>
+                      <span className={`material-symbols-outlined text-[20px] shrink-0 mt-0.5 ${tier.checkColor}`}>
+                        {f.icon}
+                      </span>
+                      <span className="text-slate-700 text-[15px] sm:text-base font-semibold leading-normal">{f.label}</span>
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
 
               {/* CTA */}
               <Link
                 to={tier.ctaLink}
-                className={`block w-full text-center py-2.5 px-4 rounded-xl text-sm font-bold transition-all ${tier.btnClass}`}
+                className={`block w-full text-center py-4 px-6 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tier.btnClass} mt-auto shrink-0`}
               >
                 {tier.cta}
               </Link>
             </div>
           ))}
         </div>
-      </div>
-    </section>
+    </div>
   );
 }
