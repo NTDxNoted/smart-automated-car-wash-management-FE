@@ -1,38 +1,59 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 
-export default function BookingStepper({ currentStep }) {
-    const { t } = useLanguage();
-    const steps = [
-        { id: 1, title: t('bookingStep1') },
-        { id: 2, title: t('bookingStep2') },
-        { id: 3, title: t('bookingStep3') }
-    ];
+export default function BookingStepper({ currentStep = 1 }) {
+  const { t } = useLanguage();
+  const steps = [
+    { id: 1, label: t('bookingStep1') },
+    { id: 2, label: t('bookingStep2') },
+    { id: 3, label: t('bookingStep3') },
+  ];
 
-    return (
-        <div className="flex items-center justify-between relative max-w-xl mx-auto mb-12">
-            {/* Line background */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-slate-200 z-0"></div>
-            {/* Active Line Progress */}
-            <div
-                className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-cyan-500 transition-all duration-300 ease-in-out z-0"
-                style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-            ></div>
+  return (
+    <nav aria-label="Tiến trình đặt lịch" className="px-2 pb-6">
+      <ol className="flex items-start w-full">
+        {steps.map((step, index) => {
+          const isCompleted = step.id < currentStep;
+          const isActive    = step.id === currentStep;
+          return (
+            <li key={step.id} className="relative flex flex-1 flex-col items-center">
+              {/* Connector line */}
+              {index !== steps.length - 1 && (
+                <span
+                  aria-hidden="true"
+                  className={`absolute left-1/2 top-5 h-0.5 w-full ${isCompleted ? 'bg-cyan-500' : 'bg-slate-200'}`}
+                />
+              )}
 
-            {steps.map((step) => (
-                <div key={step.id} className="flex flex-col items-center z-10">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 border ${currentStep >= step.id
-                            ? 'bg-cyan-500 border-cyan-500 text-white shadow-md'
-                            : 'bg-white border-slate-300 text-slate-400'
-                        }`}>
-                        {step.id}
-                    </div>
-                    <span className={`text-xs mt-2 font-medium tracking-wide ${currentStep >= step.id ? 'text-cyan-600' : 'text-slate-500'
-                        }`}>
-                        {step.title}
-                    </span>
-                </div>
-            ))}
-        </div>
-    );
+              {/* Circle */}
+              <span
+                className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-colors ${
+                  isCompleted
+                    ? 'border-cyan-500 bg-cyan-500 text-white'
+                    : isActive
+                    ? 'border-cyan-500 bg-cyan-500 text-white ring-4 ring-cyan-100'
+                    : 'border-slate-300 bg-white text-slate-400'
+                }`}
+              >
+                {isCompleted ? (
+                  <span className="material-symbols-outlined text-[20px] font-extrabold">check</span>
+                ) : (
+                  step.id
+                )}
+              </span>
+
+              {/* Label */}
+              <span
+                className={`mt-2 text-center text-xs font-semibold sm:text-sm ${
+                  isActive || isCompleted ? 'text-cyan-700' : 'text-slate-400'
+                }`}
+              >
+                {step.label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
 }
