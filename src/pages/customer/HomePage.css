@@ -575,7 +575,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── Custom Spacing for MembershipTiers (prevent badge overlapping) ── */
 .membership-tiers-header {
-  margin-bottom: 50px !important;
+  margin-bottom: 24px !important;
 }
 
 .membership-tiers-grid {
