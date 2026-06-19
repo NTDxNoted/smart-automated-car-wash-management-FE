@@ -5,6 +5,9 @@ const translations = {
     // Navigation & Common
     navHome: "Trang chủ",
     navBooking: "Đặt lịch rửa xe",
+    navServices: "Gói dịch vụ",
+    navResults: "Hình ảnh thực tế",
+    navMembership: "Thành viên Luxe",
     navHistory: "Lịch sử",
     navLoyalty: "Ví điểm",
     navProfile: "Thông tin cá nhân",
@@ -215,6 +218,9 @@ const translations = {
     // Navigation & Common
     navHome: "Home",
     navBooking: "Book a Wash",
+    navServices: "Services Menu",
+    navResults: "Before & After",
+    navMembership: "Membership Tiers",
     navHistory: "History",
     navLoyalty: "Points Wallet",
     navProfile: "Profile",
