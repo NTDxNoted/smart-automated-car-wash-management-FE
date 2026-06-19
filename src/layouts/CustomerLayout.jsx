@@ -93,6 +93,33 @@ export default function CustomerLayout() {
             <span className="text-sm font-medium">{t('navBooking')}</span>
           </Link>
 
+          <a
+            href="/#services"
+            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+            className="flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">auto_awesome</span>
+            <span className="text-sm font-medium">{t('navServices')}</span>
+          </a>
+
+          <a
+            href="/#results"
+            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+            className="flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">image</span>
+            <span className="text-sm font-medium">{t('navResults')}</span>
+          </a>
+
+          <a
+            href="/#membership"
+            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+            className="flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          >
+            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">workspace_premium</span>
+            <span className="text-sm font-medium">{t('navMembership')}</span>
+          </a>
+
           {isAuthenticated && (
             <>
               <Link
