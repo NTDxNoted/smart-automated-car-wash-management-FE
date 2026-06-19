@@ -3,278 +3,290 @@ import { bookingService } from '../../services/bookingService';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function StepVehicleTime({ bookingData, setBookingData, onNext, onBack, user }) {
-    const { t, locale } = useLanguage();
-    const [vehicles, setVehicles] = useState([]);
-    const [errors, setErrors] = useState({});
+  const { t, locale } = useLanguage();
+  const [vehicles, setVehicles] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [availableDays, setAvailableDays] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [loadingSlots, setLoadingSlots] = useState(true);
 
-    // --- [VỊ TRÍ THAY ĐỔI 1: BỔ SUNG STATE QUẢN LÝ LỊCH CHỌN GRID] ---
-    const [availableDays, setAvailableDays] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(''); // Lưu trữ chuỗi ngày YYYY-MM-DD
-    const [selectedTime, setSelectedTime] = useState(''); // Lưu trữ chuỗi giờ HH:mm
-    const [loadingSlots, setLoadingSlots] = useState(true);
+  const getBookingWindowDays = (tier) => {
+    switch (tier?.toUpperCase()) {
+      case 'DIAMOND': return 30;
+      case 'GOLD':    return 15;
+      case 'SILVER':  return 10;
+      default:        return 7;
+    }
+  };
 
-    // Tính toán Booking Window theo Tier từ AuthContext (BR-15 -> BR-18)
-    const getBookingWindowDays = (tier) => {
-        switch (tier?.toUpperCase()) {
-            case 'DIAMOND': return 30;
-            case 'GOLD': return 15;
-            case 'SILVER': return 10;
-            case 'MEMBER':
-            default: return 7; // Mặc định 7 ngày
+  const bookingWindowDays = getBookingWindowDays(user?.tier);
+
+  useEffect(() => {
+    if (user) {
+      bookingService.getVehicles()
+        .then(data => {
+          setVehicles(data);
+          if (data.length > 0 && !bookingData.selectedVehicleId) {
+            setBookingData(prev => ({
+              ...prev,
+              selectedVehicleId: data[0].id,
+              licensePlate: data[0].licensePlate,
+            }));
+          }
+        })
+        .catch(err => console.error('Lỗi fetch xe:', err));
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    setLoadingSlots(true);
+    bookingService.getAvailableSlots(todayStr)
+      .then(data => {
+        const daysOfWeek = locale === 'en'
+          ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+          : ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+        const allowed = data.slice(0, bookingWindowDays).map(item => {
+          const dateValStr = item.date || item.Date || item.dateStr;
+          const d = new Date(dateValStr);
+          return {
+            dateStr: dateValStr,
+            label: String(d.getDate()).padStart(2, '0'),
+            dayOfWeek: daysOfWeek[d.getDay()],
+            slots: item.slots || item.Slots || [],
+          };
+        });
+        setAvailableDays(allowed);
+        setLoadingSlots(false);
+
+        if (bookingData.scheduledTime && bookingData.scheduledTime.includes('T')) {
+          const [savedDate, savedTime] = bookingData.scheduledTime.split('T');
+          setSelectedDate(savedDate);
+          setSelectedTime(savedTime);
         }
-    };
+      })
+      .catch(err => {
+        console.error('Lỗi fetch slot giờ trống:', err);
+        setLoadingSlots(false);
+      });
+  }, [user, bookingWindowDays, locale]);
 
-    const bookingWindowDays = getBookingWindowDays(user?.tier);
+  const handleSelectSlot = (dateStr, timeStr) => {
+    setSelectedDate(dateStr);
+    setSelectedTime(timeStr);
+    setBookingData(prev => ({ ...prev, scheduledTime: `${dateStr}T${timeStr}` }));
+  };
 
-    // --- [VỊ TRÍ THAY ĐỔI 2: REWRITE EFFECT ĐỂ TỰ ĐỘNG ĐỌC MOCK GIỜ TỪ SERVICE] ---
-    useEffect(() => {
-        // 1. Fetch danh sách xe nếu là Member đã đăng nhập
-        if (user) {
-            bookingService.getVehicles()
-                .then(data => {
-                    setVehicles(data);
-                    if (data.length > 0 && !bookingData.selectedVehicleId) {
-                        setBookingData(prev => ({
-                            ...prev,
-                            selectedVehicleId: data[0].id,
-                            licensePlate: data[0].licensePlate
-                        }));
-                    }
-                })
-                .catch(err => console.error("Lỗi fetch xe:", err));
-        }
+  const handleVehicleChange = (vehicleId) => {
+    const selected = vehicles.find(v => v.id === vehicleId);
+    setBookingData(prev => ({
+      ...prev,
+      selectedVehicleId: vehicleId,
+      licensePlate: selected ? selected.licensePlate : '',
+    }));
+  };
 
-        // 2. Gọi hàm lấy các Slot lịch trống ảo/thật từ bookingService
-        const todayStr = new Date().toISOString().split('T')[0];
-        setLoadingSlots(true);
-        bookingService.getAvailableSlots(todayStr)
-            .then(data => {
-                const daysOfWeek = locale === 'en'
-                    ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-                    : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-                const allowedDays = data.slice(0, bookingWindowDays).map(item => {
-                    const dateValStr = item.date || item.Date || item.dateStr;
-                    const d = new Date(dateValStr);
-                    const dateVal = String(d.getDate()).padStart(2, '0');
-                    return {
-                        dateStr: dateValStr,
-                        label: dateVal,
-                        dayOfWeek: daysOfWeek[d.getDay()],
-                        slots: item.slots || item.Slots || []
-                    };
-                });
-                setAvailableDays(allowedDays);
-                setLoadingSlots(false);
+  const validate = () => {
+    const errs = {};
+    if (!bookingData.phone.trim())       errs.phone = t('phoneRequired');
+    if (!bookingData.licensePlate.trim()) errs.licensePlate = t('licensePlateRequired');
+    if (!selectedDate || !selectedTime)   errs.scheduledTime = t('selectSlotRequired');
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
-                // Khôi phục lại trạng thái cũ nếu người dùng nhấn "Quay lại" từ các bước sau
-                if (bookingData.scheduledTime && bookingData.scheduledTime.includes('T')) {
-                    const [savedDate, savedTime] = bookingData.scheduledTime.split('T');
-                    setSelectedDate(savedDate);
-                    setSelectedTime(savedTime);
-                }
-            })
-            .catch(err => {
-                console.error("Lỗi fetch slot giờ trống:", err);
-                setLoadingSlots(false);
-            });
-    }, [user, bookingWindowDays, locale]);
+  const handleNext = () => { if (validate()) onNext(); };
 
-    // Hàm đồng bộ ngày giờ được click chọn vào State tổng
-    const handleSelectSlot = (dateStr, timeStr) => {
-        setSelectedDate(dateStr);
-        setSelectedTime(timeStr);
-        setBookingData(prev => ({
-            ...prev,
-            scheduledTime: `${dateStr}T${timeStr}` // Gộp chuỗi theo định dạng chuẩn ISO để lưu xuống DB
-        }));
-    };
+  const activeDaySlots = availableDays.find(d => d.dateStr === selectedDate)?.slots || [];
 
-    const handleVehicleChange = (vehicleId) => {
-        const selected = vehicles.find(v => v.id === vehicleId);
-        setBookingData(prev => ({
-            ...prev,
-            selectedVehicleId: vehicleId,
-            licensePlate: selected ? selected.licensePlate : ''
-        }));
-    };
+  return (
+    <section>
+      <h2 className="mb-4 text-xl font-bold text-cyan-700">
+        {t('step2Title') || 'Bước 2: Thông tin xe và Thời gian đặt lịch'}
+      </h2>
 
-    const validate = () => {
-        let tempErrors = {};
-        if (!bookingData.phone.trim()) tempErrors.phone = t('phoneRequired');
-        if (!bookingData.licensePlate.trim()) tempErrors.licensePlate = t('licensePlateRequired');
+      {/* Phone + Vehicle */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {user ? (
+          <>
+            {/* Phone (disabled) */}
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t('phoneLabel')}</span>
+              <span className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+                <span className="material-symbols-outlined text-slate-400 text-[20px]">call</span>
+                <input
+                  type="text"
+                  value={bookingData.phone}
+                  disabled
+                  className="w-full bg-transparent text-sm text-slate-500 outline-none cursor-not-allowed"
+                />
+              </span>
+            </label>
 
-        // Validate kiểm tra xem đã click chọn slot trên lưới chưa
-        if (!selectedDate || !selectedTime) {
-            tempErrors.scheduledTime = t('selectSlotRequired');
-        }
-        setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
-    };
-
-    const handleNext = () => {
-        if (validate()) onNext();
-    };
-
-    // Tìm danh sách khung giờ thuộc ngày đang được nhấn chọn hiện tại
-    const activeDaySlots = availableDays.find(d => d.dateStr === selectedDate)?.slots || [];
-
-    return (
-        <div className="space-y-6">
-            <h3 className="text-xl font-heading text-cyan-600 font-semibold mb-4">{t('step2Title')}</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {!user ? (
-                    <>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-600 mb-2">{t('phoneLabel')}</label>
-                            <input
-                                type="text"
-                                placeholder={t('phonePlaceholder')}
-                                value={bookingData.phone}
-                                onChange={e => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
-                                className="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
-                            />
-                            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-600 mb-2">{t('licensePlateLabel')}</label>
-                            <input
-                                type="text"
-                                placeholder={t('licensePlatePlaceholder')}
-                                value={bookingData.licensePlate}
-                                onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value }))}
-                                className="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
-                            />
-                            {errors.licensePlate && <p className="text-red-500 text-xs mt-1">{errors.licensePlate}</p>}
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-600 mb-2">{t('phoneLabel')}</label>
-                            <input
-                                type="text"
-                                value={bookingData.phone}
-                                disabled
-                                className="w-full bg-slate-100 border border-slate-200 rounded-lg p-3 text-slate-500 cursor-not-allowed"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-600 mb-2">{t('selectVehicleLabel')}</label>
-                            <select
-                                value={bookingData.selectedVehicleId}
-                                onChange={e => handleVehicleChange(e.target.value)}
-                                className="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-cyan-500"
-                            >
-                                {vehicles.map(v => (
-                                    <option key={v.id} value={v.id} className="bg-white">{v.model} ({v.licensePlate})</option>
-                                ))}
-                            </select>
-                        </div>
-                    </>
-                )}
-
-                {/* --- [VỊ TRÍ THAY ĐỔI 3: THAY ĐỔI TOÀN BỘ Ô INPUT DATETIME BẰNG GRID ĐẸP MẮT] --- */}
-                <div className="md:col-span-2 space-y-4">
-                    <label className="block text-sm font-medium text-slate-600">
-                        {t('timeSlotsLabel')} <span className="text-xs text-slate-400">({t('maxBookingDays').replace('{days}', bookingWindowDays).replace('{tier}', user?.tier || 'GUEST')})</span>
-                    </label>
-
-                    {loadingSlots ? (
-                        <div className="text-center py-6 text-sm text-neutral-400 animate-pulse"> {t('loadingSlots')}</div>
-                    ) : (
-                        <div className="bg-neutral-900/40 p-5 rounded-xl border border-white/5 space-y-5">
-
-                            {/* Hàng ngang chứa các tab chọn Ngày */}
-                            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                                {availableDays.map((day) => {
-                                    const isDaySelected = selectedDate === day.dateStr;
-                                    return (
-                                        <button
-                                            key={day.dateStr}
-                                            type="button"
-                                            onClick={() => {
-                                                setSelectedDate(day.dateStr);
-                                                setSelectedTime(''); // Reset giờ về trống khi chuyển đổi sang ngày khác
-                                            }}
-                                            className={`p-3 rounded-xl border flex flex-col items-center justify-center space-y-1 transition-all ${isDaySelected
-                                                    ? 'bg-cyan-500 border-cyan-400 text-white font-bold shadow-md'
-                                                    : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
-                                                }`}
-                                        >
-                                            <span className={`text-[10px] uppercase tracking-wider ${isDaySelected ? 'text-white' : 'text-slate-500'}`}>
-                                                {day.dayOfWeek}
-                                            </span>
-                                            <span className="text-base font-bold font-mono">
-                                                {day.label}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Khung lưới hiển thị danh sách giờ tương ứng */}
-                            <div className="pt-2">
-                                <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
-                                    {t('timeSlotsInDay')} {selectedDate ? <span className="text-cyan-600 font-mono font-bold">{selectedDate}</span> : <span className="text-amber-500 italic font-normal">{t('selectDatePrompt')}</span>}
-                                </span>
-
-                                {selectedDate && (
-                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                                        {activeDaySlots.map((slot, index) => {
-                                            const isTimeSelected = selectedTime === slot.time;
-
-                                            if (!slot.isAvailable) {
-                                                return (
-                                                    <button
-                                                        key={index}
-                                                        disabled
-                                                        className="p-2 text-xs rounded-lg bg-slate-100 border border-dashed border-slate-300 text-slate-400 cursor-not-allowed text-center"
-                                                    >
-                                                        {slot.time} ({t('slotBusy')})
-                                                    </button>
-                                                );
-                                            }
-
-                                            return (
-                                                <button
-                                                    key={index}
-                                                    type="button"
-                                                    onClick={() => handleSelectSlot(selectedDate, slot.time)}
-                                                    className={`p-2 text-xs font-mono font-semibold rounded-lg border transition-all text-center ${isTimeSelected
-                                                            ? 'bg-cyan-50 text-cyan-600 border-cyan-500 shadow-sm'
-                                                            : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
-                                                        }`}
-                                                >
-                                                    {slot.time}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                    {errors.scheduledTime && <p className="text-red-400 text-xs mt-1">{errors.scheduledTime}</p>}
+            {/* Vehicle select */}
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t('selectVehicleLabel')}</span>
+              {vehicles.length > 0 ? (
+                <span className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 focus-within:border-cyan-500 transition-colors">
+                  <span className="material-symbols-outlined text-slate-400 text-[20px]">directions_car</span>
+                  <select
+                    value={bookingData.selectedVehicleId}
+                    onChange={e => handleVehicleChange(e.target.value)}
+                    className="w-full bg-transparent text-sm text-slate-800 outline-none"
+                  >
+                    {vehicles.map(v => (
+                      <option key={v.id} value={v.id} className="bg-white">
+                        {v.model} ({v.licensePlate})
+                      </option>
+                    ))}
+                  </select>
+                </span>
+              ) : (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                  ⚠️ {t('profileNoVehicles') || 'Chưa có xe nào được đăng ký.'} 
+                  <a href="/profile" className="ml-2 font-bold underline hover:text-amber-950">
+                    {t('btnAddVehicle') || 'Thêm xe mới'}
+                  </a>
                 </div>
-            </div>
+              )}
+            </label>
+          </>
+        ) : (
+          <>
+            {/* Phone input */}
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t('phoneLabel')}</span>
+              <span className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 focus-within:border-cyan-500 transition-colors">
+                <span className="material-symbols-outlined text-slate-400 text-[20px]">call</span>
+                <input
+                  type="tel"
+                  inputMode="tel"
+                  value={bookingData.phone}
+                  onChange={e => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder={t('phonePlaceholder')}
+                  className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                />
+              </span>
+              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+            </label>
 
-            <div className="flex justify-between pt-6 border-t border-slate-200">
+            {/* License plate input */}
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">{t('licensePlateLabel')}</span>
+              <span className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 focus-within:border-cyan-500 transition-colors">
+                <span className="material-symbols-outlined text-slate-400 text-[20px]">directions_car</span>
+                <input
+                  type="text"
+                  value={bookingData.licensePlate}
+                  onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
+                  placeholder={t('licensePlatePlaceholder')}
+                  className="w-full bg-transparent text-sm uppercase text-slate-800 outline-none placeholder:text-slate-400"
+                />
+              </span>
+              {errors.licensePlate && <p className="text-red-500 text-xs mt-1">{errors.licensePlate}</p>}
+            </label>
+          </>
+        )}
+      </div>
+
+      {/* Date + Time grid */}
+      <div className="mt-8">
+        <p className="mb-3 text-sm font-semibold text-slate-700">
+          {t('timeSlotsLabel')}{' '}
+          <span className="font-normal text-cyan-600">
+            ({t('maxBookingDays').replace('{days}', bookingWindowDays).replace('{tier}', user?.tier || 'GUEST')})
+          </span>
+        </p>
+
+        {loadingSlots ? (
+          <div className="text-center py-6 text-sm text-slate-400">
+            <span className="material-symbols-outlined animate-spin align-middle mr-2">progress_activity</span>
+            {t('loadingSlots')}
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+            {availableDays.map(day => {
+              const isSelected = selectedDate === day.dateStr;
+              return (
                 <button
-                    onClick={onBack}
-                    className="px-6 py-3 border border-slate-300 text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-medium rounded-lg transition-all"
+                  key={day.dateStr}
+                  type="button"
+                  onClick={() => { setSelectedDate(day.dateStr); setSelectedTime(''); }}
+                  className={`flex flex-col items-center justify-center rounded-xl border-2 px-2 py-2 transition-colors ${
+                    isSelected
+                      ? 'border-cyan-500 bg-cyan-500 text-white shadow-sm'
+                      : 'border-slate-200 bg-white text-slate-800 hover:border-cyan-400'
+                  }`}
                 >
-                    {t('btnBack')}
+                  <span className={`text-[11px] font-semibold uppercase tracking-wider mb-0.5 ${isSelected ? 'text-cyan-50' : 'text-slate-400'}`}>
+                    {day.dayOfWeek}
+                  </span>
+                  <span className="text-lg font-bold font-mono leading-none">{day.label}</span>
                 </button>
-                <button
-                    onClick={handleNext}
-                    className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all shadow-md"
-                >
-                    {t('btnContinue')}
-                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Time slots */}
+      {!loadingSlots && (
+        <div className="mt-8">
+          <p className="mb-3 text-sm font-semibold text-slate-700">
+            {t('timeSlotsInDay')}{' '}
+            {selectedDate
+              ? <span className="font-bold text-cyan-600 font-mono ml-1">{selectedDate}</span>
+              : <span className="text-amber-500 italic font-normal ml-1">{t('selectDatePrompt')}</span>
+            }
+          </p>
+
+          {selectedDate && (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+              {activeDaySlots.map((slot, idx) => {
+                const isUnavailable = !slot.isAvailable;
+                const isTimeSelected = selectedTime === slot.time;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    disabled={isUnavailable}
+                    onClick={() => handleSelectSlot(selectedDate, slot.time)}
+                    className={`rounded-lg border-2 px-2 py-2.5 text-sm font-semibold font-mono transition-colors ${
+                      isUnavailable
+                        ? 'cursor-not-allowed border-slate-100 bg-slate-100 text-slate-400 line-through'
+                        : isTimeSelected
+                        ? 'border-cyan-500 bg-cyan-500 text-white shadow-sm'
+                        : 'border-slate-200 bg-white text-slate-800 hover:border-cyan-400'
+                    }`}
+                  >
+                    {slot.time}
+                  </button>
+                );
+              })}
             </div>
+          )}
+
+          {errors.scheduledTime && (
+            <p className="text-red-500 text-xs mt-2">{errors.scheduledTime}</p>
+          )}
         </div>
-    );
+      )}
+
+      <div className="flex justify-between mt-8 pt-6 border-t border-slate-200">
+        <button
+          type="button"
+          onClick={onBack}
+          className="rounded-full font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50 px-6 py-2.5 transition-all duration-200 active:scale-95 cursor-pointer"
+        >
+          {t('btnBack')}
+        </button>
+        <button
+          type="button"
+          onClick={handleNext}
+          className="rounded-full bg-cyan-500 text-white hover:bg-cyan-600 shadow-sm font-semibold px-6 py-2.5 transition-all duration-200 active:scale-95 cursor-pointer"
+        >
+          {t('btnContinue')}
+        </button>
+      </div>
+    </section>
+  );
 }
