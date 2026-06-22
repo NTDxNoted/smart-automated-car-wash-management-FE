@@ -1,11 +1,11 @@
-import axiosInstance from '../api/axiosInstance';
+import adminAxiosInstance from '../api/adminAxiosInstance';
 
 const adminTierService = {
   getTiers() {
-    return axiosInstance.get('/admin/tiers');
+    return adminAxiosInstance.get('/admin/tiers');
   },
   updateTier(id, data) {
-    return axiosInstance.put(`/admin/tiers/${id}`, data);
+    return adminAxiosInstance.put(`/admin/tiers/${id}`, data);
   },
 };
 
