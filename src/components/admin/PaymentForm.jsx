@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import { toast } from "react-toastify";
+import adminBookingService from "../../services/adminBookingService";
 export default function PaymentForm({
   booking,
   onSuccess,
@@ -7,17 +8,54 @@ export default function PaymentForm({
   const [method, setMethod] = useState("CASH");
   const [confirmed, setConfirmed] = useState(false);
   const [paid, setPaid] = useState(false);
+  const [paymentAt, setPaymentAt] = useState(null);
 
   const handleConfirm = async () => {
-    // call api payment
+     try {
+    const res =
+      await adminBookingService.recordPayment(
+        booking.id,
+        {
+          method,
+        }
+      );
 
     setPaid(true);
 
-    onSuccess?.();
+    setPaymentAt(
+      res.data.paymentAt ||
+      res.data.updatedAt
+    );
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message ||
+        "Không thể ghi nhận thanh toán"
+    );
+  }
+        
   };
 
+  const handleMethodChange = (value) => {
+  setMethod(value);
+
+  setConfirmed(false);
+};
+
+ const formattedPaymentTime = paymentAt
+    ? new Date(paymentAt).toLocaleTimeString(
+        "vi-VN",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      )
+    : "";
+
   return (
-    <div className="border rounded-xl p-4">
+    <fieldset
+    disabled={paid}
+    className="border rounded-xl p-4"
+  >
       <h3 className="font-semibold mb-3">
         Payment
       </h3>
@@ -27,7 +65,7 @@ export default function PaymentForm({
           <input
             type="radio"
             checked={method === "CASH"}
-            onChange={() => setMethod("CASH")}
+            onChange={() =>handleMethodChange("CASH")}
             disabled={paid}
           />
           Cash
@@ -37,7 +75,7 @@ export default function PaymentForm({
           <input
             type="radio"
             checked={method === "TRANSFER"}
-            onChange={() => setMethod("TRANSFER")}
+            onChange={() =>handleMethodChange("TRANSFER")}
             disabled={paid}
           />
           Transfer
@@ -69,6 +107,13 @@ export default function PaymentForm({
       >
         {paid ? "Paid" : "Confirm Payment"}
       </button>
-    </div>
+
+       {paid && paymentAt && (
+        <p className="mt-3 text-green-600 text-sm">
+          Đã thanh toán lúc{" "}
+          {formattedPaymentTime}
+        </p>
+      )}
+    </fieldset>
   );
 }

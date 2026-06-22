@@ -1,6 +1,14 @@
 import { Link } from 'react-router-dom';
 
 export default function CustomerTable({ customers = [] }) {
+  if (customers.length === 0) {
+    return (
+      <div className="py-10 text-center text-slate-400 border border-dashed border-white/10 rounded-xl">
+        Không tìm thấy khách hàng phù hợp
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -16,38 +24,43 @@ export default function CustomerTable({ customers = [] }) {
         </thead>
 
         <tbody>
-          {customers.map((customer) => (
-            <tr
-              key={customer.id}
-              className="border-b border-white/5"
-            >
-              <td className="py-3">{customer.fullName}</td>
-              <td>{customer.phone}</td>
-              <td>{customer.tier}</td>
-              <td>{customer.points}</td>
+          {customers.map((customer) => {
+            const isLocked =
+              customer.isLocked || customer.status === 'LOCKED';
 
-              <td>
-                <span
-                  className={`px-2 py-1 rounded text-xs ${
-                    customer.status === 'ACTIVE'
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'bg-red-500/20 text-red-400'
-                  }`}
-                >
-                  {customer.status}
-                </span>
-              </td>
+            return (
+              <tr
+                key={customer.id}
+                className="border-b border-white/5"
+              >
+                <td className="py-3">{customer.fullName}</td>
+                <td>{customer.phone}</td>
+                <td>{customer.tier}</td>
+                <td>{customer.points}</td>
 
-              <td>
-                <Link
-                  to={`/admin/customers/${customer.id}`}
-                  className="text-cyan-400 hover:underline"
-                >
-                  Chi tiết
-                </Link>
-              </td>
-            </tr>
-          ))}
+                <td>
+                  <span
+                    className={`px-2 py-1 rounded text-xs ${
+                      isLocked
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-green-500/20 text-green-400'
+                    }`}
+                  >
+                    {isLocked ? 'Bị khóa' : 'Hoạt động'}
+                  </span>
+                </td>
+
+                <td>
+                  <Link
+                    to={`/admin/customers/${customer.id}`}
+                    className="text-cyan-400 hover:underline"
+                  >
+                    Chi tiết
+                  </Link>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
