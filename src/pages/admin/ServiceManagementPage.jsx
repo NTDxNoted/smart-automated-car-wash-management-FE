@@ -34,14 +34,29 @@ const ServiceManagementPage = () => {
     };
 
     if (selectedService) {
-      alert('Giá mới chỉ áp dụng cho booking mới');
-      await adminServiceService.updateService(selectedService.id, payload);
-    } else {
-      await adminServiceService.createService(payload);
-    }
+  const oldPrice = Number(selectedService.price);
+  const newPrice = Number(payload.price);
+
+  const isPriceChanged =
+    Number.isFinite(oldPrice) &&
+    Number.isFinite(newPrice) &&
+    oldPrice !== newPrice;
+
+  if (isPriceChanged) {
+    const confirmed = window.confirm(
+      'Giá dịch vụ đã thay đổi. Giá mới chỉ áp dụng cho booking mới. Bạn có chắc muốn lưu thay đổi này không?'
+    );
+
+    if (!confirmed) return;
+  }
+
+  await adminServiceService.updateService(selectedService.id, payload);
+} else {
+  await adminServiceService.createService(payload);
+}
 
     setOpenModal(false);
-    fetchServices();
+    await fetchServices();
   };
 
   const thStyle = {
