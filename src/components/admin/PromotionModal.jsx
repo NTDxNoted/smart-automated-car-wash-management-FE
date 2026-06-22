@@ -17,11 +17,26 @@ const PromotionModal = ({
     endDate: '',
   });
 
+  const [error, setError] = useState('');
+
   useEffect(() => {
     if (initialData) {
       setForm(initialData);
+    } else {
+      setForm({
+        title: '',
+        promoCode: '',
+        minTier: '',
+        discountType: '',
+        value: '',
+        maxUsage: '',
+        startDate: '',
+        endDate: '',
+      });
     }
-  }, [initialData]);
+
+    setError('');
+  }, [initialData, open]);
 
   if (!open) return null;
 
@@ -29,6 +44,37 @@ const PromotionModal = ({
     setForm({
       ...form,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = () => {
+    const value = Number(form.value);
+    const maxUsage = Number(form.maxUsage);
+
+    if (form.startDate && form.endDate && form.endDate < form.startDate) {
+      setError('EndDate không được nhỏ hơn StartDate.');
+      return;
+    }
+
+    if (!Number.isFinite(value) || value <= 0) {
+      setError('Value phải là số dương.');
+      return;
+    }
+
+    if (form.discountType === 'PERCENT' && value > 100) {
+      setError('Giảm giá phần trăm không được vượt quá 100%.');
+      return;
+    }
+
+    if (!Number.isFinite(maxUsage) || maxUsage < 0) {
+      setError('MaxUsage phải là số không âm.');
+      return;
+    }
+
+    onSubmit({
+      ...form,
+      value,
+      maxUsage,
     });
   };
 
@@ -73,6 +119,8 @@ const PromotionModal = ({
           type="number"
           value={form.value}
           onChange={handleChange}
+          min="0"
+          max={form.discountType === 'PERCENT' ? 100 : undefined}
         />
 
         <input
@@ -80,6 +128,7 @@ const PromotionModal = ({
           type="number"
           value={form.maxUsage}
           onChange={handleChange}
+          min="0"
         />
 
         <input
@@ -94,11 +143,12 @@ const PromotionModal = ({
           name="endDate"
           value={form.endDate}
           onChange={handleChange}
+          min={form.startDate || undefined}
         />
-
+        {error && <p style={{ color: '#f87171' }}>{error}</p>}
         <div className="modal-actions">
           <button onClick={onClose}>Cancel</button>
-          <button onClick={() => onSubmit(form)}>
+          <button onClick={handleSubmit}>
             Save
           </button>
         </div>
