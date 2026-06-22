@@ -1,30 +1,20 @@
-import axiosClient from "./axiosClient";
+import adminAxiosInstance from "../api/adminAxiosInstance";
 
 const adminBookingService = {
   getAll(params) {
-    return axiosClient.get("/admin/bookings", {
-      params,
-    });
+    return adminAxiosInstance.get("/admin/bookings", { params });
   },
 
   getDetail(id) {
-    return axiosClient.get(
-      `/admin/bookings/${id}`
-    );
+    return adminAxiosInstance.get(`/admin/bookings/${id}`);
   },
 
   updateStatus(id, status) {
-    return axiosClient.patch(
-      `/admin/bookings/${id}/status`,
-      { status }
-    );
+    return adminAxiosInstance.patch(`/admin/bookings/${id}/status`, { status });
   },
 
   payment(id, payload) {
-    return axiosClient.post(
-      `/admin/bookings/${id}/payment`,
-      payload
-    );
+    return adminAxiosInstance.post(`/admin/bookings/${id}/payment`, payload);
   },
 };
 

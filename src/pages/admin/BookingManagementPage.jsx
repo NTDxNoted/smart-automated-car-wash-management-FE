@@ -1,3 +1,8 @@
+import { useState, useEffect, useMemo, useCallback } from "react";
+import BookingTable from "../../components/admin/BookingTable";
+import BookingDetailDrawer from "../../components/admin/BookingDetailDrawer";
+import adminBookingService from "../../services/adminBookingService";
+
 export default function BookingManagementPage() {
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -33,7 +38,7 @@ export default function BookingManagementPage() {
         <select
           value={filters.status}
           onChange={(e) =>
-            setFilters({ ...filters, status: e.target.value })
+            setFilters({ ...filters, status: e.target.value, page: 1 })
           }
           className="border px-3 py-2 rounded"
         >
@@ -48,7 +53,7 @@ export default function BookingManagementPage() {
           type="date"
           value={filters.date}
           onChange={(e) =>
-            setFilters({ ...filters, date: e.target.value })
+            setFilters({ ...filters, date: e.target.value, page: 1 })
           }
           className="border px-3 py-2 rounded"
         />
@@ -57,7 +62,7 @@ export default function BookingManagementPage() {
           placeholder="Tìm SĐT / biển số"
           value={filters.keyword}
           onChange={(e) =>
-            setFilters({ ...filters, keyword: e.target.value })
+            setFilters({ ...filters, keyword: e.target.value, page: 1 })
           }
           className="border px-3 py-2 rounded w-64"
         />
