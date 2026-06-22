@@ -1,14 +1,14 @@
-import axiosInstance from '../api/axiosInstance';
+import adminAxiosInstance from '../api/adminAxiosInstance';
 
 const adminServiceService = {
   getAdminServices() {
-    return axiosInstance.get('/admin/services');
+    return adminAxiosInstance.get('/admin/services');
   },
   createService(data) {
-    return axiosInstance.post('/admin/services', data);
+    return adminAxiosInstance.post('/admin/services', data);
   },
   updateService(id, data) {
-    return axiosInstance.put(`/admin/services/${id}`, data);
+    return adminAxiosInstance.put(`/admin/services/${id}`, data);
   },
 };
 

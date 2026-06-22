@@ -34,8 +34,27 @@ const ServiceModal = ({
   };
 
   const handleSubmit = () => {
-    onSubmit(form);
+    const price = Number(form.price);
+    const duration = Number(form.duration);
+
+    if (!Number.isFinite(price) || price < 0) {
+      setError('Price must be a valid non-negative number.');
+      return;
+    }
+
+    if (!Number.isFinite(duration) || duration <= 0) {
+      setError('Duration must be a valid positive number.');
+      return;
+    }
+
+    onSubmit({
+      ...form,
+      price,
+      duration,
+    });
   };
+
+  const [error, setError] = useState('');
 
   return (
     <div className="modal-overlay">
@@ -64,6 +83,7 @@ const ServiceModal = ({
           placeholder="Price"
           value={form.price}
           onChange={handleChange}
+          min="0"
         />
 
         <input
@@ -72,6 +92,7 @@ const ServiceModal = ({
           placeholder="Duration"
           value={form.duration}
           onChange={handleChange}
+          min="1"
         />
 
         <textarea
@@ -80,7 +101,7 @@ const ServiceModal = ({
           value={form.description}
           onChange={handleChange}
         />
-
+        {error && <p style={{ color: '#f87171' }}>{error}</p>}
         <div className="modal-actions">
           <button onClick={onClose}>Cancel</button>
           <button onClick={handleSubmit}>Save</button>

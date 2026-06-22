@@ -6,25 +6,59 @@ export default function CustomerListPage() {
   const [customers, setCustomers] = useState([]);
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
   const [status, setStatus] = useState('');
   const [tier, setTier] = useState('');
+  const [page, setPage] = useState(1);
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     loadCustomers();
-  }, [search, status, tier]);
+  }, [debouncedSearch, status, tier, page]);
 
   const loadCustomers = async () => {
     try {
+      setLoading(true);
+
       const data = await getCustomers({
-        search,
+        search: debouncedSearch,
         status,
         tier,
+        page,
       });
 
       setCustomers(data.items || []);
     } catch (err) {
       console.error(err);
+      setCustomers([]);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const handleStatusChange = (value) => {
+    setStatus(value);
+    setPage(1);
+  };
+
+  const handleTierChange = (value) => {
+    setTier(value);
+    setPage(1);
   };
 
   return (
@@ -38,13 +72,13 @@ export default function CustomerListPage() {
           <input
             placeholder="Tên hoặc SĐT"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="bg-[#070913] border border-white/10 rounded-lg px-3 py-2"
           />
 
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => handleStatusChange(e.target.value)}
             className="bg-[#070913] border border-white/10 rounded-lg px-3 py-2"
           >
             <option value="">Tất cả trạng thái</option>
@@ -55,7 +89,7 @@ export default function CustomerListPage() {
 
           <select
             value={tier}
-            onChange={(e) => setTier(e.target.value)}
+            onChange={(e) => handleTierChange(e.target.value)}
             className="bg-[#070913] border border-white/10 rounded-lg px-3 py-2"
           >
             <option value="">Tất cả hạng</option>
@@ -65,7 +99,36 @@ export default function CustomerListPage() {
           </select>
         </div>
 
-        <CustomerTable customers={customers} />
+        {loading ? (
+          <div className="py-10 text-center text-slate-400">
+            Đang tải danh sách khách hàng...
+          </div>
+        ) : (
+          <CustomerTable customers={customers} />
+        )}
+
+        <div className="flex justify-end gap-2 mt-5">
+          <button
+            type="button"
+            disabled={page === 1}
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            className="px-3 py-2 rounded-lg bg-[#070913] border border-white/10 disabled:opacity-50"
+          >
+            Trước
+          </button>
+
+          <span className="px-3 py-2 text-slate-300">
+            Trang {page}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setPage((prev) => prev + 1)}
+            className="px-3 py-2 rounded-lg bg-[#070913] border border-white/10"
+          >
+            Sau
+          </button>
+        </div>
       </div>
     </div>
   );
