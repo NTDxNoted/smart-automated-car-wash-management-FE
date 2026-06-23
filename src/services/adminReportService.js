@@ -1,4 +1,4 @@
-export const getOverviewReport = async () => {
+export const getOverviewReport = async ({ signal } = {}) => {
   return {
     revenue: [
       { month: "Jan", revenue: 12000000 },
@@ -23,7 +23,7 @@ export const getOverviewReport = async () => {
   };
 };
 
-export const getRfmReport = async () => {
+export const getRfmReport = async ({ signal } = {}) => {
   return [
     {
       customer: "Nguyễn Văn A",
@@ -52,7 +52,7 @@ export const getRfmReport = async () => {
   ];
 };
 
-export const getTierDistribution = async () => {
+export const getTierDistribution = async ({ signal } = {}) => {
   return [
     { tier: "Member", total: 120 },
     { tier: "Silver", total: 80 },
@@ -61,7 +61,7 @@ export const getTierDistribution = async () => {
   ];
 };
 
-export const getLoyaltyStats = async () => {
+export const getLoyaltyStats = async ({ signal } = {}) => {
   return {
     totalPoints: 120500,
     expiringSoon: 3200,
