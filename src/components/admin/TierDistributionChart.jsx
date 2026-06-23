@@ -16,9 +16,9 @@ export default function TierDistributionChart({
         Tier Distribution
       </h3>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" aspect={2}>
         <BarChart data={data}>
-          <XAxis dataKey="tier" />
+          <XAxis dataKey="tier" tick={{ fontSize: 12 }} />
           <YAxis />
           <Tooltip />
           <Bar dataKey="total" fill="#06b6d4" />

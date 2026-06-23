@@ -22,7 +22,7 @@ export default function BookingStatusPieChart({
         Booking Status
       </h3>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" aspect={2}>
         <PieChart>
           <Pie
             data={data}
@@ -43,7 +43,7 @@ export default function BookingStatusPieChart({
           </Pie>
 
           <Tooltip />
-          <Legend />
+          <Legend verticalAlign="bottom" />
         </PieChart>
       </ResponsiveContainer>
     </div>

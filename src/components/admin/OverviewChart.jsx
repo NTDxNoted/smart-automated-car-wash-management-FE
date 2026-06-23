@@ -14,9 +14,9 @@ export default function OverviewChart({ data }) {
         Revenue Overview
       </h3>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" aspect={2}>
         <LineChart data={data}>
-          <XAxis dataKey="month" />
+          <XAxis dataKey="month" tick={{ fontSize: 12 }} />
           <YAxis />
           <Tooltip />
           <Line dataKey="revenue" stroke="#06b6d4" />
