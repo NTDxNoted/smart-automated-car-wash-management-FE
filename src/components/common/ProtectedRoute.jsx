@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
 
     if (
       !token ||
-      auth.role !== "Admin"
+      auth.role !== "ADMIN"
     ) {
       return <Navigate to="/login" replace />;
     }
@@ -23,7 +23,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
     localStorage.getItem("member_token");
 
   if (
-    !token || auth.role !== "Member"
+    !token || auth.role !== "MEMBER"
   ) 
   {
     return <Navigate to="/login" replace />;
