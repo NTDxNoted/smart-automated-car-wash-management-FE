@@ -28,12 +28,20 @@ const DEFAULT_AUTH = {
 // Rehydrate from localStorage on app boot
 function loadFromStorage() {
   try {
-    const token = localStorage.getItem("aw_token");
-    const raw = localStorage.getItem("aw_user");
-    if (token && raw) {
-      return { token, ...JSON.parse(raw) };
+     const adminToken = localStorage.getItem("admin_token");
+    const adminRaw = localStorage.getItem("admin_user");
+
+    if (adminToken && adminRaw) {
+      return { token: adminToken, ...JSON.parse(adminRaw) };
     }
-  } catch (_) { /* ignore */ }
+
+    const memberToken = localStorage.getItem("member_token");
+    const memberRaw = localStorage.getItem("member_user");
+
+    if (memberToken && memberRaw) {
+      return { token: memberToken, ...JSON.parse(memberRaw) };
+    }
+  } catch (_) {}
   return DEFAULT_AUTH;
 }
 
@@ -54,11 +62,20 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
-    logoutService(); // clears localStorage
-    setAuthState(DEFAULT_AUTH);
-  }, []);
+    if (auth.role === "ADMIN") {
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
+  }
 
-  const isAdmin = auth.role === "ADMIN";
+  if (auth.role === "MEMBER") {
+    localStorage.removeItem("member_token");
+    localStorage.removeItem("member_user");
+  }
+    //logoutService(); // clears localStorage
+    setAuthState(DEFAULT_AUTH);
+  }, [auth.role]);
+
+  const isAdmin = !!auth.token && auth.role === "ADMIN";
   const isMember = !!auth.token && auth.role === "MEMBER";
   const isGuest = !auth.token;
 
