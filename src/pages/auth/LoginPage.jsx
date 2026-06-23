@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { login } from "../../services/authService";
@@ -110,7 +110,7 @@ function PasswordInput(props) {
 // ─── LoginPage ───────────────────────────────────────────────────────────────
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { setAuth } = useContext(AuthContext);
+  const { setAuth, auth } = useContext(AuthContext);
 
   const [form, setForm] = useState({ phone: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -122,8 +122,20 @@ export default function LoginPage() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
   }
 
+  useEffect(() => {
+  if (auth.role === "ADMIN" && localStorage.getItem("admin_token")) {
+    navigate("/admin/dashboard", { replace: true });
+  }
+
+  if (auth.role === "MEMBER" && localStorage.getItem("member_token")) {
+    navigate("/bookings", { replace: true });
+  }
+}, [auth.role, navigate]); 
+
   async function handleSubmit(e) {
     e.preventDefault();
+    if (loading) return;
+
     const validationErrors = validate(form);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -131,6 +143,10 @@ export default function LoginPage() {
     }
 
     setLoading(true);
+    setErrors({});
+
+     let adminError = null;
+
     
 try {
    // ===== LOGIN ADMIN TRƯỚC =====
@@ -140,16 +156,21 @@ try {
       password: form.password,
     });
 
-    localStorage.setItem(
-      "admin_token",
-      adminData.token
-    );
+     localStorage.setItem("admin_token", adminData.token);
+      localStorage.setItem(
+        "admin_user",
+        JSON.stringify({
+          adminId: adminData.adminId,
+          fullName: adminData.fullName,
+          role: "ADMIN",
+        })
+      );
 
     setAuth({
       token: adminData.token,
-      adminId: adminData.adminId,
-      fullName: adminData.fullName,
-      role: "Admin",
+        adminId: adminData.adminId,
+        fullName: adminData.fullName,
+        role: "ADMIN",
     });
 
     toast.success(
@@ -161,8 +182,9 @@ try {
     });
 
     return;
-  } catch {
+  } catch (err) {
     // không phải admin => login member
+    adminError = err;
   }
 
   // ===== LOGIN MEMBER =====
@@ -176,26 +198,24 @@ try {
     data.token
   );
 
-  localStorage.setItem(
-    "aw_user",
-    JSON.stringify({
-      customerId: data.customerId,
-      fullName: data.fullName,
-      tier: data.tier,
-      suspendedUntil:
-        data.suspendedUntil ?? null,
-      role: "Member",
+ localStorage.setItem(
+      "member_user",
+      JSON.stringify({
+        customerId: data.customerId,
+        fullName: data.fullName,
+        tier: data.tier,
+        suspendedUntil: data.suspendedUntil ?? null,
+        role: "MEMBER",
     })
   );
 
   setAuth({
     token: data.token,
-    customerId: data.customerId,
-    fullName: data.fullName,
-    tier: data.tier,
-    suspendedUntil:
-      data.suspendedUntil ?? null,
-    role: "Member",
+      customerId: data.customerId,
+      fullName: data.fullName,
+      tier: data.tier,
+      suspendedUntil: data.suspendedUntil ?? null,
+      role: "MEMBER",
   });
       toast.success(`Chào mừng, ${data.fullName}!`);
       navigate("/bookings", {
