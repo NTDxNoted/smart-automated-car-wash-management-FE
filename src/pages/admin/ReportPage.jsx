@@ -20,26 +20,38 @@ export default function ReportPage() {
   const [loyalty, setLoyalty] = useState(null);
 
   useEffect(() => {
-    const loadData = async () => {
-      const overviewData =
-        await getOverviewReport();
+  const controller = new AbortController();
+  let isMounted = true;
 
-      const rfmData = await getRfmReport();
+  const loadData = async () => {
+    try {
+      const [overviewData, rfmData, tierData, loyaltyData] = await Promise.all([
+        getOverviewReport({ signal: controller.signal }),
+        getRfmReport({ signal: controller.signal }),
+        getTierDistribution({ signal: controller.signal }),
+        getLoyaltyStats({ signal: controller.signal }),
+      ]);
 
-      const tierData =
-        await getTierDistribution();
-
-      const loyaltyData =
-        await getLoyaltyStats();
+      if (!isMounted) return;
 
       setOverview(overviewData);
       setRfm(rfmData);
       setTiers(tierData);
       setLoyalty(loyaltyData);
-    };
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error(error);
+      }
+    }
+  };
 
-    loadData();
-  }, []);
+  loadData();
+
+  return () => {
+    isMounted = false;
+    controller.abort();
+  };
+}, []);
 
   if (!overview || !loyalty) {
     return <div>Loading...</div>;
