@@ -1,7 +1,7 @@
 import axiosInstance from '../api/axiosInstance';
 
 // TODO: Thay thế bằng API thật khi Backend sẵn sàng
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const mockWallet = {
   totalPoints: 125,
@@ -48,7 +48,7 @@ export const loyaltyService = {
       return new Promise(resolve => setTimeout(() => resolve(mockRewards), 800));
     }
     const response = await axiosInstance.get('/rewards');
-    return response.data;
+    return response.data.data || response.data;
   },
 
   simulateRedeem: async ({ rewardId, baseAmount }) => {

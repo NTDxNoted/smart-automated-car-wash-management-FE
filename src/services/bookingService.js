@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
-const USE_MOCK_DATA = true; // Gạt thành false khi backend deploy API thật
+const USE_MOCK_DATA = false; // Gạt thành false khi backend deploy API thật
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 📦 1. KHO DỮ LIỆU ẢO MOCK DỊCH VỤ CHUẨN THEO DATABASE SQL CỦA BẠN
@@ -129,7 +129,7 @@ export const bookingService = {
             await delay(400);
             return generateMockTimeSlots();
         }
-        const response = await axios.get('/api/bookings/available-slots', { params: { startDate } });
+        const response = await axiosInstance.get('/bookings/available-slots', { params: { startDate } });
         return response.data;
     },
 
@@ -140,8 +140,8 @@ export const bookingService = {
             await delay(300);
             return MOCK_SERVICES;
         }
-        const response = await axios.get('/api/services');
-        return response.data;
+        const response = await axiosInstance.get('/services');
+        return response.data.data || response.data;
     },
 
     // ── FE-ISSUE-04: Lấy danh sách xe của member ─────────────────────────────
@@ -154,8 +154,15 @@ export const bookingService = {
                 { id: 'v2', licensePlate: '30H-99999', model: 'Porsche Taycan' },
             ];
         }
-        const response = await axios.get('/api/vehicles');
-        return response.data;
+        const response = await axiosInstance.get('/vehicles');
+        const raw = response.data.data || response.data;
+        return raw.map(v => ({
+            id: String(v.vehicleId),        // keep as string for select value
+            vehicleId: v.vehicleId,         // numeric id for CreateBookingRequest
+            licensePlate: v.licensePlate,
+            model: v.model || '',
+            isActive: v.isActive,
+        }));
     },
 
     // ── FE-ISSUE-04: Validate mã khuyến mãi ──────────────────────────────────
@@ -171,7 +178,7 @@ export const bookingService = {
                 throw { response: { data: { code: 'PROMO_INVALID', message: 'Mã giảm giá không tồn tại hoặc hết hạn' } } };
             }
         }
-        const response = await axios.get(`/api/promotions/validate?code=${code}`);
+        const response = await axiosInstance.get(`/promotions/validate`, { params: { code } });
         return response.data;
     },
 
@@ -191,7 +198,7 @@ export const bookingService = {
                 }
             };
         }
-        const response = await axios.post('/api/bookings', bookingData);
+        const response = await axiosInstance.post('/bookings', bookingData);
         return response.data;
     },
 
@@ -206,8 +213,8 @@ export const bookingService = {
         if (USE_MOCK_DATA) {
             await delay(400);
 
-            // Lấy thông tin user đăng nhập thực tế (Issue 2 lưu vào 'user')
-            const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+            // Lấy thông tin user đăng nhập thực tế (Issue 2 lưu vào 'aw_user')
+            const storedUser = localStorage.getItem('aw_user') ? JSON.parse(localStorage.getItem('aw_user')) : null;
             const currentCustomerId = storedUser?.customerId || 'CUS-0001';
 
             // TỐI ƯU HIỆU NĂNG: Lọc trực tiếp bằng biểu thức điều kiện, không dùng .map() lãng phí bộ nhớ
@@ -242,8 +249,28 @@ export const bookingService = {
         // 🚀 LUỒNG 2: CHẠY API THẬT KẾT NỐI DATABASE (Cam kết không lỗi)
         // Khi gạt USE_MOCK_DATA = false, Axios sẽ bắn request lên Backend.
         // Backend (SQL/Supabase) sẽ tự dùng câu lệnh "WHERE CustomerID = ..." để lọc dưới DB và trả về.
-        const response = await axios.get('/api/bookings/my-bookings', { params: { status, page, pageSize } });
-        return response.data;
+        const response = await axiosInstance.get('/bookings', { params: { status: status === 'all' ? undefined : status, page, pageSize } });
+        // Backend trả về { page, total, data, pageSize } — normalize về { data, pagination }
+        const raw = response.data;
+        const totalPages = raw.pageSize > 0 ? Math.ceil(raw.total / raw.pageSize) : 1;
+        return {
+            data: (raw.data || []).map(b => ({
+                bookingId: b.bookingId,
+                vehiclePlate: b.licensePlate,
+                serviceName: b.service?.serviceName || '',
+                scheduledTime: b.scheduledTime,
+                status: b.status,
+                finalAmount: b.finalAmount,
+                pointsEarned: b.pointsEarned,
+                createdAt: b.createdAt,
+            })),
+            pagination: {
+                page: raw.page || page,
+                pageSize: raw.pageSize || pageSize,
+                totalItems: raw.total || 0,
+                totalPages,
+            }
+        };
     },
     // ── FE-ISSUE-05: Lấy chi tiết một booking ────────────────────────────────
     // GET /api/bookings/{id}
@@ -255,7 +282,7 @@ export const bookingService = {
             if (!booking) throw { response: { data: { code: 'BOOKING_NOT_FOUND' } } };
             return booking;
         }
-        const response = await axios.get(`/api/bookings/${id}`);
+        const response = await axiosInstance.get(`/bookings/${id}`);
         return response.data;
     },
 
@@ -278,7 +305,8 @@ export const bookingService = {
 
             return { bookingId: id, status: 'Cancelled', pointsRefunded };
         }
-        const response = await axios.post(`/api/bookings/${id}/cancel`);
+        const response = await axiosInstance.post(`/bookings/${id}/cancel`);
         return response.data;
     },
 };
+

@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 
-const USE_MOCK_DATA = true; // Gạt thành false khi backend deploy API thật
+const USE_MOCK_DATA = false; // Gạt thành false khi backend deploy API thật
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 📦 MOCK DATA PROFILE
@@ -34,7 +34,7 @@ export const profileService = {
       await delay(500);
       return { ...MOCK_PROFILE };
     }
-    const response = await axios.get('/api/profile');
+    const response = await axiosInstance.get('/profile');
     return response.data;
   },
 
@@ -46,7 +46,7 @@ export const profileService = {
       MOCK_PROFILE.fullName = fullName;
       return { customerId: MOCK_PROFILE.customerId, fullName };
     }
-    const response = await axios.put('/api/profile', { fullName });
+    const response = await axiosInstance.put('/profile', { fullName });
     return response.data;
   },
 };

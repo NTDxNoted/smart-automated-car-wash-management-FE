@@ -37,54 +37,57 @@ function validate({ fullName, phone, password, confirmPassword }) {
 // ─── InputRow — matches the design system input style ──────────────────────
 function InputRow({ label, name, type = "text", value, onChange, placeholder, error, icon, autoComplete, disabled, rightSlot }) {
   return (
-    <div className="space-y-xs">
-      <label className="font-label-caps text-label-caps text-on-surface-variant px-1">
+    <div style={{ marginBottom: "24px" }}>
+      <label 
+        htmlFor={name} 
+        className="block text-[12px] font-bold text-slate-400 uppercase tracking-wider px-1"
+        style={{ marginBottom: "10px", display: "block" }}
+      >
         {label}
       </label>
-      <div className="flex items-center gap-sm group">
-        {/* Icon nằm NGOÀI, TRƯỚC input */}
+      
+      <div 
+        className={[
+          "group flex items-center gap-3 rounded-2xl border-2 bg-slate-50 px-4 py-3.5 transition-all duration-300",
+          error 
+            ? "border-red-200 bg-red-50/30 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-100" 
+            : "border-slate-200/80 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-sm"
+        ].join(" ")}
+        style={{ padding: "14px 16px" }}
+      >
+        {/* Icon inside wrapper */}
         <span
           className={[
-            "material-symbols-outlined transition-colors shrink-0",
-            error ? "text-error" : "text-outline group-focus-within:text-primary",
+            "material-symbols-outlined transition-colors shrink-0 text-xl",
+            error ? "text-red-500" : "text-slate-400 group-focus-within:text-cyan-500"
           ].join(" ")}
-          style={{ fontSize: "20px" }}
         >
           {icon}
         </span>
 
         {/* Input */}
-        <div className="relative flex-1">
-          <input
-            id={name}
-            name={name}
-            type={type}
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            autoComplete={autoComplete}
-            disabled={disabled}
-            className={[
-              "w-full bg-surface-container-low border rounded-lg py-3 px-4 text-on-surface",
-              "placeholder:text-outline outline-none transition-all duration-300 focus:ring-1",
-              rightSlot ? "pr-12" : "pr-4",
-              error
-                ? "border-error/60 focus:border-error focus:ring-error/40"
-                : "border-outline/30 focus:border-primary focus:ring-primary/30",
-              disabled ? "opacity-50 cursor-not-allowed" : "",
-            ].join(" ")}
-          />
-          {rightSlot && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightSlot}</div>
-          )}
-        </div>
+        <input
+          id={name}
+          name={name}
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          autoComplete={autoComplete}
+          disabled={disabled}
+          className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none placeholder:text-slate-400 disabled:opacity-50"
+        />
+
+        {rightSlot && (
+          <div className="shrink-0 flex items-center">{rightSlot}</div>
+        )}
       </div>
 
       {error && (
-        <p className="flex items-center gap-xs text-error text-xs px-1 mt-0.5">
+        <p className="flex items-center gap-1.5 text-red-500 text-xs px-1" style={{ marginTop: "8px" }}>
           <span
-            className="material-symbols-outlined shrink-0"
-            style={{ fontSize: "14px", fontVariationSettings: "'FILL' 1" }}
+            className="material-symbols-outlined shrink-0 text-sm"
+            style={{ fontVariationSettings: "'FILL' 1" }}
           >
             error
           </span>
@@ -115,12 +118,11 @@ function PasswordInput({ label, name, value, onChange, placeholder, error, icon 
           type="button"
           onClick={() => setShow((v) => !v)}
           tabIndex={-1}
-          className="text-outline hover:text-primary transition-colors"
+          className="text-slate-400 hover:text-cyan-600 transition-colors cursor-pointer flex items-center justify-center"
           aria-label={show ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
         >
           <span
-            className="material-symbols-outlined"
-            style={{ fontSize: "20px" }}
+            className="material-symbols-outlined text-xl"
           >
             {show ? "visibility_off" : "visibility"}
           </span>
@@ -165,6 +167,7 @@ export default function RegisterPage() {
         fullName: form.fullName.trim(),
         phone: form.phone.trim(),
         password: form.password,
+        confirmPassword: form.confirmPassword,
       });
       toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
       navigate("/login");
@@ -182,23 +185,15 @@ export default function RegisterPage() {
 
   return (
     <>
-      {/*
-        ── Host app must inject these globally (e.g. in index.html / App.jsx) ──
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
-        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000&family=Syne:wght@400..800&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-      */}
-
       {/* ── Full-screen layout ── */}
-      <div className="bg-background text-on-background min-h-screen font-body-md overflow-hidden flex items-center justify-center relative">
+      <div className="bg-slate-50 text-slate-800 min-h-screen font-sans overflow-hidden flex items-center justify-center relative p-4">
 
         {/* Grid overlay */}
         <div
-          className="fixed inset-0 pointer-events-none"
+          className="fixed inset-0 pointer-events-none z-10"
           style={{
             backgroundImage:
-              "linear-gradient(to right, rgba(161,234,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(161,234,255,0.05) 1px, transparent 1px)",
+              "linear-gradient(to right, rgba(6,182,212,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(6,182,212,0.02) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
         />
@@ -208,54 +203,48 @@ export default function RegisterPage() {
           <img
             src={bg}
             alt="AutoWash Pro Background"
-            className="w-full h-full object-cover opacity-60"
-            style={{ filter: "grayscale(0.3)" }}
+            className="w-full h-full object-cover opacity-90"
+            style={{ filter: "contrast(1.02) brightness(0.95)" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-[rgba(3,20,39,0.4)]" />
+          <div className="absolute inset-0 bg-slate-900/10 backdrop-blur-[1px]" />
         </div>
 
+
         {/* ── Card ── */}
-        <main className="relative z-10 w-full max-w-md px-lg py-8">
-          <div
-            className="rounded-xl flex flex-col items-center p-lg"
-            style={{
-              background: "rgba(3,20,39,0.45)",
-              backdropFilter: "blur(25px)",
-              WebkitBackdropFilter: "blur(25px)",
-              border: "1px solid rgba(161,234,255,0.1)",
-              boxShadow: "0 8px 32px 0 rgba(0,0,0,0.8)",
+        <main className="relative z-20 w-full max-w-md my-8">
+          <div 
+            className="rounded-3xl border border-white/40 shadow-xl shadow-slate-900/15 flex flex-col relative overflow-hidden"
+            style={{ 
+              padding: "40px",
+              background: "rgba(255, 255, 255, 0.88)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)"
             }}
           >
+            
+            {/* Ambient Glow Dot */}
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-36 h-36 rounded-full bg-cyan-500/5 blur-2xl pointer-events-none" />
+
             {/* ── Brand ── */}
-            <div className="flex flex-col items-center gap-sm mb-lg">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center border animate-pulse"
-                style={{
-                  background: "rgba(161,234,255,0.1)",
-                  borderColor: "rgba(161,234,255,0.3)",
-                  boxShadow: "0 0 20px rgba(0,217,255,0.3)",
-                }}
-              >
-                <span
-                  className="material-symbols-outlined text-primary"
-                  style={{
-                    fontSize: "36px",
-                    fontVariationSettings: "'FILL' 1",
-                  }}
+            <div className="flex flex-col items-center gap-2 mb-8 text-center w-full">
+              <div className="w-16 h-16 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-cyan-600 shadow-sm shadow-cyan-100/30 mb-4">
+                <span 
+                  className="material-symbols-outlined text-[32px]" 
+                  style={{ fontVariationSettings: "'FILL' 1" }}
                 >
                   diamond
                 </span>
               </div>
-              <h1 className="font-h2 text-h2 text-primary tracking-tighter uppercase">
-                AutoWash Pro
+              <h1 className="text-2xl font-black tracking-tight text-slate-800 uppercase flex items-center gap-2">
+                AutoWash <span className="text-cyan-600">Pro</span>
               </h1>
-              <p className="font-label-caps text-label-caps text-on-surface-variant/70">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                 Xác lập tiêu chuẩn vệ sinh xe cao cấp
               </p>
             </div>
 
             {/* ── Form ── */}
-            <form onSubmit={handleSubmit} noValidate className="w-full space-y-md">
+            <form onSubmit={handleSubmit} noValidate className="w-full">
               {/* Họ và tên */}
               <InputRow
                 label="Họ và tên"
@@ -263,21 +252,21 @@ export default function RegisterPage() {
                 type="text"
                 value={form.fullName}
                 onChange={handleChange}
-                placeholder=" Nguyễn Văn A"
+                placeholder="Nguyễn Văn A"
                 error={errors.fullName}
                 icon="person"
                 autoComplete="name"
                 disabled={loading}
               />
 
-              {/* Số điện thoại — BR-03 */}
+              {/* Số điện thoại */}
               <InputRow
                 label="Số điện thoại"
                 name="phone"
                 type="tel"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder=" Số điện thoại (dùng để đăng nhập)"
+                placeholder="Nhập số điện thoại đăng ký"
                 error={errors.phone}
                 icon="phone_iphone"
                 autoComplete="tel"
@@ -290,7 +279,7 @@ export default function RegisterPage() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder=" ••••••••"
+                placeholder="Nhập mật khẩu mới"
                 error={errors.password}
                 icon="lock"
                 autoComplete="new-password"
@@ -303,7 +292,7 @@ export default function RegisterPage() {
                 name="confirmPassword"
                 value={form.confirmPassword}
                 onChange={handleChange}
-                placeholder=" ••••••••"
+                placeholder="Nhập lại mật khẩu"
                 error={errors.confirmPassword}
                 icon="shield_lock"
                 autoComplete="new-password"
@@ -311,8 +300,8 @@ export default function RegisterPage() {
               />
 
               {/* Terms */}
-              <div className="flex flex-col gap-xs pt-xs">
-                <div className="flex items-center gap-sm">
+              <div className="flex flex-col gap-1.5" style={{ marginTop: "12px", marginBottom: "24px" }}>
+                <div className="flex items-center gap-3">
                   <input
                     id="terms"
                     name="terms"
@@ -320,20 +309,20 @@ export default function RegisterPage() {
                     checked={form.terms}
                     onChange={handleChange}
                     disabled={loading}
-                    className="rounded bg-surface-container-low border-outline text-primary focus:ring-primary"
+                    className="w-4.5 h-4.5 rounded bg-slate-50 border-slate-300 text-cyan-600 focus:ring-cyan-500/30 accent-cyan-600 cursor-pointer"
                   />
-                  <label htmlFor="terms" className="font-body-md text-on-surface-variant text-sm">
+                  <label htmlFor="terms" className="text-sm font-medium text-slate-500 cursor-pointer select-none">
                     Tôi đồng ý với{" "}
-                    <a href="#" className="text-primary hover:underline underline-offset-4">
+                    <a href="#" className="text-cyan-600 hover:text-cyan-500 font-bold underline underline-offset-4">
                       Điều khoản dịch vụ
                     </a>
                   </label>
                 </div>
                 {errors.terms && (
-                  <p className="flex items-center gap-xs text-error text-xs px-1">
+                  <p className="flex items-center gap-1.5 text-red-500 text-xs px-1" style={{ marginTop: "8px" }}>
                     <span
-                      className="material-symbols-outlined shrink-0"
-                      style={{ fontSize: "14px", fontVariationSettings: "'FILL' 1" }}
+                      className="material-symbols-outlined shrink-0 text-sm"
+                      style={{ fontVariationSettings: "'FILL' 1" }}
                     >
                       error
                     </span>
@@ -343,33 +332,27 @@ export default function RegisterPage() {
               </div>
 
               {/* Submit */}
-              <div className="pt-md">
+              <div style={{ marginTop: "12px" }}>
                 <button
                   type="submit"
                   disabled={loading}
                   className={[
-                    "w-full bg-primary-container text-on-primary font-h3",
-                    "py-4 rounded-xl flex items-center justify-center gap-sm",
-                    "hover:brightness-110 active:scale-95 transition-all group",
+                    "w-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold",
+                    "py-4 rounded-2xl flex items-center justify-center gap-2 group",
+                    "shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/25 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer",
                     loading ? "opacity-70 cursor-not-allowed" : "",
                   ].join(" ")}
-                  style={{ boxShadow: "0 0 20px rgba(0,217,255,0.3)" }}
+                  style={{ padding: "16px 24px" }}
                 >
                   {loading ? (
                     <>
-                      <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                      </svg>
-                      <span>Đang đăng ký…</span>
+                      <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                      <span>Đang đăng ký...</span>
                     </>
                   ) : (
                     <>
                       <span>Đăng ký ngay</span>
-                      <span
-                        className="material-symbols-outlined group-hover:translate-x-1 transition-transform"
-                        style={{ fontSize: "20px" }}
-                      >
+                      <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">
                         arrow_forward
                       </span>
                     </>
@@ -379,41 +362,26 @@ export default function RegisterPage() {
             </form>
 
             {/* ── Footer ── */}
-            <div className="mt-lg flex flex-col items-center gap-md w-full">
-              <div className="flex items-center gap-sm w-full">
-                <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-outline/30" />
-                <span className="text-outline text-xs uppercase tracking-widest font-label-caps whitespace-nowrap">
+            <div className="mt-6 flex flex-col items-center gap-4 w-full">
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-[1px] flex-1 bg-slate-200" />
+                <span className="text-slate-400 text-xs uppercase tracking-widest font-bold whitespace-nowrap">
                   Đã có tài khoản?
                 </span>
-                <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-outline/30" />
+                <div className="h-[1px] flex-1 bg-slate-200" />
               </div>
               <Link
                 to="/login"
-                className="font-label-caps text-primary hover:text-white flex items-center gap-xs group transition-colors"
+                className="text-sm font-bold text-cyan-600 hover:text-cyan-500 flex items-center gap-1.5 group transition-colors duration-300"
               >
-                <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>login</span>
+                <span className="material-symbols-outlined text-base">login</span>
                 <span className="underline underline-offset-4">Quay lại Đăng nhập</span>
               </Link>
             </div>
           </div>
-
-          {/* Scanning line decoration */}
-          <div className="relative mt-1 w-full h-[2px] overflow-hidden" style={{ background: "rgba(161,234,255,0.2)", filter: "blur(1px)" }}>
-            <div
-              className="h-full w-24 bg-primary"
-              style={{ animation: "scan 3s linear infinite" }}
-            />
-          </div>
+          {/* No scanning line decoration */}
         </main>
       </div>
-
-      {/* Keyframe injection — drop this into global CSS if preferred */}
-      <style>{`
-        @keyframes scan {
-          0%   { transform: translateX(-100%); }
-          100% { transform: translateX(500%); }
-        }
-      `}</style>
     </>
   );
 }
