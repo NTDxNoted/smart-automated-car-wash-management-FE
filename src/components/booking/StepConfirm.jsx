@@ -5,18 +5,9 @@ import InvoicePreview from './InvoicePreview';
 import PromoCodeInput from './PromoCodeInput';
 import { useLanguage } from '../../context/LanguageContext';
 
-function ConfirmRow({ label, value }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-0.5">{label}</span>
-      <span className="text-sm font-bold text-slate-800">{value || '—'}</span>
-    </div>
-  );
-}
-
 export default function StepConfirm({ bookingData, onBack, user }) {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
@@ -26,12 +17,11 @@ export default function StepConfirm({ bookingData, onBack, user }) {
   const baseAmount = bookingData.service?.price || 0;
 
   const getTierDiscountRate = (tier) => {
-    switch (tier?.toUpperCase()) {
-      case 'DIAMOND': return 0.15;
-      case 'GOLD':    return 0.10;
-      case 'SILVER':  return 0.05;
-      default:        return 0;
-    }
+    const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
+    if (tStr === '4' || tStr === 'PLATINUM' || tStr === 'DIAMOND') return 0.15;
+    if (tStr === '3' || tStr === 'GOLD') return 0.10;
+    if (tStr === '2' || tStr === 'SILVER') return 0.05;
+    return 0;
   };
   const tierDiscount = Math.floor(baseAmount * getTierDiscountRate(user?.tier));
 
@@ -105,54 +95,149 @@ export default function StepConfirm({ bookingData, onBack, user }) {
         </div>
       )}
 
-      <h2 className="mb-4 text-xl font-bold text-cyan-700">
+      <h2 className="mb-6 text-xl font-bold text-slate-800 flex items-center gap-2">
+        <span className="w-2.5 h-6 rounded-full bg-cyan-500"></span>
         {t('step3Title') || 'Bước 3: Kiểm tra hoá đơn & Xác nhận'}
       </h2>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-start mb-6">
         {/* Left column */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           {/* Booking details */}
-          <div className="grid grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <ConfirmRow label={t('bookingServiceLabel').replace(':', '')} value={bookingData.service?.name} />
-            <ConfirmRow label={t('bookingTimeLabel').replace(':', '')} value={scheduledDisplay} />
-            <ConfirmRow label={t('bookingPhoneLabel').replace(':', '')} value={bookingData.phone} />
-            <ConfirmRow label={t('bookingPlateLabel').replace(':', '')} value={bookingData.licensePlate} />
+          <div className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <span className="material-symbols-outlined text-slate-500">info</span>
+              {locale === 'en' ? 'Booking Details' : 'Thông tin chi tiết'}
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Service block */}
+              <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300 border border-slate-100/50">
+                <div className="w-11 h-11 rounded-xl bg-cyan-50 flex items-center justify-center text-cyan-600 shrink-0">
+                  <span className="material-symbols-outlined text-xl">local_car_wash</span>
+                </div>
+                <div>
+                  <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider block">
+                    {t('bookingServiceLabel').replace(':', '')}
+                  </span>
+                  <span className="text-[15px] font-extrabold text-slate-800 block mt-0.5 leading-snug">
+                    {bookingData.service?.name}
+                  </span>
+                </div>
+              </div>
+
+              {/* Time block */}
+              <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300 border border-slate-100/50">
+                <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                  <span className="material-symbols-outlined text-xl">calendar_month</span>
+                </div>
+                <div>
+                  <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider block">
+                    {t('bookingTimeLabel').replace(':', '')}
+                  </span>
+                  <span className="text-[15px] font-extrabold text-cyan-600 block mt-0.5 leading-snug">
+                    {scheduledDisplay}
+                  </span>
+                </div>
+              </div>
+
+              {/* Phone block */}
+              <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300 border border-slate-100/50">
+                <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                  <span className="material-symbols-outlined text-xl">call</span>
+                </div>
+                <div>
+                  <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider block">
+                    {t('bookingPhoneLabel').replace(':', '')}
+                  </span>
+                  <span className="text-[15px] font-extrabold text-slate-800 block mt-0.5 leading-snug">
+                    {bookingData.phone || '—'}
+                  </span>
+                </div>
+              </div>
+
+              {/* License Plate block */}
+              <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300 border border-slate-100/50">
+                <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
+                  <span className="material-symbols-outlined text-xl">tag</span>
+                </div>
+                <div>
+                  <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider block">
+                    {t('bookingPlateLabel').replace(':', '')}
+                  </span>
+                  {bookingData.licensePlate ? (
+                    <span className="inline-block mt-1 font-mono text-sm font-extrabold bg-slate-100 text-slate-800 px-3 py-1 rounded-lg border border-slate-300 tracking-wider shadow-sm">
+                      {bookingData.licensePlate}
+                    </span>
+                  ) : (
+                    <span className="text-[15px] font-extrabold text-slate-800 block mt-0.5 leading-snug">—</span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Promo code */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
             <PromoCodeInput onValidateSuccess={(promo) => setAppliedPromo(promo)} />
           </div>
 
           {/* Reward points */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
             {!user || user.points < 50 ? (
-              <p className="text-xs text-slate-500 italic flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]">stars</span>
-                {t('rewardInsufficient').replace('{points}', 50 - (user?.points || 0))}
-              </p>
+              <div className="flex items-start gap-3 rounded-2xl bg-purple-50/30 border border-purple-100 p-4">
+                <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                  <span className="material-symbols-outlined text-lg">stars</span>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-purple-800 uppercase tracking-wide">
+                    {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
+                  </h4>
+                  <p className="text-xs text-purple-600/90 mt-1 leading-relaxed">
+                    {t('rewardInsufficient').replace('{points}', String(50 - (user?.points || 0)))}
+                  </p>
+                </div>
+              </div>
             ) : (
-              <div className="space-y-2.5">
-                <label className="flex items-center gap-1.5 text-xs font-semibold text-purple-600 uppercase tracking-wider">
-                  <span className="material-symbols-outlined text-[16px]">stars</span>
-                  {t('rewardLabel').replace('{points}', user.points)}
-                </label>
-                <select
-                  value={selectedRewardOption}
-                  onChange={e => setSelectedRewardOption(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-purple-500 transition-colors"
-                >
-                  <option value={0}>{t('rewardNoUse')}</option>
-                  {user.points >= 50  && <option value={50}>{t('rewardUse50')}</option>}
-                  {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
-                </select>
-                <p className="text-[11px] text-purple-400 font-medium">
-                  {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString('vi-VN'))}
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-purple-600">stars</span>
+                    <span className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+                      {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
+                    </span>
+                  </div>
+                  <span className="text-xs font-extrabold text-purple-700 bg-purple-50 border border-purple-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    {user.points} PTS
+                  </span>
+                </div>
+                
+                <div className="relative group">
+                  <select
+                    value={selectedRewardOption}
+                    onChange={e => setSelectedRewardOption(Number(e.target.value))}
+                    className="w-full rounded-2xl border-2 border-slate-100 bg-white pl-4 pr-10 py-3.5 text-base font-semibold text-slate-800 outline-none appearance-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100/50 transition-all duration-300 cursor-pointer"
+                  >
+                    <option value={0}>{t('rewardNoUse')}</option>
+                    {user.points >= 50  && <option value={50}>{t('rewardUse50')}</option>}
+                    {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
+                  </select>
+                  <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-purple-600 transition-colors duration-300">
+                    keyboard_arrow_down
+                  </span>
+                </div>
+                
+                <div className="space-y-1">
+                  <p className="text-[11px] text-purple-600/90 font-medium">
+                    {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN'))}
+                  </p>
                   {isRewardCapped && (
-                    <span className="text-amber-500 block font-semibold mt-0.5">{t('rewardCappedMsg')}</span>
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50/50 border border-amber-100/60 p-2.5 rounded-xl">
+                      <span className="material-symbols-outlined text-sm shrink-0">warning</span>
+                      <span>{t('rewardCappedMsg')}</span>
+                    </div>
                   )}
-                </p>
+                </div>
               </div>
             )}
           </div>
@@ -170,27 +255,33 @@ export default function StepConfirm({ bookingData, onBack, user }) {
         </div>
       )}
 
-      <div className="flex justify-between pt-6 border-t border-slate-200">
+      <div className="flex justify-between items-center mt-6 py-[5px] border-t border-slate-100">
         <button
           type="button"
           onClick={onBack}
           disabled={loading}
-          className="rounded-full font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50 px-6 py-2.5 transition-all duration-200 active:scale-95 disabled:opacity-50 cursor-pointer"
+          className="rounded-full font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800 px-10 py-3.5 text-lg transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
         >
+          <span className="material-symbols-outlined text-lg">arrow_back</span>
           {t('btnBack')}
         </button>
         <button
           type="button"
           onClick={handleBookingConfirm}
           disabled={loading}
-          className="rounded-full bg-cyan-500 text-white hover:bg-cyan-600 shadow-sm font-semibold flex items-center gap-2 px-6 py-2.5 transition-all duration-200 active:scale-95 disabled:opacity-50 cursor-pointer"
+          className="rounded-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 px-12 py-3.5 text-lg transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
-              <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+              <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
               {t('btnProcessing')}
             </>
-          ) : t('btnConfirm')}
+          ) : (
+            <>
+              {t('btnConfirm')}
+              <span className="material-symbols-outlined text-lg">check_circle</span>
+            </>
+          )}
         </button>
       </div>
     </section>
