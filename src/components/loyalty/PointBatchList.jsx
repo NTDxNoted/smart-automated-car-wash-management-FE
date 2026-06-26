@@ -1,12 +1,14 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * Hiển thị danh sách các lô điểm (batch)
  * BR-57: Highlight đỏ nếu số ngày còn lại ≤ 30 ngày
  */
 export default function PointBatchList({ batches = [] }) {
+  const { t, locale } = useLanguage();
   const formatDate = (isoString) => {
-    return new Date(isoString).toLocaleDateString('vi-VN', {
+    return new Date(isoString).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', {
       year: 'numeric', month: '2-digit', day: '2-digit'
     });
   };
@@ -15,7 +17,7 @@ export default function PointBatchList({ batches = [] }) {
     return (
       <div className="py-8 text-center border border-slate-200 rounded-xl bg-white">
         <p className="text-slate-500 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-          Chưa có lô điểm nào trong ví
+          {t('loyaltyNoBatches')}
         </p>
       </div>
     );
@@ -27,7 +29,7 @@ export default function PointBatchList({ batches = [] }) {
         className="text-sm uppercase tracking-widest text-slate-500 mb-3"
         style={{ fontFamily: "'Archivo', sans-serif" }}
       >
-        Lô điểm chi tiết
+        {t('loyaltyBatchesTitle')}
       </h3>
       
       <div className="space-y-3">
@@ -51,28 +53,28 @@ export default function PointBatchList({ batches = [] }) {
                     className={`text-lg font-bold ${isExpiringSoon ? 'text-red-600' : 'text-slate-800'}`}
                     style={{ fontFamily: "'Archivo', sans-serif" }}
                   >
-                    {batch.points} điểm
+                    {batch.points} {t('loyaltyPoints')}
                   </span>
                   {isExpiringSoon && (
                     <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-red-100 text-red-600 border border-red-300 tracking-wider">
-                      Sắp hết hạn
+                      {t('loyaltyExpiringSoon')}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-                  Tích lũy từ {formatDate(batch.earnedAt)}
+                  {t('loyaltyAccumulatedFrom')} {formatDate(batch.earnedAt)}
                 </p>
               </div>
               
               <div className="text-right">
                 <p className="text-xs text-slate-500 mb-0.5" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-                  Hết hạn: <span className="text-slate-700">{formatDate(batch.expiredAt)}</span>
+                  {t('loyaltyExpiry')} <span className="text-slate-700">{formatDate(batch.expiredAt)}</span>
                 </p>
                 <p 
                   className={`text-sm font-semibold ${isExpiringSoon ? 'text-red-600' : 'text-cyan-600'}`}
                   style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
                 >
-                  Còn {batch.daysUntilExpiry} ngày
+                  {t('loyaltyDaysRemaining').replace('{days}', batch.daysUntilExpiry)}
                 </p>
               </div>
             </div>
@@ -81,7 +83,7 @@ export default function PointBatchList({ batches = [] }) {
       </div>
       
       <p className="text-xs text-slate-500 text-center mt-2" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-        * Điểm sau khi quá hạn sẽ tự động bị khấu trừ và không thể khôi phục.
+        {t('loyaltyExpiryNote')}
       </p>
     </div>
   );

@@ -1,11 +1,12 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * Hiển thị phần thưởng có thể đổi (nếu điểm >= 50)
  */
 export default function RewardCard({ reward }) {
   const navigate = useNavigate();
+  const { t, locale } = useLanguage();
 
   const handleUseReward = () => {
     // Redirect to booking page, có thể pass params nếu muốn tự apply reward, 
@@ -14,7 +15,10 @@ export default function RewardCard({ reward }) {
   };
 
   const formatVND = (amount) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
 
   return (
     <div 
@@ -38,7 +42,8 @@ export default function RewardCard({ reward }) {
             {reward.name}
           </h4>
           <p className="text-xs text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-            Trị giá giảm: <span className="font-semibold text-slate-800">{formatVND(reward.discountValue)}</span>
+            {t('loyaltyRewardValue')}{' '}
+            <span className="font-semibold text-slate-800">{formatVND(reward.discountValue)}</span>
           </p>
         </div>
 
@@ -52,7 +57,9 @@ export default function RewardCard({ reward }) {
             >
               {reward.pointsRequired}
             </span>
-            <span className="text-xs text-slate-500 uppercase tracking-wide">điểm</span>
+            <span className="text-xs text-slate-500 uppercase tracking-wide">
+              {t('loyaltyPoints')}
+            </span>
           </div>
 
           <button
@@ -64,10 +71,11 @@ export default function RewardCard({ reward }) {
               boxShadow: '0 0 14px rgba(6,182,212,0.2)',
             }}
           >
-            Dùng ngay
+            {t('btnUseNow')}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

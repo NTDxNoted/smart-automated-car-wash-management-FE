@@ -1,148 +1,75 @@
-// BookingCard.jsx
-// Hiển thị thông tin tóm tắt một booking trong danh sách
-// Click card → callback onOpenDetail(booking)
-// BR-63: nút Hủy chỉ hiện khi status=Pending VÀ scheduledTime - now >= 2h
-
-import BookingStatusBadge from "./BookingStatusBadge";
+import React from 'react';
+import BookingStatusBadge from './BookingStatusBadge';
+import { useLanguage } from '../../context/LanguageContext';
 
 function canCancel(booking) {
-  if (booking.status !== "Pending") return false;
-  const diffMs = new Date(booking.scheduledTime) - new Date();
-  return diffMs >= 2 * 60 * 60 * 1000; // >= 2 tiếng
+  return booking.status === 'Pending' && (new Date(booking.scheduledTime) - new Date()) >= 7200 * 1000;
 }
 
-function formatVND(amount) {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
+function formatVND(amount, locale) {
+  return new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount);
 }
 
-function formatDateTime(iso) {
-  return new Date(iso).toLocaleString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+function formatDateTime(iso, locale) {
+  return new Date(iso).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
 export default function BookingCard({ booking, onOpenDetail, onCancel }) {
+  const { t, locale } = useLanguage();
   const showCancelBtn = canCancel(booking);
 
   return (
-    <div
+    <article
+      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-cyan-300 hover:shadow-md cursor-pointer"
       onClick={() => onOpenDetail(booking)}
-      style={{
-        background: "#ffffff",
-        border: "1px solid rgba(0,0,0,0.1)",
-        borderRadius: "14px",
-        padding: "18px 22px",
-        cursor: "pointer",
-        transition: "border-color 0.2s, background 0.2s",
-        position: "relative",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "rgba(8, 145, 178, 0.4)";
-        e.currentTarget.style.background = "#f8fafc";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)";
-        e.currentTarget.style.background = "#ffffff";
-      }}
     >
-      {/* Row 1: Biển số + Service + Badge */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "10px" }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-            {/* Biển số */}
-            <span
-              style={{
-                fontFamily: "'Archivo', sans-serif",
-                fontSize: "15px",
-                fontWeight: 700,
-                color: "#0891b2",
-                background: "rgba(8, 145, 178, 0.1)",
-                border: "1px solid rgba(8, 145, 178, 0.3)",
-                borderRadius: "6px",
-                padding: "2px 9px",
-                letterSpacing: "0.06em",
-              }}
-            >
-              {booking.vehiclePlate}
-            </span>
-            <BookingStatusBadge status={booking.status} />
-          </div>
-          <p
-            style={{
-              fontFamily: "'Be Vietnam Pro', sans-serif",
-              fontSize: "14px",
-              color: "rgba(0,0,0,0.6)",
-              margin: "6px 0 0",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {booking.serviceName}
+      {/* Top row: service info + status */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base font-bold text-slate-800 truncate">{booking.serviceName}</h3>
+          <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
+            <span className="material-symbols-outlined text-base">calendar_month</span>
+            {formatDateTime(booking.scheduledTime, locale)}
+          </p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-slate-500">
+            <span className="material-symbols-outlined text-base">directions_car</span>
+            {booking.vehiclePlate}
           </p>
         </div>
-
-        {/* Số tiền */}
-        <div style={{ textAlign: "right", marginLeft: "16px", flexShrink: 0 }}>
-          <span
-            style={{
-              fontFamily: "'Archivo', sans-serif",
-              fontSize: "16px",
-              fontWeight: 700,
-              color: "#0f172a",
-            }}
-          >
-            {formatVND(booking.finalAmount)}
-          </span>
-        </div>
+        <BookingStatusBadge status={booking.status} />
       </div>
 
-      {/* Row 2: Giờ hẹn + ID + Nút hủy */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", gap: "18px" }}>
-          <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
-            🕐 {formatDateTime(booking.scheduledTime)}
-          </span>
-          <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)" }}>
-            #{booking.bookingId}
-          </span>
-        </div>
-
-        {showCancelBtn && (
+      {/* Bottom row: price + buttons */}
+      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+        <span className="text-lg font-bold text-cyan-600">{formatVND(booking.finalAmount, locale)}</span>
+        <div className="flex gap-2">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onCancel(booking);
-            }}
-            style={{
-              fontFamily: "'Be Vietnam Pro', sans-serif",
-              fontSize: "12px",
-              fontWeight: 600,
-              color: "#FF5C5C",
-              background: "rgba(255,92,92,0.08)",
-              border: "1px solid rgba(255,92,92,0.3)",
-              borderRadius: "8px",
-              padding: "4px 12px",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255,92,92,0.18)";
-              e.currentTarget.style.borderColor = "rgba(255,92,92,0.6)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255,92,92,0.08)";
-              e.currentTarget.style.borderColor = "rgba(255,92,92,0.3)";
-            }}
+            type="button"
+            onClick={e => { e.stopPropagation(); onOpenDetail(booking); }}
+            className="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
           >
-            Hủy lịch
+            {t('btnDetail') || 'Chi tiết'}
           </button>
-        )}
+          {showCancelBtn && (
+            <button
+              type="button"
+              onClick={e => { e.stopPropagation(); onCancel(booking); }}
+              className="rounded-full border border-red-200 px-4 py-1.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+            >
+              {t('btnCancel')}
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }

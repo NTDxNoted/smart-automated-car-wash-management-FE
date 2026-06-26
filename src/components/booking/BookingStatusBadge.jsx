@@ -1,36 +1,24 @@
-// BookingStatusBadge.jsx
-// BR-64: Màu theo spec — Pending=vàng, Completed=xanh lá, Cancelled=xám, Failed=đỏ, No-show=cam
+import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
-const STATUS_CONFIG = {
-  Pending:   { label: "Chờ xác nhận", bg: "#2D2500", color: "#FFD04A", border: "#5C4A00" },
-  Completed: { label: "Hoàn thành",   bg: "#0A2D1A", color: "#4AE082", border: "#0F5C31" },
-  Cancelled: { label: "Đã hủy",       bg: "#1C1C1C", color: "#A0A0A0", border: "#3A3A3A" },
-  Failed:    { label: "Thất bại",      bg: "#2D0A0A", color: "#FF5C5C", border: "#5C1A1A" },
-  "No-show": { label: "Vắng mặt",     bg: "#2D1500", color: "#FF8C42", border: "#5C2E00" },
+const STATUS_MAP = {
+  Pending:   { key: 'statusPending',   className: 'bg-amber-100 text-amber-700' },
+  Completed: { key: 'statusCompleted', className: 'bg-emerald-100 text-emerald-700' },
+  Cancelled: { key: 'statusCancelled', className: 'bg-slate-200 text-slate-500' },
+  Failed:    { key: 'statusFailed',    className: 'bg-red-100 text-red-700' },
+  'No-show': { key: 'statusNoShow',    className: 'bg-orange-100 text-orange-700' },
 };
 
-export default function BookingStatusBadge({ status, size = "md" }) {
-  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG["Cancelled"];
-  const fontSize = size === "sm" ? "11px" : "12px";
-  const padding  = size === "sm" ? "2px 8px" : "3px 10px";
-
+export default function BookingStatusBadge({ status = 'Pending', size = 'md' }) {
+  const { t } = useLanguage();
+  const config = STATUS_MAP[status] || STATUS_MAP.Pending;
   return (
     <span
-      style={{
-        display: "inline-block",
-        fontSize,
-        fontFamily: "'Be Vietnam Pro', sans-serif",
-        fontWeight: 600,
-        letterSpacing: "0.04em",
-        padding,
-        borderRadius: "100px",
-        background: cfg.bg,
-        color: cfg.color,
-        border: `1px solid ${cfg.border}`,
-        whiteSpace: "nowrap",
-      }}
+      className={`inline-flex items-center rounded-full font-semibold whitespace-nowrap
+        ${size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1 text-xs'}
+        ${config.className}`}
     >
-      {cfg.label}
+      {t(config.key)}
     </span>
   );
 }
