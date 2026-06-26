@@ -98,7 +98,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Content Body */}
-        <main className="flex-grow p-6 overflow-y-auto">
+        <main className="flex-grow p-6 pt-20 overflow-y-auto">
           <Outlet />
         </main>
       </div>

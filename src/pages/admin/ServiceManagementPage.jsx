@@ -1,10 +1,159 @@
-export default function ServiceManagementPage() {
-  return (
-    <div className="space-y-6">
-      <div className="bg-[#0c0f24] border border-white/5 p-8 rounded-2xl">
-        <h2 className="text-xl font-bold text-white mb-2">Cấu hình Dịch vụ</h2>
-        <p className="text-slate-400 text-sm">Quản lý danh sách dịch vụ rửa xe, tạo mới, chỉnh sửa thông tin, đổi trạng thái và cảnh báo sửa giá (Placeholder)</p>
-      </div>
-    </div>
-  );
+import React, { useEffect, useState } from 'react';
+import adminServiceService from '../../services/adminServiceService';
+import ServiceModal from '../../components/admin/ServiceModal';
+
+const ServiceManagementPage = () => {
+  const [services, setServices] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+
+  const fetchServices = async () => {
+    const res = await adminServiceService.getAdminServices();
+    setServices(res.data?.data || res.data || []);
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const handleCreate = () => {
+    setSelectedService(null);
+    setOpenModal(true);
+  };
+
+  const handleEdit = (service) => {
+    setSelectedService(service);
+    setOpenModal(true);
+  };
+
+  const handleSubmit = async (form) => {
+    const payload = {
+      ...form,
+      price: Number(form.price),
+      duration: Number(form.duration),
+    };
+
+    if (selectedService) {
+  const oldPrice = Number(selectedService.price);
+  const newPrice = Number(payload.price);
+
+  const isPriceChanged =
+    Number.isFinite(oldPrice) &&
+    Number.isFinite(newPrice) &&
+    oldPrice !== newPrice;
+
+  if (isPriceChanged) {
+    const confirmed = window.confirm(
+      'Giá dịch vụ đã thay đổi. Giá mới chỉ áp dụng cho booking mới. Bạn có chắc muốn lưu thay đổi này không?'
+    );
+
+    if (!confirmed) return;
+  }
+
+  await adminServiceService.updateService(selectedService.id, payload);
+} else {
+  await adminServiceService.createService(payload);
 }
+
+    setOpenModal(false);
+    await fetchServices();
+  };
+
+  const thStyle = {
+  textAlign: "left",
+  padding: "14px 18px",
+  color: "#38bdf8",
+  borderBottom: "1px solid #334155",
+  fontWeight: 700,
+};
+
+const tdStyle = {
+  padding: "16px 18px",
+  color: "#e2e8f0",
+  borderBottom: "1px solid #1e293b",
+};
+
+const buttonStyle = {
+  background: "#0ea5e9",
+  border: "none",
+  color: "#fff",
+  padding: "8px 16px",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontWeight: 600,
+};
+
+  return (
+  <div className="admin-page">
+    <div className="admin-page-header">
+      <h2>Service Management</h2>
+    </div>
+
+    <div
+      style={{
+        background: "#07111f",
+        border: "1px solid #1e293b",
+        borderRadius: "12px",
+        padding: "20px",
+        marginTop: "20px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h3 style={{ color: "#fff", fontSize: "20px", margin: 0 }}>
+          Quản lý dịch vụ
+        </h3>
+
+        <button onClick={handleCreate} style={buttonStyle}>
+          + Add Service
+        </button>
+      </div>
+
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th style={thStyle}>Name</th>
+            <th style={thStyle}>Category</th>
+            <th style={thStyle}>Price</th>
+            <th style={thStyle}>Duration</th>
+            <th style={thStyle}>Description</th>
+            <th style={thStyle}>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {services.map((item) => (
+            <tr key={item.id}>
+              <td style={tdStyle}>{item.name}</td>
+              <td style={tdStyle}>{item.category}</td>
+              <td style={tdStyle}>{Number(item.price).toLocaleString()}đ</td>
+              <td style={tdStyle}>{item.duration} phút</td>
+              <td style={tdStyle}>{item.description}</td>
+              <td style={tdStyle}>
+                <button onClick={() => handleEdit(item)} style={buttonStyle}>
+                  Edit
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <ServiceModal
+      open={openModal}
+      onClose={() => setOpenModal(false)}
+      onSubmit={handleSubmit}
+      initialData={selectedService}
+    />
+  </div>
+);
+};
+
+export default ServiceManagementPage;
