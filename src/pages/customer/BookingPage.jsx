@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import BookingStepper from '../../components/booking/BookingStepper';
 import StepSelectService from '../../components/booking/StepSelectService';
 import StepVehicleTime from '../../components/booking/StepVehicleTime';
@@ -10,6 +11,7 @@ import { profileService } from '../../services/profileService';
 
 export default function BookingPage() {
   const { auth } = useContext(AuthContext);
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [services, setServices] = useState([]);
@@ -70,13 +72,13 @@ export default function BookingPage() {
         }));
         setServices(normalized);
       } catch (err) {
-        setError(err.message || 'Không thể tải danh sách dịch vụ.');
+        setError(err.message || t('emptyServices'));
       } finally {
         setLoadingServices(false);
       }
     }
     loadServices();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const serviceId = searchParams.get('serviceId');
@@ -92,14 +94,12 @@ export default function BookingPage() {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   return (
-    // 1. Thêm "justify-center" vào thẻ cha để ép nội dung con căn giữa theo chiều dọc
-    <div className="w-full min-h-screen bg-slate-50 text-slate-800 font-sans py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
+    <div className="booking-page-container w-full min-h-[calc(100vh-64px)] bg-slate-50 text-slate-800 font-sans p-[15px] flex flex-col justify-center items-center">
 
-      {/* 2. Đổi "mt-6" thành "my-8" (khoảng cách đều cả trên lẫn dưới để hộp không bị dính biên) */}
-      <div className="w-full max-w-4xl bg-white border border-slate-200 p-6 md:p-10 rounded-2xl shadow-xl my-8">
+      <div className="booking-card-wrapper w-full max-w-5xl bg-white border border-slate-200 p-8 md:p-12 rounded-3xl shadow-2xl">
 
         <h1 className="text-2xl md:text-3xl font-bold font-heading text-center mb-10 bg-gradient-to-r from-slate-800 via-slate-600 to-cyan-600 bg-clip-text text-transparent tracking-wide uppercase">
-          ĐẶT LỊCH DỊCH VỤ LUXURY
+          {t('bookingTitle')}
         </h1>
 
         {/* Cụm hiển thị các bước */}
@@ -113,7 +113,7 @@ export default function BookingPage() {
             loadingServices ? (
               <div className="flex flex-col items-center justify-center py-12 space-y-4">
                 <div className="w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-sm text-slate-500 font-medium">Đang tải danh sách dịch vụ...</p>
+                <p className="text-sm text-slate-500 font-medium">{t('loadingServices')}</p>
               </div>
             ) : error ? (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-center text-sm">

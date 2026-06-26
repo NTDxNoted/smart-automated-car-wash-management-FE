@@ -50,7 +50,14 @@ const SIZE_CONFIG = {
 };
 
 export default function TierBadge({ tier = 'MEMBER', size = 'md' }) {
-  const config = TIER_CONFIG[tier] ?? TIER_CONFIG.MEMBER;
+  const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
+  let normalizedTier = 'MEMBER';
+  if (tStr === '4' || tStr === 'PLATINUM') normalizedTier = 'PLATINUM';
+  else if (tStr === '3' || tStr === 'GOLD') normalizedTier = 'GOLD';
+  else if (tStr === '2' || tStr === 'SILVER') normalizedTier = 'SILVER';
+  else if (tStr === '1' || tStr === 'MEMBER') normalizedTier = 'MEMBER';
+
+  const config = TIER_CONFIG[normalizedTier] ?? TIER_CONFIG.MEMBER;
   const sizeClass = SIZE_CONFIG[size];
 
   return (
