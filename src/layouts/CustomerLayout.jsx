@@ -28,21 +28,74 @@ export default function CustomerLayout() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isDesktop]);
 
+  // Handle smooth scroll for hash links on navigation
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        const timer = setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname, location.hash]);
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  const getTierColor = (tier) => {
-    switch (tier?.toLowerCase()) {
-      case 'platinum': return 'from-cyan-500 to-blue-600 text-white';
-      case 'gold': return 'from-yellow-500 to-amber-600 text-white font-semibold';
-      case 'silver': return 'from-slate-400 to-slate-500 text-white font-semibold';
-      default: return 'from-slate-500 to-slate-600 text-white';
+  const getTierDetails = (tier) => {
+    const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toLowerCase();
+    if (tStr === '4' || tStr === 'platinum') {
+      return { 
+        name: 'Platinum', 
+        color: 'from-cyan-500 to-blue-600 text-white border-cyan-400/20 shadow-cyan-500/10' 
+      };
     }
+    if (tStr === '3' || tStr === 'gold') {
+      return { 
+        name: 'Gold', 
+        color: 'from-amber-400 to-yellow-500 text-white border-amber-300/20 shadow-amber-500/10' 
+      };
+    }
+    if (tStr === '2' || tStr === 'silver') {
+      return { 
+        name: 'Silver', 
+        color: 'from-slate-300 to-slate-400 text-slate-800 border-slate-200/20 shadow-slate-300/5' 
+      };
+    }
+    return { 
+      name: 'Member', 
+      color: 'from-slate-400 to-slate-500 text-white border-slate-300/20 shadow-slate-500/5' 
+    };
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isLinkActive = (path, hash = '') => {
+    if (hash) {
+      return location.pathname === path && location.hash === hash;
+    }
+    if (path === '/') {
+      return location.pathname === '/' && !location.hash;
+    }
+    return location.pathname === path;
+  };
+
+  const handleHashLinkClick = (hashId) => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+    if (location.pathname === '/' && location.hash === hashId) {
+      const element = document.getElementById(hashId.replace('#', ''));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans relative overflow-x-hidden">
@@ -71,7 +124,7 @@ export default function CustomerLayout() {
             to="/"
             onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
             className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-              isActive('/')
+              isLinkActive('/')
                 ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
@@ -84,7 +137,7 @@ export default function CustomerLayout() {
             to="/booking"
             onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
             className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-              isActive('/booking')
+              isLinkActive('/booking')
                 ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
@@ -93,32 +146,44 @@ export default function CustomerLayout() {
             <span className="text-sm font-medium">{t('navBooking')}</span>
           </Link>
 
-          <a
-            href="/#services"
-            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            className="flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          <Link
+            to="/#services"
+            onClick={() => handleHashLinkClick('#services')}
+            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
+              isLinkActive('/', '#services')
+                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            }`}
           >
             <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">auto_awesome</span>
             <span className="text-sm font-medium">{t('navServices')}</span>
-          </a>
+          </Link>
 
-          <a
-            href="/#results"
-            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            className="flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          <Link
+            to="/#results"
+            onClick={() => handleHashLinkClick('#results')}
+            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
+              isLinkActive('/', '#results')
+                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            }`}
           >
             <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">image</span>
             <span className="text-sm font-medium">{t('navResults')}</span>
-          </a>
+          </Link>
 
-          <a
-            href="/#membership"
-            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            className="flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          <Link
+            to="/#membership"
+            onClick={() => handleHashLinkClick('#membership')}
+            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
+              isLinkActive('/', '#membership')
+                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            }`}
           >
             <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">workspace_premium</span>
             <span className="text-sm font-medium">{t('navMembership')}</span>
-          </a>
+          </Link>
 
           {isAuthenticated && (
             <>
@@ -126,7 +191,7 @@ export default function CustomerLayout() {
                 to="/bookings"
                 onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
                 className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-                  isActive('/bookings')
+                  isLinkActive('/bookings')
                     ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
@@ -139,7 +204,7 @@ export default function CustomerLayout() {
                 to="/loyalty"
                 onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
                 className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-                  isActive('/loyalty')
+                  isLinkActive('/loyalty')
                     ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
@@ -155,7 +220,7 @@ export default function CustomerLayout() {
               to="/profile"
               onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
               className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-                isActive('/profile')
+                isLinkActive('/profile')
                   ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
@@ -233,34 +298,56 @@ export default function CustomerLayout() {
 
               {isAuthenticated ? (
                 <div className="flex items-center gap-3">
-                  <Link to="/profile" className="flex items-center gap-2 hover:opacity-85 transition-opacity">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-sm">
-                      {user?.fullName?.charAt(0) || 'U'}
+                  <Link 
+                    to="/profile" 
+                    className="flex items-center gap-2.5 p-1 pr-3 rounded-full border border-slate-100 hover:border-cyan-200/80 bg-slate-50/50 hover:bg-cyan-50/30 transition-all duration-300 shadow-xs group"
+                  >
+                    {/* Glowing Avatar */}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center font-black text-sm text-white shadow-sm ring-2 ring-cyan-500/10 group-hover:ring-cyan-500/20 transition-all">
+                      {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
-                    <div className="hidden sm:block text-left leading-none">
-                      <div className="text-xs font-semibold text-slate-800">{user?.fullName}</div>
-                      {user?.tier && (
-                        <span className={`inline-block text-[9px] uppercase px-1.5 py-0.5 rounded-full bg-gradient-to-r mt-0.5 ${getTierColor(user.tier)}`}>
-                          {user.tier}
+                    
+                    <div className="hidden sm:flex flex-col items-start justify-center min-w-0">
+                      <div className="text-[12px] font-extrabold text-slate-800 tracking-tight leading-tight group-hover:text-cyan-600 transition-colors">
+                        {user?.fullName}
+                      </div>
+                      {user?.tier !== undefined && user?.tier !== null && user?.tier !== '' && (
+                        <span 
+                          className={`inline-flex items-center gap-0.5 text-[8px] font-black uppercase rounded-full bg-gradient-to-r border shadow-2xs ${getTierDetails(user.tier).color}`}
+                          style={{ 
+                            letterSpacing: '0.05em',
+                            padding: '3px 8px',
+                            marginTop: '2px',
+                            lineHeight: '1'
+                          }}
+                        >
+                          <span className="opacity-75 text-[7px]">✦</span>
+                          {getTierDetails(user.tier).name}
                         </span>
                       )}
                     </div>
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-xs font-medium text-slate-500 hover:text-red-500 border border-slate-300 hover:border-red-500 px-3 py-1.5 rounded-full transition-all"
+                    className="inline-flex items-center justify-center text-xs font-bold text-slate-500 hover:text-red-500 border border-slate-200 hover:border-red-200 hover:bg-red-50/30 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer active:scale-95"
+                    style={{ fontFamily: "'Archivo', sans-serif" }}
                   >
                     {t('navLogout')}
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-cyan-600 transition-all px-3 py-2 rounded-lg hover:bg-slate-50">
+                <div className="flex items-center gap-3 sm:gap-5">
+                  <Link 
+                    to="/login" 
+                    className="inline-flex items-center justify-center text-base font-semibold text-slate-600 hover:text-cyan-600 transition-all py-3 rounded-xl hover:bg-slate-100/60"
+                    style={{ paddingLeft: '24px', paddingRight: '24px' }}
+                  >
                     {t('navLogin')}
                   </Link>
                   <Link
                     to="/register"
-                    className="text-sm font-bold text-white bg-cyan-600 hover:bg-cyan-500 px-6 py-2.5 rounded-full shadow-[0_4px_14px_0_rgba(6,182,212,0.39)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.23)] whitespace-nowrap transition-all hover:-translate-y-0.5 active:translate-y-0"
+                    className="inline-flex items-center justify-center text-base font-extrabold text-white bg-cyan-600 hover:bg-cyan-500 py-3.5 rounded-full shadow-[0_4px_14px_0_rgba(6,182,212,0.39)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.23)] whitespace-nowrap transition-all hover:-translate-y-0.5 active:translate-y-0"
+                    style={{ paddingLeft: '32px', paddingRight: '32px' }}
                   >
                     {t('navRegister')}
                   </Link>
@@ -319,7 +406,7 @@ export default function CustomerLayout() {
         <Link
           to="/"
           className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 ${
-            isActive('/') ? 'text-cyan-600 scale-110' : 'text-slate-500'
+            isLinkActive('/') ? 'text-cyan-600 scale-110' : 'text-slate-500'
           }`}
         >
           <span className="material-symbols-outlined text-2xl">home</span>
@@ -329,7 +416,7 @@ export default function CustomerLayout() {
         <Link
           to="/booking"
           className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 ${
-            isActive('/booking') ? 'text-cyan-600 scale-110' : 'text-slate-500'
+            isLinkActive('/booking') ? 'text-cyan-600 scale-110' : 'text-slate-500'
           }`}
         >
           <span className="material-symbols-outlined text-2xl">local_car_wash</span>
@@ -341,7 +428,7 @@ export default function CustomerLayout() {
             <Link
               to="/bookings"
               className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 ${
-                isActive('/bookings') ? 'text-cyan-600 scale-110' : 'text-slate-500'
+                isLinkActive('/bookings') ? 'text-cyan-600 scale-110' : 'text-slate-500'
               }`}
             >
               <span className="material-symbols-outlined text-2xl">history</span>
@@ -351,7 +438,7 @@ export default function CustomerLayout() {
             <Link
               to="/loyalty"
               className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 ${
-                isActive('/loyalty') ? 'text-cyan-600 scale-110' : 'text-slate-500'
+                isLinkActive('/loyalty') ? 'text-cyan-600 scale-110' : 'text-slate-500'
               }`}
             >
               <span className="material-symbols-outlined text-2xl">stars</span>
