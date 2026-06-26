@@ -43,7 +43,7 @@ export default function ResultsPage() {
         <div className="w-full max-w-5xl bg-white p-6 sm:p-10 border border-cyan-100 shadow-[0_20px_60px_-15px_rgba(6,182,212,0.15)] rounded-[2rem] mx-auto relative overflow-hidden flex flex-col items-center justify-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(6,182,212,0.08)_0%,transparent_50%)] pointer-events-none"></div>
           
-          <div className="relative w-full aspect-[16/10] md:aspect-[16/8] rounded-2xl overflow-hidden border border-slate-100 shadow-lg select-none group z-10">
+          <div className="relative w-full aspect-[16/10] md:aspect-[16/10] rounded-2xl overflow-hidden border border-slate-100 shadow-lg select-none group z-10">
             <div className="scan-line pointer-events-none z-10"></div>
 
             {/* After Image */}
