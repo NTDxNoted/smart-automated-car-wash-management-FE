@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import axiosInstance from '../api/axiosInstance';
 
 const adminAxiosInstance = axios.create({

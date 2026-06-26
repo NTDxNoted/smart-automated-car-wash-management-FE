@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
 // Request interceptor to automatically attach the JWT token
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('aw_token');
+    const token = localStorage.getItem("member_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,8 +27,8 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       // Clear token and user info from localStorage
-      localStorage.removeItem('aw_token');
-      localStorage.removeItem('aw_user');
+      localStorage.removeItem("member_token");
+      localStorage.removeItem("member_user");
       // Redirect to login page
       window.location.href = '/login';
     }
