@@ -35,43 +35,48 @@ export default function PromoCodeInput({ onValidateSuccess }) {
 
   return (
     <div>
-      <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+      <p className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700 uppercase tracking-wide">
         <span className="material-symbols-outlined text-base text-cyan-600">local_offer</span>
         {t('promoLabel')}
       </p>
 
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <input
           type="text"
           value={code}
           onChange={e => setCode(e.target.value.toUpperCase())}
           placeholder={t('promoPlaceholder')}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm uppercase text-slate-800 outline-none placeholder:text-slate-400 focus:border-cyan-500 transition-colors"
+          className="w-full rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 text-base font-semibold uppercase text-slate-800 outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100/50 transition-all duration-300"
         />
         <button
           type="button"
           onClick={handleApply}
           disabled={loading}
-          className="whitespace-nowrap rounded-xl bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-cyan-600 disabled:opacity-50 flex items-center gap-1.5"
+          className="shrink-0 whitespace-nowrap rounded-2xl bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-cyan-500/10 cursor-pointer flex items-center justify-center gap-1.5"
         >
           {loading ? (
             <>
               <span className="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
               {t('btnChecking')}
             </>
-          ) : t('btnApply')}
+          ) : (
+            <>
+              {t('btnApply')}
+              <span className="material-symbols-outlined text-base">check</span>
+            </>
+          )}
         </button>
       </div>
 
       {error && (
-        <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500">
-          <span className="material-symbols-outlined text-[14px]">error</span>
+        <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-red-500">
+          <span className="material-symbols-outlined text-sm">error</span>
           {error}
         </p>
       )}
       {successMsg && (
-        <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-600">
-          <span className="material-symbols-outlined text-[14px]">check_circle</span>
+        <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+          <span className="material-symbols-outlined text-sm">check_circle</span>
           {successMsg}
         </p>
       )}
