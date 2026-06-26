@@ -106,7 +106,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
           <div>
             <label
               className="block text-xs text-slate-500 uppercase tracking-widest mb-2"
-              style={{ fontFamily: "'Syne', sans-serif" }}
+              style={{ fontFamily: "'Archivo', sans-serif" }}
             >
               Biển số xe
             </label>
@@ -116,13 +116,13 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
               onChange={e => { setPlate(e.target.value.toUpperCase()); setError(''); }}
               placeholder="VD: 51A-12345"
               className={inputClass}
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
               maxLength={10}
             />
           </div>
 
           {error && (
-            <p className="text-red-400 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <p className="text-red-400 text-xs" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
               {error}
             </p>
           )}
@@ -131,7 +131,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
             <button
               onClick={onCancel}
               className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
             >
               Hủy
             </button>
@@ -140,7 +140,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
               disabled={sendingOtp}
               className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
               style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Archivo', sans-serif",
                 background: sendingOtp
                   ? 'rgba(6,182,212,0.4)'
                   : 'linear-gradient(135deg, #06b6d4, #0891b2)',
@@ -159,13 +159,13 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
           <div>
             <p
               className="text-sm text-slate-400 mb-1"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
             >
               OTP đã được gửi đến SĐT đã đăng ký
             </p>
             <p
               className="text-xs text-slate-500"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
             >
               Biển số: <span className="text-cyan-600 font-semibold">{plate}</span>
             </p>
@@ -189,13 +189,13 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
                   text-slate-800 focus:outline-none focus:border-cyan-500
                   transition-all duration-150
                 "
-                style={{ fontFamily: "'Syne', sans-serif" }}
+                style={{ fontFamily: "'Archivo', sans-serif" }}
               />
             ))}
           </div>
 
           {/* Resend countdown */}
-          <p className="text-xs text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-xs text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
             {countdown > 0 ? (
               <>Gửi lại sau <span className="text-cyan-600">{countdown}s</span></>
             ) : (
@@ -209,7 +209,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
           </p>
 
           {error && (
-            <p className="text-red-400 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <p className="text-red-400 text-xs" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
               {error}
             </p>
           )}
@@ -218,7 +218,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
             <button
               onClick={() => { setStep(1); setOtp(['', '', '', '', '', '']); setError(''); }}
               className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
             >
               Quay lại
             </button>
@@ -227,7 +227,7 @@ export default function OtpVerifyStep({ initialPlate = '', onConfirm, onCancel, 
               disabled={isLoading || otp.join('').length < 6}
               className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
               style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Archivo', sans-serif",
                 background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
                 boxShadow: '0 0 16px rgba(6,182,212,0.35)',
               }}

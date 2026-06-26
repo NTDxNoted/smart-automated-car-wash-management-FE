@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { vehicleService } from '../../services/vehicleService';
+import { useLanguage } from '../../context/LanguageContext';
 import AddVehicleModal from './AddVehicleModal';
 
 /**
@@ -7,6 +8,7 @@ import AddVehicleModal from './AddVehicleModal';
  * BR-08: Không giới hạn số xe
  */
 export default function VehicleList() {
+  const { t } = useLanguage();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(null); // null | { mode: 'add' } | { mode: 'edit', vehicle }
@@ -25,18 +27,18 @@ export default function VehicleList() {
       const data = await vehicleService.getVehicles();
       setVehicles(data);
     } catch {
-      showToast('error', 'Không thể tải danh sách xe');
+      showToast('error', t('vehicleLoadFailed'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => { fetchVehicles(); }, [fetchVehicles]);
 
   const handleModalSuccess = (vehicle) => {
     setModal(null);
     fetchVehicles();
-    const msg = modal?.mode === 'edit' ? 'Cập nhật biển số thành công' : 'Thêm xe thành công';
+    const msg = modal?.mode === 'edit' ? t('vehicleUpdateSuccess') : t('vehicleAddSuccess');
     showToast('success', msg);
   };
 
@@ -46,9 +48,9 @@ export default function VehicleList() {
       await vehicleService.deleteVehicle(id);
       setDeleteConfirm(null);
       fetchVehicles();
-      showToast('success', 'Đã xóa xe thành công');
+      showToast('success', t('vehicleDeleteSuccess'));
     } catch (err) {
-      const msg = err?.response?.data?.message ?? 'Không thể xóa xe, thử lại sau';
+      const msg = err?.response?.data?.message ?? t('vehicleDeleteFailed');
       showToast('error', msg);
     } finally {
       setDeleting(false);
@@ -68,7 +70,7 @@ export default function VehicleList() {
               : 'bg-red-950/90 border-red-500/30 text-red-300'
             }
           `}
-          style={{ fontFamily: "'DM Sans', sans-serif", backdropFilter: 'blur(8px)' }}
+          style={{ fontFamily: "'Be Vietnam Pro', sans-serif", backdropFilter: 'blur(8px)' }}
         >
           <span>{toast.type === 'success' ? '✓' : '✕'}</span>
           {toast.msg}
@@ -77,20 +79,20 @@ export default function VehicleList() {
 
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-          {vehicles.length} xe đã đăng ký
+        <p className="text-sm text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
+          {t('profileVehiclesCount').replace('{count}', vehicles.length)}
         </p>
         <button
           onClick={() => setModal({ mode: 'add' })}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95"
           style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Archivo', sans-serif",
             background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
             boxShadow: '0 0 14px rgba(6,182,212,0.3)',
           }}
         >
           <span className="text-lg leading-none">+</span>
-          Thêm xe
+          {t('btnAddVehicle')}
         </button>
       </div>
 
@@ -107,8 +109,8 @@ export default function VehicleList() {
       {!loading && vehicles.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 space-y-3">
           <span className="text-4xl opacity-20">🚗</span>
-          <p className="text-slate-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Chưa có xe nào được đăng ký
+          <p className="text-slate-500 text-sm" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
+            {t('profileNoVehicles')}
           </p>
         </div>
       )}
@@ -118,17 +120,17 @@ export default function VehicleList() {
         <div
           key={v.id}
           className="flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition-all duration-200 hover:border-slate-300"
-          style={{ background: '#ffffff' }}
+          style={{ background: '#ffffff', marginBottom: '5px' }}
         >
           <div className="space-y-0.5">
             <p
               className="text-slate-800 font-bold tracking-widest text-base"
-              style={{ fontFamily: "'Syne', sans-serif" }}
+              style={{ fontFamily: "'Archivo', sans-serif" }}
             >
               {v.licensePlate}
             </p>
-            {v.model && v.model !== 'Chưa cập nhật' && (
-              <p className="text-slate-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {v.model && v.model !== 'Chưa cập nhật' && v.model !== 'Not updated' && v.model !== t('vehicleModelPlaceholder') && (
+              <p className="text-slate-500 text-xs" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
                 {v.model}
               </p>
             )}
@@ -139,7 +141,7 @@ export default function VehicleList() {
             <button
               onClick={() => setModal({ mode: 'edit', vehicle: v })}
               className="p-2 rounded-lg text-slate-500 hover:text-cyan-600 hover:bg-cyan-50 transition-all duration-200"
-              title="Sửa biển số"
+              title={t('btnEditPlate')}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M11.586 2a2 2 0 012.828 2.828l-7.9 7.9-3.414.586.586-3.414 7.9-7.9z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -149,7 +151,7 @@ export default function VehicleList() {
             <button
               onClick={() => setDeleteConfirm(v.id)}
               className="p-2 rounded-lg text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all duration-200"
-              title="Xóa xe"
+              title={t('btnDeleteVehicle')}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M2 4h12M6 4V2h4v2M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -185,12 +187,12 @@ export default function VehicleList() {
             <div className="space-y-1">
               <h3
                 className="text-base font-bold text-slate-800"
-                style={{ fontFamily: "'Syne', sans-serif" }}
+                style={{ fontFamily: "'Archivo', sans-serif" }}
               >
-                Xác nhận xóa xe
+                {t('confirmDeleteVehicle')}
               </h3>
-              <p className="text-sm text-slate-500" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Xe sẽ bị xóa khỏi danh sách. Hành động này không thể hoàn tác.
+              <p className="text-sm text-slate-500" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
+                {t('confirmDeleteVehicleWarning')}
               </p>
             </div>
             <div className="flex gap-3">
@@ -198,21 +200,21 @@ export default function VehicleList() {
                 onClick={() => setDeleteConfirm(null)}
                 disabled={deleting}
                 className="flex-1 py-2.5 rounded-lg border border-slate-300 text-slate-600 text-sm hover:border-slate-400 hover:text-slate-800 transition-all duration-200"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
               >
-                Hủy
+                {t('btnCancel')}
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm)}
                 disabled={deleting}
                 className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50"
                 style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Archivo', sans-serif",
                   background: 'linear-gradient(135deg, #ef4444, #dc2626)',
                   boxShadow: '0 0 14px rgba(239,68,68,0.25)',
                 }}
               >
-                {deleting ? 'Đang xóa...' : 'Xóa xe'}
+                {deleting ? t('btnDeletingVehicle') : t('btnDeleteVehicle')}
               </button>
             </div>
           </div>
@@ -221,3 +223,4 @@ export default function VehicleList() {
     </div>
   );
 }
+

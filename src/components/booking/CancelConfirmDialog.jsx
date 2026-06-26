@@ -1,189 +1,86 @@
-// CancelConfirmDialog.jsx
-// Dialog xác nhận hủy lịch — hiển thị thông tin booking và cảnh báo trước khi submit
+import React from 'react';
+import BookingStatusBadge from './BookingStatusBadge';
+import { useLanguage } from '../../context/LanguageContext';
 
-import BookingStatusBadge from "./BookingStatusBadge";
-
-function formatVND(amount) {
-  return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
-}
-
-function estimatePointsRefund(finalAmount) {
+function calcPointsRefund(finalAmount) {
   return Math.floor(finalAmount / 10000);
 }
 
 export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoading }) {
+  const { t } = useLanguage();
   if (!booking) return null;
-  const estimatedPoints = estimatePointsRefund(booking.finalAmount);
+
+  const points = calcPointsRefund(booking.finalAmount);
+  const parts = t('confirmCancelRefundMsg').split('{points}');
 
   return (
-    // Faux viewport overlay — dùng normal-flow div để tránh position:fixed collapse iframe
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0, 0, 0, 0.4)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-        backdropFilter: "blur(6px)",
-        WebkitBackdropFilter: "blur(6px)",
-      }}
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cancel-dialog-title"
       onClick={onClose}
     >
       <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "420px",
-          maxWidth: "90vw",
-          background: "#ffffff",
-          border: "none",
-          borderRadius: "18px",
-          padding: "28px",
-          boxShadow: "0 0 40px rgba(255,92,92,0.12)",
-        }}
+        className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl"
+        onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div style={{ marginBottom: "20px" }}>
-          <div
-            style={{
-              width: "44px",
-              height: "44px",
-              borderRadius: "50%",
-              background: "rgba(255,92,92,0.12)",
-              border: "1px solid rgba(255,92,92,0.3)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "20px",
-              marginBottom: "14px",
-            }}
-          >
-            ⚠️
-          </div>
-          <h2
-            style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: "18px",
-              fontWeight: 700,
-              color: "#0f172a",
-              margin: "0 0 6px",
-            }}
-          >
-            Xác nhận hủy lịch hẹn
-          </h2>
-          <p
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "13px",
-              color: "rgba(0,0,0,0.5)",
-              margin: 0,
-            }}
-          >
-            Hành động này không thể hoàn tác sau khi xác nhận.
-          </p>
+        {/* Warning icon */}
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+          <span className="material-symbols-outlined text-3xl text-red-600">warning</span>
         </div>
 
-        {/* Booking Info */}
-        <div
-          style={{
-            background: "#f8fafc",
-            border: "1px solid rgba(0,0,0,0.1)",
-            borderRadius: "10px",
-            padding: "14px 16px",
-            marginBottom: "16px",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <span
-              style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: "14px",
-                fontWeight: 700,
-                color: "#0891b2",
-                letterSpacing: "0.05em",
-              }}
-            >
+        <h2 id="cancel-dialog-title" className="mt-4 text-lg font-bold text-slate-800">
+          {t('confirmCancelTitle')}
+        </h2>
+        <p className="mt-2 text-sm text-slate-500 leading-relaxed">{t('confirmCancelWarning')}</p>
+
+        {/* Booking preview */}
+        <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50 p-3.5 text-left">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-sm font-bold text-cyan-600 tracking-wider uppercase">
               {booking.vehiclePlate}
             </span>
             <BookingStatusBadge status="Pending" size="sm" />
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.7)", margin: "0 0 4px" }}>
-            {booking.serviceName}
-          </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "rgba(0,0,0,0.5)", margin: 0 }}>
-            #{booking.bookingId}
-          </p>
+          <p className="text-sm font-semibold text-slate-800">{booking.serviceName}</p>
+          <p className="text-xs text-slate-400 mt-1">#{booking.bookingId}</p>
         </div>
 
-        {/* Points Refund Info */}
-        {estimatedPoints > 0 && (
-          <div
-            style={{
-              background: "rgba(8, 145, 178, 0.05)",
-              border: "1px solid rgba(8, 145, 178, 0.2)",
-              borderRadius: "10px",
-              padding: "12px 16px",
-              marginBottom: "20px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <span style={{ fontSize: "18px" }}>💎</span>
-            <p
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "13px",
-                color: "#0891b2",
-                margin: 0,
-              }}
-            >
-              Khi hủy, bạn sẽ nhận lại khoảng{" "}
-              <strong>{estimatedPoints} điểm</strong> Loyalty.
+        {/* Points refund */}
+        {points > 0 && (
+          <div className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-cyan-100 bg-cyan-50 py-2.5 px-3">
+            <span className="text-lg">💎</span>
+            <p className="text-xs text-cyan-700 font-medium">
+              {parts[0]}
+              <strong className="mx-1 font-bold">{points}</strong>
+              {parts[1]}
             </p>
           </div>
         )}
 
-        {/* Actions */}
-        <div style={{ display: "flex", gap: "10px" }}>
+        {/* Buttons */}
+        <div className="mt-6 flex gap-3">
           <button
+            type="button"
             onClick={onClose}
             disabled={isLoading}
-            style={{
-              flex: 1,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "14px",
-              fontWeight: 600,
-              color: "rgba(0,0,0,0.6)",
-              background: "#f1f5f9",
-              border: "1px solid rgba(0,0,0,0.1)",
-              borderRadius: "10px",
-              padding: "12px",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
+            className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
           >
-            Giữ lịch
+            {t('btnKeepAppointment')}
           </button>
           <button
+            type="button"
             onClick={() => onConfirm(booking.bookingId)}
             disabled={isLoading}
-            style={{
-              flex: 1,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "14px",
-              fontWeight: 600,
-              color: "#fff",
-              background: isLoading ? "rgba(255,92,92,0.3)" : "rgba(255,92,92,0.85)",
-              border: "1px solid rgba(255,92,92,0.5)",
-              borderRadius: "10px",
-              padding: "12px",
-              cursor: isLoading ? "not-allowed" : "pointer",
-              transition: "all 0.2s",
-            }}
+            className="flex-1 rounded-full bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isLoading ? "Đang hủy..." : "Xác nhận hủy"}
+            {isLoading ? (
+              <>
+                <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                {t('btnCancelling')}
+              </>
+            ) : t('btnConfirmCancel')}
           </button>
         </div>
       </div>

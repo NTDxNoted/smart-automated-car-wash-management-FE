@@ -4,7 +4,7 @@
    Fonts: Sora (headings) + DM Sans (body)
    ════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --clr-bg: #f8fafc; /* slate-50 */
@@ -23,8 +23,8 @@
   --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
   --shadow-hover: 0 20px 40px rgba(255, 42, 59, 0.15);
 
-  --font-head: 'Sora', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  --font-head: 'Archivo', sans-serif;
+  --font-body: 'Be Vietnam Pro', sans-serif;
 }
 
 /* ── Reset & Base Layout ── */
@@ -147,13 +147,16 @@ header.sticky div.w-full {
   font-weight: 800;
   line-height: 1.2;
   color: var(--clr-text);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.025em; /* tracking-wide */
   margin-bottom: 24px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .hero__title-accent {
   background: linear-gradient(135deg, var(--clr-accent) 0%, var(--clr-accent-2) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -391,6 +394,7 @@ header.sticky div.w-full {
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -441,12 +445,12 @@ header.sticky div.w-full {
 .service-card__cta {
   width: 100%;
   font-family: var(--font-head);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #ffffff;
   background: var(--clr-primary);
   border: 1px solid var(--clr-border);
-  padding: 12px;
+  padding: 16px 24px;
   border-radius: var(--radius-btn);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -524,4 +528,101 @@ header.sticky div.w-full {
   width: 100%;
   height: 44px;
   border-radius: var(--radius-btn);
+}
+
+/* ── Before & After Section (Light Theme Wrapper with Stitch mockup) ── */
+.ba-section {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  text-align: center !important;
+  margin: 40px auto !important;
+}
+
+/* Premium Scan Line Animation */
+.scan-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(6, 182, 212, 0), rgba(6, 182, 212, 0.5) 50%, rgba(6, 182, 212, 0));
+  pointer-events: none;
+  animation: scan-anim 6s ease-in-out infinite;
+  z-index: 15;
+}
+
+@keyframes scan-anim {
+  0% { left: 0%; opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* Make sure range input thumb handles events nicely */
+input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  cursor: ew-resize;
+}
+input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  cursor: ew-resize;
+}
+
+/* ── Custom Spacing for MembershipTiers (prevent badge overlapping) ── */
+.membership-tiers-header {
+  margin-bottom: 24px !important;
+}
+
+.membership-tiers-grid {
+  margin-top: 20px !important;
+}
+
+/* ── Membership Tier Cards Styles ── */
+.membership-tier-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding: 32px 24px 28px 24px !important; /* px-6 pt-8 pb-7 equivalent */
+  min-height: 540px !important; /* Ensure consistent min-height across cards */
+}
+
+/* Margin between Header/titles and Requirement pill */
+.membership-tier-card .tier-header {
+  margin-bottom: 24px !important; /* Spacing between header and requirement pill */
+}
+
+/* Margin between Requirement pill and Divider */
+.membership-tier-card .tier-requirement {
+  margin-bottom: 24px !important;
+}
+
+/* Margin between Divider and Features */
+.membership-tier-card .tier-divider {
+  margin-bottom: 16px !important;
+}
+
+/* Margin between Features and CTA Button */
+.membership-tier-card .tier-features {
+  margin-bottom: 28px !important;
+}
+
+/* CTA Button Styling */
+.membership-tier-card .tier-cta {
+  width: 85% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: auto !important;
+  margin-bottom: 8px !important;
+  border-radius: 12px !important;
+  min-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
