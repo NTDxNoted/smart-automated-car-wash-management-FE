@@ -156,6 +156,7 @@ header.sticky div.w-full {
 .hero__title-accent {
   background: linear-gradient(135deg, var(--clr-accent) 0%, var(--clr-accent-2) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -393,6 +394,7 @@ header.sticky div.w-full {
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -443,12 +445,12 @@ header.sticky div.w-full {
 .service-card__cta {
   width: 100%;
   font-family: var(--font-head);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #ffffff;
   background: var(--clr-primary);
   border: 1px solid var(--clr-border);
-  padding: 12px;
+  padding: 16px 24px;
   border-radius: var(--radius-btn);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -575,9 +577,52 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── Custom Spacing for MembershipTiers (prevent badge overlapping) ── */
 .membership-tiers-header {
-  margin-bottom: 50px !important;
+  margin-bottom: 24px !important;
 }
 
 .membership-tiers-grid {
   margin-top: 20px !important;
+}
+
+/* ── Membership Tier Cards Styles ── */
+.membership-tier-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding: 32px 24px 28px 24px !important; /* px-6 pt-8 pb-7 equivalent */
+  min-height: 540px !important; /* Ensure consistent min-height across cards */
+}
+
+/* Margin between Header/titles and Requirement pill */
+.membership-tier-card .tier-header {
+  margin-bottom: 24px !important; /* Spacing between header and requirement pill */
+}
+
+/* Margin between Requirement pill and Divider */
+.membership-tier-card .tier-requirement {
+  margin-bottom: 24px !important;
+}
+
+/* Margin between Divider and Features */
+.membership-tier-card .tier-divider {
+  margin-bottom: 16px !important;
+}
+
+/* Margin between Features and CTA Button */
+.membership-tier-card .tier-features {
+  margin-bottom: 28px !important;
+}
+
+/* CTA Button Styling */
+.membership-tier-card .tier-cta {
+  width: 85% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: auto !important;
+  margin-bottom: 8px !important;
+  border-radius: 12px !important;
+  min-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }

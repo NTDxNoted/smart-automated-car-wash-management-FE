@@ -3,53 +3,83 @@ import { bookingService } from '../../services/bookingService';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function PromoCodeInput({ onValidateSuccess }) {
-    const { t, locale } = useLanguage();
-    const [code, setCode] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [successMsg, setSuccessMsg] = useState('');
+  const { t, locale } = useLanguage();
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
 
-    const handleApply = async () => {
-        if (!code.trim()) return;
-        setLoading(true);
-        setError('');
-        setSuccessMsg('');
-        try {
-            const res = await bookingService.validatePromo(code);
-            if (res.isValid) {
-                onValidateSuccess(res);
-                setSuccessMsg(`${t('promoSuccess')} ${res.discountType === 'PERCENT' ? res.discountValue + '%' : res.discountValue.toLocaleString('vi-VN') + (locale === 'en' ? ' VND' : 'đ')}`);
-            }
-        } catch (err) {
-            setError(err?.response?.data?.message || t('promoInvalid'));
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleApply = async () => {
+    if (!code.trim()) return;
+    setLoading(true);
+    setError('');
+    setSuccessMsg('');
+    try {
+      const res = await bookingService.validatePromo(code.trim().toUpperCase());
+      if (res.isValid) {
+        onValidateSuccess(res);
+        setSuccessMsg(
+          `${t('promoSuccess')} ${
+            res.discountType === 'PERCENT'
+              ? res.discountValue + '%'
+              : res.discountValue.toLocaleString('vi-VN') + (locale === 'en' ? ' VND' : 'đ')
+          }`
+        );
+      }
+    } catch (err) {
+      setError(err?.response?.data?.message || t('promoInvalid'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div className="space-y-2">
-            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wider">
-                {t('promoLabel')}
-            </label>
-            <div className="flex gap-2">
-                <input
-                    type="text"
-                    value={code}
-                    onChange={e => setCode(e.target.value)}
-                    placeholder={t('promoPlaceholder')}
-                    className="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-cyan-500"
-                />
-                <button
-                    onClick={handleApply}
-                    disabled={loading}
-                    className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm transition-all"
-                >
-                    {loading ? t('btnChecking') : t('btnApply')}
-                </button>
-            </div>
-            {error && <p className="text-red-500 text-xs">{error}</p>}
-            {successMsg && <p className="text-emerald-600 text-xs">{successMsg}</p>}
-        </div>
-    );
+  return (
+    <div>
+      <p className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700 uppercase tracking-wide">
+        <span className="material-symbols-outlined text-base text-cyan-600">local_offer</span>
+        {t('promoLabel')}
+      </p>
+
+      <div className="flex gap-3">
+        <input
+          type="text"
+          value={code}
+          onChange={e => setCode(e.target.value.toUpperCase())}
+          placeholder={t('promoPlaceholder')}
+          className="w-full rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 text-base font-semibold uppercase text-slate-800 outline-none placeholder:text-slate-400 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100/50 transition-all duration-300"
+        />
+        <button
+          type="button"
+          onClick={handleApply}
+          disabled={loading}
+          className="shrink-0 whitespace-nowrap rounded-2xl bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-cyan-500/10 cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          {loading ? (
+            <>
+              <span className="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
+              {t('btnChecking')}
+            </>
+          ) : (
+            <>
+              {t('btnApply')}
+              <span className="material-symbols-outlined text-base">check</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {error && (
+        <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-red-500">
+          <span className="material-symbols-outlined text-sm">error</span>
+          {error}
+        </p>
+      )}
+      {successMsg && (
+        <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+          <span className="material-symbols-outlined text-sm">check_circle</span>
+          {successMsg}
+        </p>
+      )}
+    </div>
+  );
 }

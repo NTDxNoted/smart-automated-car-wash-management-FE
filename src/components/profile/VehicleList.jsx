@@ -120,7 +120,7 @@ export default function VehicleList() {
         <div
           key={v.id}
           className="flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 transition-all duration-200 hover:border-slate-300"
-          style={{ background: '#ffffff' }}
+          style={{ background: '#ffffff', marginBottom: '5px' }}
         >
           <div className="space-y-0.5">
             <p
