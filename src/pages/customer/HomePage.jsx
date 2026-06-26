@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import ServiceFilter from '../../components/service/ServiceFilter';
 import ServiceList from '../../components/service/ServiceList';
 import MembershipTiers from '../../components/home/MembershipTiers';
@@ -64,9 +65,8 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 w-full lg:grid-cols-2 lg:gap-8">
-          <div className="text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-cyan-600">
-              <span className="material-symbols-outlined text-[15px] animate-pulse">sparkles</span>
+          <div className="text-left">
+            <span className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-cyan-600">
               {t('heroSubtitle')}
             </span>
 
@@ -75,27 +75,29 @@ export default function HomePage() {
               <span className="bg-gradient-to-r from-cyan-600 to-cyan-400 bg-clip-text text-transparent">{t('heroTitleAccent')}</span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-md text-base sm:text-lg leading-relaxed text-slate-500 lg:mx-0">
+            <p className="mt-6 max-w-md text-base sm:text-lg leading-relaxed text-slate-500">
               {t('heroDesc')}
             </p>
 
-            <div className="mt-8 flex flex-col items-center justify-center lg:justify-start gap-4 sm:flex-row">
-              <a
-                href="/booking"
-                className="group inline-flex items-center justify-center rounded-full bg-cyan-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-cyan-600/30 hover:bg-cyan-500 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+            <div className="mt-8 flex flex-col sm:flex-row items-start justify-start gap-5">
+              <Link
+                to="/booking"
+                className="group inline-flex items-center justify-center rounded-full bg-cyan-600 py-[18px] text-lg font-bold text-white shadow-lg shadow-cyan-600/30 hover:bg-cyan-500 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                style={{ paddingLeft: '32px', paddingRight: '32px' }}
               >
                 {isVi ? 'Đặt Lịch Ngay' : 'Book a Wash'}
-                <span className="material-symbols-outlined ml-1.5 text-[18px] transition-transform group-hover:translate-y-0.5">arrow_downward</span>
-              </a>
-              <a
-                href="#services"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-8 py-3.5 text-base font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                <span className="material-symbols-outlined ml-2 text-[20px] transition-transform group-hover:translate-y-0.5">arrow_downward</span>
+              </Link>
+              <Link
+                to="/#services"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white py-[18px] text-lg font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                style={{ paddingLeft: '32px', paddingRight: '32px' }}
               >
                 {isVi ? 'Xem Dịch Vụ' : 'View Services'}
-              </a>
+              </Link>
             </div>
 
-            <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start">
+            <ul className="mt-10 flex flex-wrap items-center justify-start gap-x-6 gap-y-3">
               <li className="flex items-center gap-2 text-sm font-medium text-slate-500">
                 <span className="material-symbols-outlined text-cyan-500 text-[18px]">verified_user</span> 
                 {isVi ? 'Không trầy xước' : 'Zero scratches'}
@@ -164,7 +166,7 @@ export default function HomePage() {
         <div className="w-full max-w-5xl bg-white p-6 sm:p-10 border border-cyan-100 shadow-[0_20px_60px_-15px_rgba(6,182,212,0.15)] rounded-[2rem] mx-auto relative overflow-hidden flex flex-col items-center justify-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(6,182,212,0.08)_0%,transparent_50%)] pointer-events-none"></div>
           
-          <div className="relative w-full max-h-[42vh] aspect-[16/10] md:aspect-[16/8] rounded-2xl overflow-hidden border border-slate-100 shadow-lg select-none group z-10">
+          <div className="relative w-full max-h-[60vh] aspect-[16/10] md:aspect-[16/10] rounded-2xl overflow-hidden border border-slate-100 shadow-lg select-none group z-10">
             <div className="scan-line pointer-events-none z-10"></div>
 
             <img 
@@ -209,7 +211,7 @@ export default function HomePage() {
       </section>
 
       {/* ── SECTION 3: Membership Tiers (Full screen) ── */}
-      <section id="membership" className="w-full min-h-screen lg:h-screen lg:min-h-0 flex flex-col justify-center items-center pt-14 pb-10 px-4 sm:px-6 lg:px-8 relative bg-slate-50 border-t border-slate-100">
+      <section id="membership" className="w-full min-h-screen lg:min-h-screen flex flex-col justify-center items-center pt-14 pb-10 px-4 sm:px-6 lg:px-8 relative bg-slate-50 border-t border-slate-100">
         <MembershipTiers />
       </section>
 
