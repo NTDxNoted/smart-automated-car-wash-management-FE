@@ -16,6 +16,26 @@ const MOCK_SERVICES = [
 // ─────────────────────────────────────────────────────────────────────────────
 // 📦 2. HÀM TỰ ĐỘNG SINH 7 NGÀY VÀ CÁC SLOT GIỜ ẢO (TIME SLOT PICKER)
 // ─────────────────────────────────────────────────────────────────────────────
+const generateMockTimeSlotsForDate = (dateStr) => {
+    // Generate a set of slots for a single date with various availableCount values
+    // spanning 07:30 to 19:30 in 1-hour intervals
+    return [
+        { time: "07:30", availableCount: 2, isAvailable: true },
+        { time: "08:30", availableCount: 2, isAvailable: true },
+        { time: "09:30", availableCount: 1, isAvailable: true },
+        { time: "10:30", availableCount: 0, isAvailable: false },
+        { time: "11:30", availableCount: 2, isAvailable: true },
+        { time: "12:30", availableCount: 2, isAvailable: true },
+        { time: "13:30", availableCount: 1, isAvailable: true },
+        { time: "14:30", availableCount: 0, isAvailable: false },
+        { time: "15:30", availableCount: 2, isAvailable: true },
+        { time: "16:30", availableCount: 0, isAvailable: false },
+        { time: "17:30", availableCount: 2, isAvailable: true },
+        { time: "18:30", availableCount: 1, isAvailable: true },
+        { time: "19:30", availableCount: 2, isAvailable: true },
+    ];
+};
+
 const generateMockTimeSlots = () => {
     const daysOfWeek = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
     const mockData = [];
@@ -33,20 +53,7 @@ const generateMockTimeSlots = () => {
             dateStr: fullDateStr,
             label: dateVal,
             dayOfWeek: daysOfWeek[d.getDay()],
-            slots: [
-                { time: "07:30", isAvailable: true },
-                { time: "08:00", isAvailable: true },
-                { time: "08:30", isAvailable: i !== 0 },
-                { time: "09:00", isAvailable: true },
-                { time: "09:30", isAvailable: i !== 1 },
-                { time: "10:00", isAvailable: true },
-                { time: "10:30", isAvailable: true },
-                { time: "11:00", isAvailable: true },
-                { time: "14:00", isAvailable: true },
-                { time: "14:30", isAvailable: false },
-                { time: "15:00", isAvailable: true },
-                { time: "15:30", isAvailable: true },
-            ]
+            slots: generateMockTimeSlotsForDate(fullDateStr)
         });
     }
     return mockData;
