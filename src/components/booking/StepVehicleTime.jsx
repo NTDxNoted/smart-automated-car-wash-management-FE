@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { bookingService } from '../../services/bookingService';
 import { useLanguage } from '../../context/LanguageContext';
+import TimeSlotGrid from './TimeSlotGrid';
 
 export default function StepVehicleTime({ bookingData, setBookingData, onNext, onBack, user }) {
   const { t, locale } = useLanguage();
@@ -44,40 +45,96 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         })
         .catch(err => console.error('Lỗi fetch xe:', err));
     }
+  }, [user]);
 
-    const todayStr = new Date().toISOString().split('T')[0];
+  useEffect(() => {
+    const days = [];
+    const daysOfWeek = locale === 'en'
+      ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      : ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+    for (let i = 0; i < bookingWindowDays; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const dateVal = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${dateVal}`;
+
+      days.push({
+        dateStr,
+        label: dateVal,
+        dayOfWeek: daysOfWeek[d.getDay()],
+        slots: []
+      });
+    }
+    setAvailableDays(days);
+
+    if (bookingData.scheduledTime && bookingData.scheduledTime.includes('T')) {
+      const [savedDate, savedTime] = bookingData.scheduledTime.split('T');
+      setSelectedDate(savedDate);
+      setSelectedTime(savedTime);
+    } else if (days.length > 0) {
+      setSelectedDate(days[0].dateStr);
+    }
+  }, [bookingWindowDays, locale]);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+
     setLoadingSlots(true);
-    bookingService.getAvailableSlots(todayStr)
-      .then(data => {
-        const daysOfWeek = locale === 'en'
-          ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-          : ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-        const allowed = data.slice(0, bookingWindowDays).map(item => {
-          const dateValStr = item.date || item.Date || item.dateStr;
-          const d = new Date(dateValStr);
-          return {
-            dateStr: dateValStr,
-            label: String(d.getDate()).padStart(2, '0'),
-            dayOfWeek: daysOfWeek[d.getDay()],
-            slots: item.slots || item.Slots || [],
-          };
+    bookingService.getAvailableSlots(selectedDate, bookingData.licensePlate)
+      .then(slotsData => {
+        setAvailableDays(prevDays => {
+          return prevDays.map(day => {
+            if (day.dateStr === selectedDate) {
+              return {
+                ...day,
+                slots: slotsData || [],
+              };
+            }
+            return day;
+          });
         });
-        setAvailableDays(allowed);
         setLoadingSlots(false);
 
-        if (bookingData.scheduledTime && bookingData.scheduledTime.includes('T')) {
-          const [savedDate, savedTime] = bookingData.scheduledTime.split('T');
-          setSelectedDate(savedDate);
-          setSelectedTime(savedTime);
-        } else if (allowed.length > 0) {
-          setSelectedDate(allowed[0].dateStr);
+        if (selectedTime) {
+          const matchingSlot = slotsData.find(s => s.time === selectedTime);
+          const isStillAvailable = matchingSlot && matchingSlot.availableCount > 0;
+
+          const isSlotViolatingAdvanceRule = (timeStr) => {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const dateVal = String(d.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${dateVal}`;
+
+            if (selectedDate !== todayStr) return false;
+
+            const now = new Date();
+            const [y, m, dayVal] = selectedDate.split('-').map(Number);
+            const [hours, minutes] = timeStr.split(':').map(Number);
+
+            const slotDate = new Date(y, m - 1, dayVal, hours, minutes, 0);
+            const diffMins = (slotDate.getTime() - now.getTime()) / (1000 * 60);
+
+            return diffMins < 60;
+          };
+
+          const violatesRule = isSlotViolatingAdvanceRule(selectedTime);
+
+          if (!isStillAvailable || violatesRule) {
+            setSelectedTime('');
+            setBookingData(prev => ({ ...prev, scheduledTime: '' }));
+          }
         }
       })
       .catch(err => {
         console.error('Lỗi fetch slot giờ trống:', err);
         setLoadingSlots(false);
       });
-  }, [user, bookingWindowDays, locale]);
+  }, [selectedDate, bookingData.licensePlate, bookingData.service?.id]);
 
   const handleSelectSlot = (dateStr, timeStr) => {
     setSelectedDate(dateStr);
@@ -253,29 +310,12 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           </p>
 
           {selectedDate && (
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-              {activeDaySlots.map((slot, idx) => {
-                const isUnavailable = !slot.isAvailable;
-                const isTimeSelected = selectedTime === slot.time;
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    disabled={isUnavailable}
-                    onClick={() => handleSelectSlot(selectedDate, slot.time)}
-                    className={`rounded-xl border-2 py-3 px-4 text-sm font-bold font-sans transition-all duration-200 cursor-pointer flex items-center justify-center ${
-                      isUnavailable
-                        ? 'cursor-not-allowed border-slate-100/50 bg-slate-100/70 text-slate-300 line-through decoration-slate-200 opacity-60'
-                        : isTimeSelected
-                        ? 'border-cyan-500 bg-cyan-50 text-cyan-700 font-extrabold shadow-sm shadow-cyan-100 hover:scale-[1.02]'
-                        : 'border-slate-100 bg-slate-50/50 text-slate-700 hover:border-cyan-300 hover:bg-cyan-50/20 hover:text-cyan-600 hover:scale-[1.02]'
-                    }`}
-                  >
-                    {slot.time}
-                  </button>
-                );
-              })}
-            </div>
+            <TimeSlotGrid
+              slots={activeDaySlots}
+              selectedTime={selectedTime}
+              onSelectSlot={(time) => handleSelectSlot(selectedDate, time)}
+              dateStr={selectedDate}
+            />
           )}
 
           {errors.scheduledTime && (

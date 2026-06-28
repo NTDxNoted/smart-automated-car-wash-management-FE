@@ -7,6 +7,17 @@
 - Refs # (Internal UI & Localization task)
 - Closes # (Fully completed localization requirements)
 
+## UI Changes & Polish
+* **Interactive Before/After Slider (`ResultsPage.jsx`)**: Implemented an interactive slider demonstrating "Before" (pre-treatment) vs. "After" (Luxe detailing finish) using CSS `clip-path` and a draggable range control.
+* **Hero Section Refinement (`HomePage.jsx` & `HomePage.css`)**:
+  * Switched alignment of hero contents from center to left for a cleaner look.
+  * Increased CTA button sizes (padding to `py-[18px]` and text to `text-lg`) with smooth hover translations.
+  * Replaced static anchors with React Router `<Link>` components to enable Single Page Application navigation without full page refreshes.
+  * Increased mockup frame max height to `60vh` and set a consistent aspect ratio to optimize visualization.
+* **Membership Tiers Spacing**: Shifted grid items down by `10px` to resolve "Most Popular" ribbon badge overlaps.
+* **Loyalty Page Glassmorphism Card (`LoyaltyPage.jsx`)**: Wrapped loyalty status, points batches, and rewards cards inside a unified glass-like container (`backdrop-blur` and radial gradients) with interactive tab controls.
+* **Profile Page Upgrade (`ProfilePage.jsx`)**: Styled the user profile in a matching glassmorphism frame, with custom linear-gradient avatar blocks, tier badges, and localized tab views for account details and vehicle list.
+
 ## Change Details
 - Main implementation:
   * Integrated `useLanguage` from `LanguageContext` in remaining Loyalty components (`PointHistoryTable`, `RewardCard`) and all Profile components (`ProfilePage`, `TierProgressBar`, `VehicleList`, `AddVehicleModal`) to support runtime EN/VI language switching.
@@ -31,3 +42,4 @@
 - Screenshots / recordings (for FE): Refer to walkthrough artifacts.
 - Test notes (manual/auto): Verified via successful production build compilation (`npm run build`).
 - Extra references: None.
+
