@@ -2,16 +2,16 @@ import adminAxiosInstance from '../api/adminAxiosInstance';
 
 const adminPromotionService = {
   getPromotions() {
-    return adminAxiosInstance.get('/admin/promotions');
+    return adminAxiosInstance.get('/api/admin/promotions');
   },
   createPromotion(data) {
-    return adminAxiosInstance.post('/admin/promotions', data);
+    return adminAxiosInstance.post('/api/admin/promotions', data);
   },
   updatePromotion(id, data) {
-    return adminAxiosInstance.put(`/admin/promotions/${id}`, data);
+    return adminAxiosInstance.put(`/api/admin/promotions/${id}`, data);
   },
   togglePromotion(id) {
-    return adminAxiosInstance.patch(`/admin/promotions/${id}/toggle`);
+    return adminAxiosInstance.patch(`/api/admin/promotions/${id}/toggle`);
   },
 };
 
