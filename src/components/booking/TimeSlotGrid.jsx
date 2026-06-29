@@ -14,6 +14,7 @@ export default function TimeSlotGrid({ slots, selectedTime, onSelectSlot, dateSt
 
   // Check if slot violates the 60-minute advance booking rule
   const isSlotViolatingAdvanceRule = (timeStr) => {
+    if (!timeStr || !dateStr) return true;
     const todayStr = getLocalTodayDateStr();
     if (dateStr !== todayStr) return false;
 
