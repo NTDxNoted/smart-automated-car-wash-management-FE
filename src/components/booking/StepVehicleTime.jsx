@@ -104,6 +104,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           const isStillAvailable = matchingSlot && matchingSlot.availableCount > 0;
 
           const isSlotViolatingAdvanceRule = (timeStr) => {
+            if (!timeStr || !selectedDate) return true;
             const d = new Date();
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
