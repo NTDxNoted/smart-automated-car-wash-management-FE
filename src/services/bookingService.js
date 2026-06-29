@@ -129,15 +129,17 @@ const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
 // ─────────────────────────────────────────────────────────────────────────────
 export const bookingService = {
 
-    // ── FE-ISSUE-04: Lấy danh sách khung giờ trống ───────────────────────────
-    // GET /api/bookings/available-slots?startDate=YYYY-MM-DD
-    getAvailableSlots: async (startDate) => {
+    // ── FE-ISSUE-13: Lấy danh sách khung giờ trống ───────────────────────────
+    // GET /api/Bookings/available-slots?date=YYYY-MM-DD&licensePlate=plate
+    getAvailableSlots: async (date, licensePlate) => {
         if (USE_MOCK_DATA) {
             await delay(400);
-            return generateMockTimeSlots();
+            return generateMockTimeSlotsForDate(date);
         }
-        const response = await axiosInstance.get('/bookings/available-slots', { params: { startDate } });
-        return response.data;
+        const response = await axiosInstance.get('/bookings/available-slots', { params: { date, licensePlate } });
+        // Backend returns IEnumerable<AvailableSlotResponse>. We extract the slots of the matching date.
+        const dayData = response.data?.[0];
+        return dayData?.slots || dayData?.Slots || [];
     },
 
     // ── FE-ISSUE-04: Lấy danh sách dịch vụ ──────────────────────────────────
