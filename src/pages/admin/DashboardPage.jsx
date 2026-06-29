@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import adminBookingService from "../../services/adminBookingService";
+
 export default function DashboardPage() {
   const stats = [
     {
@@ -26,29 +29,60 @@ export default function DashboardPage() {
     }
   ];
 
-  const recentBookings = [
-    {
-      id: '#BK001',
-      customer: 'Nguyễn Văn A',
-      plate: '51H-12345',
-      service: 'Premium Wash',
-      status: 'Completed'
-    },
-    {
-      id: '#BK002',
-      customer: 'Trần Minh B',
-      plate: '43A-88991',
-      service: 'Interior Cleaning',
-      status: 'Pending'
-    },
-    {
-      id: '#BK003',
-      customer: 'Lê Quốc C',
-      plate: '30F-22211',
-      service: 'Full Combo',
-      status: 'Cancelled'
+  // const recentBookings = [
+  //   {
+  //     id: '#BK001',
+  //     customer: 'Nguyễn Văn A',
+  //     plate: '51H-12345',
+  //     service: 'Premium Wash',
+  //     status: 'Completed'
+  //   },
+  //   {
+  //     id: '#BK002',
+  //     customer: 'Trần Minh B',
+  //     plate: '43A-88991',
+  //     service: 'Interior Cleaning',
+  //     status: 'Pending'
+  //   },
+  //   {
+  //     id: '#BK003',
+  //     customer: 'Lê Quốc C',
+  //     plate: '30F-22211',
+  //     service: 'Full Combo',
+  //     status: 'Cancelled'
+  //   }
+  // ];
+
+  const [recentBookings, setRecentBookings] = useState([]);
+const [loadingBookings, setLoadingBookings] = useState(false);
+
+useEffect(() => {
+  const fetchRecentBookings = async () => {
+    try {
+      setLoadingBookings(true);
+
+      const res = await adminBookingService.getAll({
+        page: 1,
+        pageSize: 5,
+      });
+
+      const data =
+        res.data?.data?.items ||
+        res.data?.items ||
+        res.data?.data ||
+        res.data ||
+        [];
+
+      setRecentBookings(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Lỗi lấy booking:", error);
+    } finally {
+      setLoadingBookings(false);
     }
-  ];
+  };
+
+  fetchRecentBookings();
+}, []);
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -205,23 +239,28 @@ export default function DashboardPage() {
             <tbody>
               {recentBookings.map((booking) => (
                 <tr
-                  key={booking.id}
+                  // key={booking.id}
+                  key={booking.bookingId || booking.id}
                   className="border-t border-white/5 hover:bg-white/[0.02] transition"
                 >
                   <td className="px-6 py-4 text-white font-medium">
-                    {booking.id}
+                    {/* {booking.id} */}
+                    #{booking.bookingId || booking.id}
                   </td>
 
                   <td className="px-6 py-4 text-slate-300">
-                    {booking.customer}
+                    {/* {booking.customer} */}
+                    {booking.customerName || booking.customer?.fullName || "N/A"}
                   </td>
 
                   <td className="px-6 py-4 text-slate-300">
-                    {booking.plate}
+                    {/* {booking.plate} */}
+                    {booking.licensePlate || "N/A"}
                   </td>
 
                   <td className="px-6 py-4 text-slate-300">
-                    {booking.service}
+                    {/* {booking.service} */}
+                    {booking.serviceName || booking.service?.name || "N/A"}
                   </td>
 
                   <td className="px-6 py-4">
