@@ -302,3 +302,102 @@
     padding: 3rem !important; /* md:p-12 */
   }
 }
+
+/* Admin light theme */
+.admin-page,
+.admin-page * {
+  color: #111827;
+  box-sizing: border-box;
+}
+
+.admin-page {
+  min-height: calc(100vh - 64px);
+  background: #ffffff;
+  padding: 24px;
+}
+
+.admin-page h1,
+.admin-page h2,
+.admin-page h3,
+.admin-page h4 {
+  color: #111827 !important;
+}
+
+.admin-page p,
+.admin-page span,
+.admin-page td,
+.admin-page th,
+.admin-page label {
+  color: #111827;
+}
+
+.admin-page input,
+.admin-page select,
+.admin-page textarea {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.admin-page table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.admin-page th {
+  background: #f3f4f6;
+  color: #111827 !important;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-page td {
+  color: #111827 !important;
+  vertical-align: top;
+  word-break: break-word;
+}
+
+.admin-page tr {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.admin-page .overflow-x-auto {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* ép các card/admin box đang dùng nền tối thành nền trắng */
+.admin-page .bg-\[\#0c0f24\],
+.admin-page .bg-\[\#07111f\],
+.admin-page .bg-\[\#070913\] {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* border tối thành border sáng */
+.admin-page .border-white\/5,
+.admin-page .border-white\/10 {
+  border-color: #e5e7eb !important;
+}
+
+/* text trắng / xám quá nhạt thành đen */
+.admin-page .text-white,
+.admin-page .text-slate-300,
+.admin-page .text-slate-400,
+.admin-page .text-slate-500 {
+  color: #111827 !important;
+}
+
+/* làm page không quá trống */
+.admin-page > div {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.admin-page .rounded-2xl,
+.admin-page .rounded-xl,
+.admin-page .rounded-lg {
+  border-radius: 14px;
+}

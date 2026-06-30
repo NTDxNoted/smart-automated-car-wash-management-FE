@@ -61,14 +61,14 @@ const PromotionManagementPage = () => {
   const thStyle = {
     textAlign: "left",
     padding: "14px 18px",
-    color: "#38bdf8",
+    color: "#111827",
     borderBottom: "1px solid #334155",
     fontWeight: 700,
   };
 
   const tdStyle = {
     padding: "16px 18px",
-    color: "#e2e8f0",
+    color: "#111827",
     borderBottom: "1px solid #1e293b",
   };
 
@@ -90,8 +90,9 @@ const PromotionManagementPage = () => {
 
       <div
         style={{
-          background: "#07111f",
-          border: "1px solid #1e293b",
+          background: "#ffffff",
+border: "1px solid #e5e7eb",
+boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
           borderRadius: "12px",
           padding: "20px",
           marginTop: "20px",

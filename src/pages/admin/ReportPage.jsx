@@ -59,7 +59,7 @@ export default function ReportPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-white">
+      <h1 className="text-3xl font-bold text-slate-900">
         Reports Dashboard
       </h1>
 
@@ -105,10 +105,10 @@ export default function ReportPage() {
 
 function SummaryCard({ title, value }) {
   return (
-    <div className="bg-[#0c0f24] p-5 rounded-2xl border border-white/5">
-      <p className="text-slate-400">{title}</p>
+    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+      <p className="text-slate-600">{title}</p>
 
-      <h3 className="text-white text-2xl font-bold mt-2">
+      <h3 className="text-slate-900 text-2xl font-bold mt-2">
         {value}
       </h3>
     </div>
