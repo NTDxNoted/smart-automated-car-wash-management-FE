@@ -1,40 +1,7 @@
 import { useEffect, useState } from 'react';
 import adminBookingService from '../../services/adminBookingService';
-
-const STAT_CARDS = [
-  {
-    label: "Today's Revenue",
-    value: '12.4M',
-    description: '↗ +8.2% vs yesterday',
-    descColor: 'text-emerald-500',
-    icon: 'payments',
-    iconBg: 'bg-cyan-500 text-white',
-  },
-  {
-    label: 'Active Bookings',
-    value: '28',
-    description: '14 currently processing',
-    descColor: 'text-slate-500',
-    icon: 'event_note',
-    iconBg: 'bg-[#d6e4ff] text-[#1e40af]',
-  },
-  {
-    label: 'Pending Services',
-    value: '6',
-    description: 'Avg wait time: 12m',
-    descColor: 'text-slate-500',
-    icon: 'history_toggle_off',
-    iconBg: 'bg-slate-200 text-slate-600',
-  },
-  {
-    label: 'No-shows',
-    value: '2',
-    description: '⚠ Requires follow-up',
-    descColor: 'text-rose-500',
-    icon: 'event_busy',
-    iconBg: 'bg-rose-100 text-rose-600',
-  },
-];
+import { getOverviewReport } from '../../services/adminReportService';
+import OverviewChart from '../../components/admin/OverviewChart';
 
 const STATUS_BADGES = {
   Processing: 'bg-cyan-100 text-cyan-700',
@@ -55,14 +22,59 @@ function getStatusLabel(status) {
 export default function DashboardPage() {
   const [recentBookings, setRecentBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
+  
+  const [overview, setOverview] = useState(null);
+  const [loadingOverview, setLoadingOverview] = useState(false);
+  const [weeklyRevenue, setWeeklyRevenue] = useState([]);
 
   useEffect(() => {
-    const fetchRecentBookings = async () => {
+    const fetchData = async () => {
+      try {
+        setLoadingOverview(true);
+        const report = await getOverviewReport();
+        setOverview(report);
+      } catch (error) {
+        console.error('Lỗi lấy overview:', error);
+      } finally {
+        setLoadingOverview(false);
+      }
+
       try {
         setLoadingBookings(true);
         const res = await adminBookingService.getAll({ page: 1, pageSize: 4 });
         const data = res.data?.data?.items || res.data?.items || res.data?.data || res.data || [];
-        setRecentBookings(Array.isArray(data) ? data : []);
+        const bookingsArray = Array.isArray(data) ? data : [];
+        setRecentBookings(bookingsArray.slice(0, 4)); // Only keep the newest 4 for the table
+
+        // Calculate weekly revenue from all bookings fetched
+        const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+        const today = new Date();
+        const weeklyData = [];
+        
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(today.getDate() - i);
+          d.setHours(0, 0, 0, 0);
+          const nextD = new Date(d);
+          nextD.setDate(d.getDate() + 1);
+          
+          const dayBookings = bookingsArray.filter(b => {
+            if (!b.scheduledTime && !b.createdAt) return false;
+            const bDate = new Date(b.scheduledTime || b.createdAt);
+            const status = b.status?.toLowerCase() || '';
+            return bDate >= d && bDate < nextD && status.includes('complete');
+          });
+          
+          const revenue = dayBookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+          
+          weeklyData.push({
+            month: i === 0 ? 'Nay' : days[d.getDay()],
+            revenue: revenue
+          });
+        }
+        
+        setWeeklyRevenue(weeklyData);
+
       } catch (error) {
         console.error('Lỗi lấy booking:', error);
       } finally {
@@ -70,14 +82,54 @@ export default function DashboardPage() {
       }
     };
 
-    fetchRecentBookings();
+    fetchData();
   }, []);
+
+  const statCards = overview ? [
+    {
+      label: "Revenue (" + (overview.revenue[0]?.month || 'Current') + ")",
+      value: (overview.summary.revenue / 1000000).toFixed(1) + 'M',
+      description: 'Tổng doanh thu',
+      descColor: 'text-emerald-500',
+      icon: 'payments',
+      iconBg: 'bg-cyan-500 text-white',
+    },
+    {
+      label: 'Total Bookings',
+      value: overview.summary.bookings.toString(),
+      description: 'Số lượng đơn',
+      descColor: 'text-slate-500',
+      icon: 'event_note',
+      iconBg: 'bg-[#d6e4ff] text-[#1e40af]',
+    },
+    {
+      label: 'Pending Bookings',
+      value: (overview.bookingStatus.find(s => s.name === 'Pending')?.value || 0).toString(),
+      description: 'Đang xử lý',
+      descColor: 'text-slate-500',
+      icon: 'history_toggle_off',
+      iconBg: 'bg-slate-200 text-slate-600',
+    },
+    {
+      label: 'No-shows',
+      value: (overview.bookingStatus.find(s => s.name === 'No-Show')?.value || 0).toString(),
+      description: '⚠ Cần lưu ý',
+      descColor: 'text-rose-500',
+      icon: 'event_busy',
+      iconBg: 'bg-rose-100 text-rose-600',
+    },
+  ] : [
+    { label: 'Loading...', value: '-', description: '...', icon: 'sync', iconBg: 'bg-slate-100 text-slate-400' },
+    { label: 'Loading...', value: '-', description: '...', icon: 'sync', iconBg: 'bg-slate-100 text-slate-400' },
+    { label: 'Loading...', value: '-', description: '...', icon: 'sync', iconBg: 'bg-slate-100 text-slate-400' },
+    { label: 'Loading...', value: '-', description: '...', icon: 'sync', iconBg: 'bg-slate-100 text-slate-400' }
+  ];
 
   return (
     <div className="space-y-6">
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {STAT_CARDS.map((item, index) => (
-          <div key={item.label} className={`rounded-xl border bg-white p-5 shadow-sm ${index === 3 ? 'border-rose-200' : 'border-slate-200'}`}>
+        {statCards.map((item, index) => (
+          <div key={index} className={`rounded-xl border bg-white p-5 shadow-sm ${index === 3 ? 'border-rose-200' : 'border-slate-200'}`}>
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-500">{item.label}</p>
@@ -85,7 +137,7 @@ export default function DashboardPage() {
                 <p className={`mt-2 text-xs font-medium ${item.descColor}`}>{item.description}</p>
               </div>
               <div className={`flex h-10 w-10 items-center justify-center rounded-full ${item.iconBg}`}>
-                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                <span className={`material-symbols-outlined text-[20px] ${loadingOverview ? 'animate-spin' : ''}`}>{item.icon}</span>
               </div>
             </div>
           </div>
@@ -106,33 +158,16 @@ export default function DashboardPage() {
           </div>
 
           <div className="mt-8 relative flex-1 min-h-[280px] w-full">
-            {/* Custom chart mockup replicating Figma exactly */}
-            <div className="absolute inset-0 flex flex-col justify-between text-xs text-slate-400">
-              <div className="border-b border-slate-100 flex items-center justify-between pb-1"><span className="w-8">20M</span></div>
-              <div className="border-b border-slate-100 flex items-center justify-between pb-1"><span className="w-8">15M</span></div>
-              <div className="border-b border-slate-100 flex items-center justify-between pb-1"><span className="w-8">10M</span></div>
-              <div className="border-b border-slate-100 flex items-center justify-between pb-1"><span className="w-8">5M</span></div>
-              <div className="border-b border-slate-100 flex items-center justify-between pb-1"><span className="w-8">0</span></div>
-            </div>
-            <div className="absolute inset-x-8 inset-y-0 pb-6 pt-3">
-              <svg viewBox="0 0 400 240" preserveAspectRatio="none" className="h-full w-full">
-                <defs>
-                  <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#0891b2" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#0891b2" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <path d="M0,180 L50,140 L100,100 L150,140 L200,180 L250,90 L300,130 L350,80 L400,60 L400,240 L0,240 Z" fill="url(#areaGradient)" />
-                <path d="M0,180 L50,140 L100,100 L150,140 L200,180 L250,90 L300,130 L350,80 L400,60" fill="none" stroke="#0891b2" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="350" cy="80" r="5" fill="white" stroke="#0891b2" strokeWidth="3" />
-              </svg>
-              <div className="absolute left-[85%] top-[15%] -translate-x-1/2 -translate-y-full pb-2">
-                <div className="rounded bg-slate-800 px-2 py-1 text-xs font-bold text-white shadow">15.2M</div>
+            {weeklyRevenue.length > 0 ? (
+              <OverviewChart data={weeklyRevenue} />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-slate-400">
+                <span className={`material-symbols-outlined mr-2 ${loadingBookings ? 'animate-spin' : ''}`}>
+                  {loadingBookings ? 'sync' : 'bar_chart'}
+                </span>
+                {loadingBookings ? 'Đang tải dữ liệu...' : 'Không có dữ liệu'}
               </div>
-            </div>
-            <div className="absolute inset-x-8 bottom-0 flex justify-between text-xs font-semibold text-slate-400">
-              <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span className="text-cyan-600">T8</span>
-            </div>
+            )}
           </div>
         </section>
 
@@ -143,9 +178,11 @@ export default function DashboardPage() {
             <div className="rounded-lg bg-slate-50 p-4 border border-slate-100">
               <p className="text-sm font-medium text-slate-500">Vehicles Processing</p>
               <div className="mt-1 flex items-center justify-between gap-4">
-                <span className="text-2xl font-bold text-slate-800">14</span>
+                <span className="text-2xl font-bold text-slate-800">
+                  {overview ? (overview.bookingStatus.find(s => s.name === 'Pending')?.value || 0) : '...'}
+                </span>
                 <div className="flex-1 max-w-[120px] h-2 rounded-full bg-slate-200 overflow-hidden">
-                  <div className="h-full bg-[#0891b2] rounded-full" style={{ width: '60%' }}></div>
+                  <div className="h-full bg-[#0891b2] rounded-full" style={{ width: overview && overview.summary.bookings > 0 ? `${((overview.bookingStatus.find(s => s.name === 'Pending')?.value || 0) / overview.summary.bookings) * 100}%` : '0%' }}></div>
                 </div>
               </div>
             </div>
@@ -166,7 +203,11 @@ export default function DashboardPage() {
             <div className="rounded-lg bg-slate-50 p-4 border border-slate-100 flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-500">Completion Rate</p>
-                <p className="text-2xl font-bold text-slate-800 mt-1">92%</p>
+                <p className="text-2xl font-bold text-slate-800 mt-1">
+                  {overview && overview.summary.bookings > 0 
+                    ? Math.round(((overview.bookingStatus.find(s => s.name === 'Completed')?.value || 0) / overview.summary.bookings) * 100) + '%' 
+                    : '0%'}
+                </p>
               </div>
               <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0891b2] text-[#0891b2]">
                 <span className="material-symbols-outlined text-sm font-bold">check</span>

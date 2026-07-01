@@ -41,7 +41,7 @@
 import adminAxiosInstance from "../api/adminAxiosInstance";
 
 export async function adminLogin({ phone, password }) {
-  const res = await adminAxiosInstance.post("/api/auth/login", {
+  const res = await adminAxiosInstance.post("/api/admin/auth/login", {
     phone,
     password,
   });

@@ -13,13 +13,13 @@ const adminBookingService = {
   //   return adminAxiosInstance.patch(`/admin/Bookings/${id}/status`, { status });
   // },
   updateStatus(id, status) {
-  return adminAxiosInstance.patch(`/api/admin/Bookings/${id}/status`, {
-    newStatus: status,
-  });
-},
+    return adminAxiosInstance.patch(`/api/admin/bookings/${id}/status`, {
+      newStatus: status,
+    });
+  },
 
   payment(id, payload) {
-    return adminAxiosInstance.post(`/api/admin/Bookings/${id}/payment`, payload);
+    return adminAxiosInstance.post(`/api/admin/bookings/${id}/payment`, payload);
   },
 };
 

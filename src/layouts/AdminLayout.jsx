@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 
 export default function AdminLayout() {
-  const { user, logout } = useAuth();
+  const { auth, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -32,10 +32,7 @@ export default function AdminLayout() {
   const pageTitle = navItems.find((item) => location.pathname === item.path)?.label || 'Tổng quan';
 
   return (
-    <div 
-      className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans relative flex transition-all duration-300"
-      style={{ paddingLeft: window.innerWidth >= 768 ? (isDesktopCollapsed ? '80px' : '240px') : '0px' }}
-    >
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] text-slate-900 font-sans">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
@@ -44,9 +41,9 @@ export default function AdminLayout() {
         />
       )}
 
-      {/* Sidebar - FIXED */}
+      {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 bg-[#263140] text-slate-300 shadow-xl transition-all duration-300 flex flex-col flex-shrink-0 ${
+        className={`fixed md:relative inset-y-0 left-0 z-50 h-full bg-[#263140] text-slate-300 shadow-xl transition-all duration-300 flex flex-col flex-shrink-0 ${
           isDesktopCollapsed ? 'w-[80px]' : 'w-[240px]'
         } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
@@ -62,15 +59,15 @@ export default function AdminLayout() {
         <div className={`py-6 border-b border-white/5 overflow-hidden ${isDesktopCollapsed ? 'px-2' : 'px-6'}`}>
           <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-4'}`}>
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-700 text-white shadow-md ring-2 ring-slate-700/50 flex-shrink-0 overflow-hidden font-bold text-xl">
-              {user?.avatar ? (
-                <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+              {auth?.avatar ? (
+                <img src={auth.avatar} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <span>A</span>
               )}
             </div>
             {!isDesktopCollapsed && (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-bold text-white">{user?.fullName || 'Alex Turner'}</p>
+                <p className="truncate text-[15px] font-bold text-white">{auth?.fullName || 'Alex Turner'}</p>
                 <p className="text-[13px] font-semibold text-emerald-500 mt-0.5">Administrator</p>
               </div>
             )}
@@ -129,8 +126,8 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-        <header className="h-[80px] flex-shrink-0 bg-white/80 backdrop-blur-md border-b border-slate-200 box-border px-4 md:px-8 lg:px-10 flex items-center justify-between shadow-sm z-30 sticky top-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        <header className="h-[80px] flex-shrink-0 bg-white border-b border-slate-200 box-border px-4 md:px-8 lg:px-10 flex items-center justify-between shadow-sm z-30">
           <div className="flex items-center gap-4">
             <button
               className="md:hidden text-slate-500 hover:text-slate-700 p-2 -ml-2 rounded-lg hover:bg-slate-100"
@@ -165,7 +162,7 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-x-hidden bg-[#f0f3ff] box-border px-4 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10 w-full">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-[#f0f3ff] box-border p-4 md:p-8 lg:p-10 w-full">
           <Outlet />
         </main>
       </div>

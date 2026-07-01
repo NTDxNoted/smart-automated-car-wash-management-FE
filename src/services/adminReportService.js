@@ -1,70 +1,45 @@
+import adminAxiosInstance from "../api/adminAxiosInstance";
+
 export const getOverviewReport = async ({ signal } = {}) => {
+  const { data: responseData } = await adminAxiosInstance.get("/api/admin/reports/overview", { signal });
+  const data = responseData || {};
+  
+  const pending = (data.totalBookings || 0) 
+    - (data.completedBookings || 0) 
+    - (data.cancelledBookings || 0) 
+    - (data.noShowBookings || 0) 
+    - (data.failedBookings || 0);
+
   return {
     revenue: [
-      { month: "Jan", revenue: 12000000 },
-      { month: "Feb", revenue: 15000000 },
-      { month: "Mar", revenue: 18000000 },
-      { month: "Apr", revenue: 14000000 },
-      { month: "May", revenue: 22000000 },
-      { month: "Jun", revenue: 26000000 },
+      { month: data.period || "Current", revenue: data.totalRevenue || 0 },
     ],
-
     bookingStatus: [
-      { name: "Completed", value: 65 },
-      { name: "Pending", value: 20 },
-      { name: "Cancelled", value: 15 },
+      { name: "Completed", value: data.completedBookings || 0 },
+      { name: "Pending", value: pending > 0 ? pending : 0 },
+      { name: "Cancelled", value: data.cancelledBookings || 0 },
+      { name: "No-Show", value: data.noShowBookings || 0 },
+      { name: "Failed", value: data.failedBookings || 0 }
     ],
-
     summary: {
-      revenue: 26000000,
-      bookings: 245,
-      customers: 265,
-    },
+      revenue: data.totalRevenue || 0,
+      bookings: data.totalBookings || 0,
+      customers: 0,
+    }
   };
 };
 
 export const getRfmReport = async ({ signal } = {}) => {
-  return [
-    {
-      customer: "Nguyễn Văn A",
-      recency: 5,
-      frequency: 22,
-      monetary: 5200000,
-      points: 1200,
-      tier: "Gold",
-    },
-    {
-      customer: "Trần Văn B",
-      recency: 2,
-      frequency: 35,
-      monetary: 9000000,
-      points: 2000,
-      tier: "Platinum",
-    },
-    {
-      customer: "Lê Văn C",
-      recency: 12,
-      frequency: 10,
-      monetary: 2500000,
-      points: 500,
-      tier: "Silver",
-    },
-  ];
+  const { data } = await adminAxiosInstance.get("/api/admin/reports/rfm", { signal });
+  return data?.data || [];
 };
 
 export const getTierDistribution = async ({ signal } = {}) => {
-  return [
-    { tier: "Member", total: 120 },
-    { tier: "Silver", total: 80 },
-    { tier: "Gold", total: 45 },
-    { tier: "Platinum", total: 20 },
-  ];
+  const { data } = await adminAxiosInstance.get("/api/admin/reports/tier-distribution", { signal });
+  return data?.data || [];
 };
 
 export const getLoyaltyStats = async ({ signal } = {}) => {
-  return {
-    totalPoints: 120500,
-    expiringSoon: 3200,
-    expired: 800,
-  };
+  const { data } = await adminAxiosInstance.get("/api/admin/reports/loyalty-stats", { signal });
+  return data || {};
 };

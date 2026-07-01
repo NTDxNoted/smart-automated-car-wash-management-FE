@@ -8,7 +8,10 @@ const adminServiceService = {
     return adminAxiosInstance.post('/api/admin/services', data);
   },
   updateService(id, data) {
-    return adminAxiosInstance.patch(`/api/admin/services/${id}/status`, data);
+    return adminAxiosInstance.put(`/api/admin/services/${id}`, data);
+  },
+  toggleServiceStatus(id) {
+    return adminAxiosInstance.patch(`/api/admin/services/${id}/status`);
   },
 };
 
