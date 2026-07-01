@@ -6,11 +6,14 @@ export const getCustomers = async ({
   search,
   page = 1,
 }) => {
+  let isLocked = undefined;
+  if (status === 'LOCKED') isLocked = true;
+  else if (status === 'ACTIVE') isLocked = false;
+
   const { data } = await adminAxiosInstance.get('/admin/customers', {
     params: {
-      tier,
-      status,
-      search,
+      tier: tier || undefined,
+      isLocked,
       page,
     },
   });
