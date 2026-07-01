@@ -8,8 +8,23 @@ const ServiceManagementPage = () => {
   const [selectedService, setSelectedService] = useState(null);
 
   const fetchServices = async () => {
-    const res = await adminServiceService.getAdminServices();
-    setServices(res.data?.data || res.data || []);
+    try {
+      const res = await adminServiceService.getAdminServices();
+      const rawList = res.data?.data || res.data || [];
+      const mapped = rawList.map(item => ({
+        id: item.serviceId ?? item.serviceID ?? item.id,
+        name: item.serviceName ?? item.name,
+        category: item.serviceCategory ?? item.category,
+        price: item.price,
+        duration: item.duration,
+        description: item.description,
+        status: item.status,
+      }));
+      setServices(mapped);
+    } catch (err) {
+      console.error("Fetch services error:", err);
+      setServices([]);
+    }
   };
 
   useEffect(() => {
@@ -28,32 +43,34 @@ const ServiceManagementPage = () => {
 
   const handleSubmit = async (form) => {
     const payload = {
-      ...form,
+      serviceName: form.name,
+      serviceCategory: form.category,
       price: Number(form.price),
       duration: Number(form.duration),
+      description: form.description,
     };
 
     if (selectedService) {
-  const oldPrice = Number(selectedService.price);
-  const newPrice = Number(payload.price);
+      const oldPrice = Number(selectedService.price);
+      const newPrice = Number(payload.price);
 
-  const isPriceChanged =
-    Number.isFinite(oldPrice) &&
-    Number.isFinite(newPrice) &&
-    oldPrice !== newPrice;
+      const isPriceChanged =
+        Number.isFinite(oldPrice) &&
+        Number.isFinite(newPrice) &&
+        oldPrice !== newPrice;
 
-  if (isPriceChanged) {
-    const confirmed = window.confirm(
-      'Giá dịch vụ đã thay đổi. Giá mới chỉ áp dụng cho booking mới. Bạn có chắc muốn lưu thay đổi này không?'
-    );
+      if (isPriceChanged) {
+        const confirmed = window.confirm(
+          'Giá dịch vụ đã thay đổi. Giá mới chỉ áp dụng cho booking mới. Bạn có chắc muốn lưu thay đổi này không?'
+        );
 
-    if (!confirmed) return;
-  }
+        if (!confirmed) return;
+      }
 
-  await adminServiceService.updateService(selectedService.id, payload);
-} else {
-  await adminServiceService.createService(payload);
-}
+      await adminServiceService.updateService(selectedService.id, payload);
+    } else {
+      await adminServiceService.createService(payload);
+    }
 
     setOpenModal(false);
     await fetchServices();

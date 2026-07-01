@@ -20,8 +20,21 @@ export default function BookingManagementPage() {
       setLoading(true);
 
       const res = await adminBookingService.getAll(filters);
+      const rawList = res.data?.data || res.data || [];
+      const mapped = rawList.map(b => ({
+        id: b.bookingID ?? b.bookingId ?? b.id,
+        customerName: b.customerName ?? "Guest",
+        phone: b.phone,
+        licensePlate: b.licensePlate,
+        status: b.status,
+        totalAmount: b.finalAmount ?? b.baseAmount ?? b.totalAmount,
+        scheduledTime: b.scheduledTime,
+      }));
 
-      setBookings(res.data);
+      setBookings(mapped);
+    } catch (err) {
+      console.error("Fetch bookings error:", err);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
