@@ -37,7 +37,7 @@ export default function CustomerListPage() {
         page,
       });
 
-      setCustomers(data.items || []);
+      setCustomers(data.data || []);
     } catch (err) {
       console.error(err);
       setCustomers([]);
@@ -93,9 +93,10 @@ export default function CustomerListPage() {
             className="bg-[#070913] border border-white/10 rounded-lg px-3 py-2"
           >
             <option value="">Tất cả hạng</option>
-            <option value="BRONZE">Bronze</option>
-            <option value="SILVER">Silver</option>
-            <option value="GOLD">Gold</option>
+            <option value="Member">Member</option>
+            <option value="Silver">Silver</option>
+            <option value="Gold">Gold</option>
+            <option value="Platinum">Platinum</option>
           </select>
         </div>
 

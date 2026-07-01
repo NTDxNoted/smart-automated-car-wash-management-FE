@@ -2,7 +2,7 @@ import adminAxiosInstance from '../api/adminAxiosInstance';
 
 const adminServiceService = {
   getAdminServices() {
-    return adminAxiosInstance.get('/admin/services');
+    return adminAxiosInstance.get('/services');
   },
   createService(data) {
     return adminAxiosInstance.post('/admin/services', data);

@@ -175,18 +175,21 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {user ? (
           <>
-            {/* Phone (disabled) */}
+            {/* Phone (Editable) */}
             <label className="block">
               <span className="mb-2 block text-sm font-bold text-slate-700 tracking-wide">{t('phoneLabel')}</span>
-              <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-slate-50 px-4 py-3.5 cursor-not-allowed">
-                <span className="material-symbols-outlined text-slate-400 text-xl">call</span>
+              <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
+                <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">call</span>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="tel"
                   value={bookingData.phone}
-                  disabled
-                  className="w-full bg-transparent text-base font-semibold text-slate-500 cursor-not-allowed outline-none"
+                  onChange={e => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder={t('phonePlaceholder')}
+                  className="w-full bg-transparent text-base font-semibold text-slate-800 placeholder:text-slate-400 outline-none"
                 />
               </span>
+              {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.phone}</p>}
             </label>
 
             {/* Vehicle select */}

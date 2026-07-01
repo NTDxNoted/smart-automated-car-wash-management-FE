@@ -271,7 +271,7 @@ export default function ProfilePage() {
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
                     className={`
-                      flex-1 py-3 text-xs sm:text-sm font-bold transition-all duration-300 rounded-xl cursor-pointer text-center
+                      flex-1 py-4 text-sm sm:text-base md:text-lg font-bold transition-all duration-300 rounded-xl cursor-pointer text-center
                       ${isSelected
                         ? 'bg-white text-cyan-600 shadow-md font-extrabold'
                         : 'text-slate-500 hover:text-slate-800'
