@@ -14,103 +14,150 @@ export default function AdminLayout() {
   };
 
   const navItems = [
-    { label: 'Tổng quan', path: '/admin/dashboard', icon: '📊' },
-    { label: 'Đặt lịch', path: '/admin/bookings', icon: '📅' },
-    { label: 'Khách hàng', path: '/admin/customers', icon: '👥' },
-    { label: 'Dịch vụ', path: '/admin/services', icon: '🛠️' },
-    { label: 'Khuyến mãi', path: '/admin/promotions', icon: '🏷️' },
-    { label: 'Cấu hình hạng', path: '/admin/tiers', icon: '👑' },
-    { label: 'Báo cáo & RFM', path: '/admin/reports', icon: '📈' },
+    { label: 'Tổng quan', path: '/admin/dashboard', icon: '▦' },
+    { label: 'Đặt lịch', path: '/admin/bookings', icon: '▣' },
+    { label: 'Khách hàng', path: '/admin/customers', icon: '♙' },
+    { label: 'Dịch vụ', path: '/admin/services', icon: '▭' },
+    { label: 'Khuyến mãi', path: '/admin/promotions', icon: '◇' },
+    { label: 'Cấu hình hạng', path: '/admin/tiers', icon: '⊛' },
+    { label: 'Báo cáo & RFM', path: '/admin/reports', icon: '▮' },
   ];
 
+   const pageTitle =
+    navItems.find((item) => location.pathname === item.path)?.label || 'Overview';
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex font-sans">
-      {/* Sidebar - Desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 shadow-xl transition-transform duration-300 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col`}>
-        <div className="h-16 flex items-center px-6 border-b border-slate-200 gap-2">
-          <span className="text-cyan-500 text-lg">⟡</span>
-          <span className="font-black tracking-wider uppercase bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
-            AutoWash Admin
+    <div className="min-h-screen bg-[#F0F3FF] text-[#111C2C] flex font-sans">
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-40 w-[255px] bg-[#263142]
+          text-[#AFC0DA] flex flex-col transition-transform duration-300
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+        `}
+      >
+        {/* Logo */}
+        <div className="h-[80px] px-6 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[#007C95] flex items-center justify-center text-white text-lg">
+            ♢
+          </div>
+          <span className="text-[#008BA7] font-extrabold text-lg tracking-wide">
+            AUTOWASH
           </span>
         </div>
 
-        <nav className="flex-grow p-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-                  }`}
-              >
-                <span>{item.icon}</span>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-slate-200">
-          <div className="flex items-center gap-3 mb-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white">
-              {user?.fullName?.charAt(0) || 'A'}
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-xs font-semibold text-slate-700 truncate">{user?.fullName || 'Administrator'}</p>
-              <span className="inline-block text-[9px] uppercase px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-600 font-semibold border border-cyan-100 mt-0.5">
-                Admin
-              </span>
-            </div>
+        {/* User */}
+        <div className="px-6 mt-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-[#111C2C] border border-[#AFC0DA]/30 flex items-center justify-center text-white font-bold">
+            {user?.fullName?.charAt(0) || 'A'}
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold border border-slate-200 text-slate-600 hover:border-red-200 hover:text-red-500 transition-all bg-slate-50 hover:bg-red-50"
-          >
-            🚪 Đăng xuất
-          </button>
+
+          <div className="min-w-0">
+            <p className="text-white font-semibold text-sm leading-5 truncate">
+              {user?.fullName || 'Admin User'}
+            </p>
+            <p className="text-[#34C759] text-xs font-semibold">
+              Administrator
+            </p>
+          </div>
+        </div>
+
+        {/* Menu */}
+        <div className="px-4 mt-12">
+          <p className="px-3 mb-2 text-xs font-bold tracking-widest text-[#7F91AD]">
+            MENU
+          </p>
+
+          <nav className="space-y-2">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`
+                    h-11 px-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition
+                    ${
+                      isActive
+                        ? 'bg-[#007C95] text-[#DCEBFF]'
+                        : 'text-[#AFC0DA] hover:bg-white/5 hover:text-white'
+                    }
+                  `}
+                >
+                  <span className="w-5 text-lg text-center">{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-auto px-6 pb-8">
+          <div className="border-t border-[#AFC0DA]/25 pt-5 space-y-4">
+            <button className="flex items-center gap-3 text-sm font-semibold text-[#AFC0DA] hover:text-white transition">
+              <span className="text-lg">?</span>
+              Help Center
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 text-sm font-semibold text-[#AFC0DA] hover:text-white transition"
+            >
+              <span className="text-lg">↪</span>
+              Logout
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* Main Content Side */}
-      <div className="flex-1 flex flex-col min-w-0 relative">
-        {/* Top Header */}
-        <header className="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 text-slate-500 hover:text-slate-900 md:hidden focus:outline-none"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <h1 className="text-lg font-bold text-slate-800">
-              {navItems.find((item) => location.pathname === item.path)?.label || 'Dashboard'}
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-4 text-xs text-slate-500">
-            <span>Server: <span className="text-emerald-500 font-semibold">Online</span></span>
-          </div>
-        </header>
-
-        {/* Content Body */}
-        <main className="admin-page flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
-      </div>
-
-      {/* Sidebar Backdrop on Mobile */}
+      {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
         />
       )}
+
+      {/* Main */}
+      <div className="flex-1 min-w-0 md:ml-[255px]">
+        {/* Header */}
+        <header className="h-[80px] bg-white/80 backdrop-blur-md border-b border-[#BCC8CE] px-8 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="md:hidden text-[#111C2C] text-2xl"
+            >
+              ☰
+            </button>
+
+            <h1 className="text-2xl font-bold text-[#111C2C]">
+              {pageTitle === 'Tổng quan' ? 'Overview' : pageTitle}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-[#3D494D]">
+              Server:{' '}
+              <span className="text-[#34C759] font-bold">
+                ● Online
+              </span>
+            </span>
+
+            <button className="w-10 h-10 rounded-full bg-[#E7EEFF] flex items-center justify-center text-[#3D494D]">
+              ♢
+            </button>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className="min-h-[calc(100vh-80px)] bg-[#F0F3FF] p-8 overflow-y-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

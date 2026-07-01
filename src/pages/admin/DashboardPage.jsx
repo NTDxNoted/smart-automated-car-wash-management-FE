@@ -86,14 +86,15 @@ useEffect(() => {
 
   const getStatusStyle = (status) => {
     switch (status) {
-      case 'Completed':
-        return 'bg-emerald-500/10 text-emerald-400';
-      case 'Pending':
-        return 'bg-yellow-500/10 text-yellow-400';
-      case 'Cancelled':
-        return 'bg-red-500/10 text-red-400';
-      default:
-        return 'bg-slate-500/10 text-slate-400';
+    case 'Completed':
+      return 'bg-[#D8E3FA] text-[#3D494D]';
+    case 'Processing':
+    case 'Pending':
+      return 'bg-[#00A9CE] text-[#003846]';
+    case 'Cancelled':
+      return 'bg-[#FFDAD6] text-[#BA1A1A]';
+    default:
+      return 'bg-[#D8E3FA] text-[#3D494D]';
     }
   };
 
