@@ -8,10 +8,18 @@ const PromotionManagementPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [togglingIds, setTogglingIds] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchPromotions = async () => {
-    const res = await adminPromotionService.getPromotions();
-    setPromotions(res.data?.data || res.data || []);
+    try {
+      setLoading(true);
+      const res = await adminPromotionService.getPromotions();
+      setPromotions(res.data?.data || res.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -58,103 +66,108 @@ const PromotionManagementPage = () => {
     }
   };
 
-  const thStyle = {
-    textAlign: "left",
-    padding: "14px 18px",
-    color: "#111827",
-    borderBottom: "1px solid #334155",
-    fontWeight: 700,
-  };
-
-  const tdStyle = {
-    padding: "16px 18px",
-    color: "#111827",
-    borderBottom: "1px solid #1e293b",
-  };
-
-  const buttonStyle = {
-    background: "#0ea5e9",
-    border: "none",
-    color: "#fff",
-    padding: "8px 16px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: 600,
-  };
-
   return (
-    <div className="admin-page">
-      <div className="admin-page-header">
-        <h2>Promotion Management</h2>
-      </div>
-
-      <div
-        style={{
-          background: "#ffffff",
-border: "1px solid #e5e7eb",
-boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
-          borderRadius: "12px",
-          padding: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <h3 style={{ color: "#fff", fontSize: "20px", margin: 0 }}>
-            Quản lý khuyến mãi
-          </h3>
-
-          <button onClick={handleCreate} style={buttonStyle}>
-            + Add Promotion
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">
+              Quản lý khuyến mãi
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">Configure and manage discount campaigns</p>
+          </div>
+          <button 
+            onClick={handleCreate} 
+            className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm"
+          >
+            <span className="material-symbols-outlined text-lg">add</span>
+            Add Promotion
           </button>
         </div>
 
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th style={thStyle}>Title</th>
-              <th style={thStyle}>Promo Code</th>
-              <th style={thStyle}>Min Tier</th>
-              <th style={thStyle}>Discount Type</th>
-              <th style={thStyle}>Value</th>
-              <th style={thStyle}>Max Usage</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle}>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {promotions.map((item) => (
-              <tr key={item.id}>
-                <td style={tdStyle}>{item.title}</td>
-                <td style={tdStyle}>{item.promoCode}</td>
-                <td style={tdStyle}>{item.minTier}</td>
-                <td style={tdStyle}>{item.discountType}</td>
-                <td style={tdStyle}>{item.value}</td>
-                <td style={tdStyle}>{item.maxUsage}</td>
-                <td style={tdStyle}>
-                  <AdminSwitch
-                    checked={item.isActive}
-                    loading={togglingIds.includes(item.id)}
-                    disabled={togglingIds.includes(item.id)}
-                    onChange={() => handleToggle(item)}
-                  />
-                </td>
-                <td style={tdStyle}>
-                  <button onClick={() => handleEdit(item)} style={buttonStyle}>
-                    Edit
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="flex-1 rounded-xl border border-slate-200 overflow-hidden mb-2">
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-full text-left text-sm whitespace-nowrap">
+              <thead className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50/50 border-b border-slate-200">
+                <tr className="divide-x divide-slate-200">
+                  <th className="px-6 py-5">PROMOTION</th>
+                  <th className="px-6 py-5">MIN TIER</th>
+                  <th className="px-6 py-5">DISCOUNT TYPE</th>
+                  <th className="px-6 py-5">VALUE</th>
+                  <th className="px-6 py-5">MAX USAGE</th>
+                  <th className="px-6 py-5 text-center">STATUS</th>
+                  <th className="px-6 py-5 text-center">ACTION</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 bg-white">
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-10 text-center text-slate-500">Đang tải dữ liệu...</td>
+                  </tr>
+                ) : promotions.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-10 text-center text-slate-500">
+                      <div className="flex flex-col items-center justify-center">
+                        <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">local_offer</span>
+                        <p>No promotions found</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  promotions.map((item) => (
+                    <tr key={item.id || item.promotionID} className="hover:bg-slate-50 transition-colors divide-x divide-slate-100">
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-slate-800">{item.promoCode}</span>
+                          <span className="text-xs text-slate-500">{item.title}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
+                          {(() => {
+                            const tierVal = typeof item.minTier === 'object' ? (item.minTier?.tierName || item.minTier?.name || '') : (item.minTier || '');
+                            const tierStr = tierVal.toUpperCase();
+                            if (tierStr === 'MEMBER') return <><span className="material-symbols-outlined text-[14px]">person</span>MEMBER</>;
+                            if (tierStr === 'SILVER') return <><span className="material-symbols-outlined text-[14px]">military_tech</span>SILVER</>;
+                            if (tierStr === 'GOLD') return <><span className="material-symbols-outlined text-[14px]">star</span>GOLD</>;
+                            if (tierStr === 'PLATINUM') return <><span className="material-symbols-outlined text-[14px]">diamond</span>PLATINUM</>;
+                            return tierStr || 'N/A';
+                          })()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-medium text-slate-600">{item.discountType}</td>
+                      <td className="px-6 py-4 font-bold text-cyan-600">
+                        {item.discountType === 'PERCENTAGE' ? `${item.value}%` : `${Number(item.value).toLocaleString()} đ`}
+                      </td>
+                      <td className="px-6 py-4 font-medium text-slate-600">{item.maxUsage}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center">
+                          <AdminSwitch
+                            checked={item.isActive}
+                            loading={togglingIds.includes(item.id)}
+                            disabled={togglingIds.includes(item.id)}
+                            onChange={() => handleToggle(item)}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button 
+                            onClick={() => handleEdit(item)} 
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                            title="Edit"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <PromotionModal
@@ -167,4 +180,4 @@ boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
   );
 };
 
-export default PromotionManagementPage;
+export default PromotionManagementPage;

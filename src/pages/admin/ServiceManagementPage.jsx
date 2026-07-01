@@ -6,10 +6,18 @@ const ServiceManagementPage = () => {
   const [services, setServices] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchServices = async () => {
-    const res = await adminServiceService.getAdminServices();
-    setServices(res.data?.data || res.data || []);
+    try {
+      setLoading(true);
+      const res = await adminServiceService.getAdminServices();
+      setServices(res.data?.data || res.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -34,127 +42,118 @@ const ServiceManagementPage = () => {
     };
 
     if (selectedService) {
-  const oldPrice = Number(selectedService.price);
-  const newPrice = Number(payload.price);
+      const oldPrice = Number(selectedService.price);
+      const newPrice = Number(payload.price);
 
-  const isPriceChanged =
-    Number.isFinite(oldPrice) &&
-    Number.isFinite(newPrice) &&
-    oldPrice !== newPrice;
+      const isPriceChanged =
+        Number.isFinite(oldPrice) &&
+        Number.isFinite(newPrice) &&
+        oldPrice !== newPrice;
 
-  if (isPriceChanged) {
-    const confirmed = window.confirm(
-      'Giá dịch vụ đã thay đổi. Giá mới chỉ áp dụng cho booking mới. Bạn có chắc muốn lưu thay đổi này không?'
-    );
+      if (isPriceChanged) {
+        const confirmed = window.confirm(
+          'Giá dịch vụ đã thay đổi. Giá mới chỉ áp dụng cho booking mới. Bạn có chắc muốn lưu thay đổi này không?'
+        );
 
-    if (!confirmed) return;
-  }
+        if (!confirmed) return;
+      }
 
-  await adminServiceService.updateService(selectedService.id, payload);
-} else {
-  await adminServiceService.createService(payload);
-}
+      await adminServiceService.updateService(selectedService.id, payload);
+    } else {
+      await adminServiceService.createService(payload);
+    }
 
     setOpenModal(false);
     await fetchServices();
   };
 
-  const thStyle = {
-  textAlign: "left",
-  padding: "14px 18px",
-  color: "#111827",
-  borderBottom: "1px solid #334155",
-  fontWeight: 700,
-};
-
-const tdStyle = {
-  padding: "16px 18px",
-  color: "#111827",
-  borderBottom: "1px solid #1e293b",
-};
-
-const buttonStyle = {
-  background: "#0ea5e9",
-  border: "none",
-  color: "#fff",
-  padding: "8px 16px",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: 600,
-};
-
   return (
-  <div className="admin-page">
-    <div className="admin-page-header">
-      <h2>Service Management</h2>
-    </div>
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">
+              Quản lý dịch vụ
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">Configure and manage available wash services</p>
+          </div>
+          <button 
+            onClick={handleCreate} 
+            className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm"
+          >
+            <span className="material-symbols-outlined text-lg">add</span>
+            Add Service
+          </button>
+        </div>
 
-    <div
-      style={{
-        background: "#ffffff",
-border: "1px solid #e5e7eb",
-boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
-        borderRadius: "12px",
-        padding: "20px",
-        marginTop: "20px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h3 style={{ color: "#fff", fontSize: "20px", margin: 0 }}>
-          Quản lý dịch vụ
-        </h3>
-
-        <button onClick={handleCreate} style={buttonStyle}>
-          + Add Service
-        </button>
+        <div className="flex-1 rounded-xl border border-slate-200 overflow-hidden mb-2">
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-full text-left text-sm whitespace-nowrap">
+              <thead className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50/50 border-b border-slate-200">
+                <tr className="divide-x divide-slate-200">
+                  <th className="px-6 py-5">SERVICE NAME</th>
+                  <th className="px-6 py-5">CATEGORY</th>
+                  <th className="px-6 py-5">BASE PRICE</th>
+                  <th className="px-6 py-5">DURATION</th>
+                  <th className="px-6 py-5">DESCRIPTION</th>
+                  <th className="px-6 py-5 text-center">ACTION</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 bg-white">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-10 text-center text-slate-500">Đang tải dữ liệu...</td>
+                  </tr>
+                ) : services.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-10 text-center text-slate-500">Không có dịch vụ nào</td>
+                  </tr>
+                ) : (
+                  services.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50 transition-colors divide-x divide-slate-100">
+                      <td className="px-6 py-4 font-semibold text-slate-800">{item.name}</td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                          {item.category || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-cyan-600">{Number(item.price).toLocaleString()} đ</td>
+                      <td className="px-6 py-4 text-slate-600 font-medium">{item.duration} phút</td>
+                      <td className="px-6 py-4 text-slate-500 max-w-xs truncate" title={item.description}>{item.description}</td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button 
+                            onClick={() => handleEdit(item)} 
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                            title="Edit"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                          <button 
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition"
+                            title="Delete"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Name</th>
-            <th style={thStyle}>Category</th>
-            <th style={thStyle}>Price</th>
-            <th style={thStyle}>Duration</th>
-            <th style={thStyle}>Description</th>
-            <th style={thStyle}>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {services.map((item) => (
-            <tr key={item.id}>
-              <td style={tdStyle}>{item.name}</td>
-              <td style={tdStyle}>{item.category}</td>
-              <td style={tdStyle}>{Number(item.price).toLocaleString()}đ</td>
-              <td style={tdStyle}>{item.duration} phút</td>
-              <td style={tdStyle}>{item.description}</td>
-              <td style={tdStyle}>
-                <button onClick={() => handleEdit(item)} style={buttonStyle}>
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ServiceModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onSubmit={handleSubmit}
+        initialData={selectedService}
+      />
     </div>
-
-    <ServiceModal
-      open={openModal}
-      onClose={() => setOpenModal(false)}
-      onSubmit={handleSubmit}
-      initialData={selectedService}
-    />
-  </div>
-);
+  );
 };
 
-export default ServiceManagementPage;
+export default ServiceManagementPage;
