@@ -186,75 +186,77 @@ export default function StepConfirm({ bookingData, onBack, user }) {
             </div>
           </div>
 
-          {/* Promo code */}
-          <div 
-            className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm"
-            style={{ marginBottom: '20px' }}
-          >
-            <PromoCodeInput onValidateSuccess={(promo) => setAppliedPromo(promo)} />
-          </div>
+          {/* Promo & Rewards side-by-side grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: '20px' }}>
+            {/* Promo code */}
+            <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
+              <PromoCodeInput onValidateSuccess={(promo) => setAppliedPromo(promo)} />
+            </div>
 
-          {/* Reward points */}
-          <div 
-            className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm"
-            style={{ marginBottom: '20px' }}
-          >
-            {!user || user.points < 50 ? (
-              <div className="flex items-start gap-3 rounded-2xl bg-purple-50/30 border border-purple-100 p-4">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
-                  <span className="material-symbols-outlined text-lg">stars</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-purple-800 uppercase tracking-wide">
-                    {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
-                  </h4>
-                  <p className="text-xs text-purple-600/90 mt-1 leading-relaxed">
-                    {t('rewardInsufficient').replace('{points}', String(50 - (user?.points || 0)))}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3.5">
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-purple-600">stars</span>
-                    <span className="text-sm font-bold text-slate-700 uppercase tracking-wide">
-                      {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
-                    </span>
+            {/* Reward points */}
+            <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm flex flex-col justify-between">
+              {!user || user.points < 50 ? (
+                <div className="flex items-start gap-3 rounded-2xl bg-purple-50/30 border border-purple-100 p-4 h-full">
+                  <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                    <span className="material-symbols-outlined text-lg">stars</span>
                   </div>
-                  <span className="text-xs font-extrabold text-purple-700 bg-purple-50 border border-purple-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    {user.points} PTS
-                  </span>
+                  <div>
+                    <h4 className="text-xs font-bold text-purple-800 uppercase tracking-wide">
+                      {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
+                    </h4>
+                    <p className="text-xs text-purple-600/90 mt-1 leading-relaxed">
+                      {t('rewardInsufficient').replace('{points}', String(50 - (user?.points || 0)))}
+                    </p>
+                  </div>
                 </div>
-                
-                <div className="relative group">
-                  <select
-                    value={selectedRewardOption}
-                    onChange={e => setSelectedRewardOption(Number(e.target.value))}
-                    className="w-full rounded-2xl border-2 border-slate-100 bg-white pl-4 pr-10 py-3.5 text-base font-semibold text-slate-800 outline-none appearance-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100/50 transition-all duration-300 cursor-pointer"
-                  >
-                    <option value={0}>{t('rewardNoUse')}</option>
-                    {user.points >= 50  && <option value={50}>{t('rewardUse50')}</option>}
-                    {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
-                  </select>
-                  <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-purple-600 transition-colors duration-300">
-                    keyboard_arrow_down
-                  </span>
-                </div>
-                
-                <div className="space-y-1">
-                  <p className="text-[11px] text-purple-600/90 font-medium">
-                    {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN'))}
-                  </p>
-                  {isRewardCapped && (
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50/50 border border-amber-100/60 p-2.5 rounded-xl">
-                      <span className="material-symbols-outlined text-sm shrink-0">warning</span>
-                      <span>{t('rewardCappedMsg')}</span>
+              ) : (
+                <div className="space-y-3.5 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between pb-2.5 border-b border-slate-100" style={{ marginBottom: '12px' }}>
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-purple-600 text-base">stars</span>
+                        <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50 border border-purple-100 px-2.5 py-0.5 rounded-full tracking-wider">
+                        {user.points} PTS
+                      </span>
                     </div>
-                  )}
+                    
+                    <div 
+                      className="relative flex items-center bg-slate-50/50 border-2 border-slate-100 rounded-2xl p-1.5 focus-within:bg-white focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-100/40 transition-all duration-350"
+                    >
+                      <span className="material-symbols-outlined text-purple-600 pl-2.5 text-lg">stars</span>
+                      <select
+                        value={selectedRewardOption}
+                        onChange={e => setSelectedRewardOption(Number(e.target.value))}
+                        className="w-full bg-transparent pl-3 pr-8 py-1.5 text-sm font-semibold text-slate-800 outline-none appearance-none cursor-pointer"
+                      >
+                        <option value={0}>{t('rewardNoUse')}</option>
+                        {user.points >= 50  && <option value={50}>{t('rewardUse50')}</option>}
+                        {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
+                      </select>
+                      <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none text-base">
+                        keyboard_arrow_down
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1 mt-2">
+                    <p className="text-[11px] text-purple-600/90 font-medium">
+                      {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN'))}
+                    </p>
+                    {isRewardCapped && (
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50/50 border border-amber-100/60 p-2.5 rounded-xl">
+                        <span className="material-symbols-outlined text-sm shrink-0">warning</span>
+                        <span>{t('rewardCappedMsg')}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
