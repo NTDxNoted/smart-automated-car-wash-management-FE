@@ -95,16 +95,25 @@ export default function StepConfirm({ bookingData, onBack, user }) {
         </div>
       )}
 
-      <h2 className="mb-6 text-xl font-bold text-slate-800 flex items-center gap-2">
+      <h2 
+        className="text-xl font-bold text-slate-800 flex items-center gap-2"
+        style={{ marginBottom: '24px' }}
+      >
         <span className="w-2.5 h-6 rounded-full bg-cyan-500"></span>
         {t('step3Title') || 'Bước 3: Kiểm tra hoá đơn & Xác nhận'}
       </h2>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-start mb-6">
+      <div 
+        className="grid grid-cols-1 lg:grid-cols-2 items-start"
+        style={{ gap: '24px', marginBottom: '24px' }}
+      >
         {/* Left column */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col" style={{ gap: '20px' }}>
           {/* Booking details */}
-          <div className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-4">
+          <div 
+            className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-4"
+            style={{ marginBottom: '20px' }}
+          >
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2">
               <span className="material-symbols-outlined text-slate-500">info</span>
               {locale === 'en' ? 'Booking Details' : 'Thông tin chi tiết'}
@@ -178,12 +187,18 @@ export default function StepConfirm({ bookingData, onBack, user }) {
           </div>
 
           {/* Promo code */}
-          <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
+          <div 
+            className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm"
+            style={{ marginBottom: '20px' }}
+          >
             <PromoCodeInput onValidateSuccess={(promo) => setAppliedPromo(promo)} />
           </div>
 
           {/* Reward points */}
-          <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
+          <div 
+            className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm"
+            style={{ marginBottom: '20px' }}
+          >
             {!user || user.points < 50 ? (
               <div className="flex items-start gap-3 rounded-2xl bg-purple-50/30 border border-purple-100 p-4">
                 <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
@@ -249,13 +264,19 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
       {/* Error */}
       {submitError && (
-        <div className="mb-6 flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
+        <div 
+          className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium"
+          style={{ marginBottom: '24px' }}
+        >
           <span className="material-symbols-outlined text-base">error</span>
           {submitError}
         </div>
       )}
 
-      <div className="flex justify-between items-center mt-6 py-[5px] border-t border-slate-100">
+      <div 
+        className="flex justify-between items-center border-t border-slate-100"
+        style={{ marginTop: '40px', paddingTop: '24px' }}
+      >
         <button
           type="button"
           onClick={onBack}
