@@ -63,7 +63,7 @@ const translations = {
     footerRights: "AutoWash Pro · FPT University — SWP391 Project. Bảo lưu mọi quyền.",
 
     // Booking Section
-    bookingTitle: "ĐẶT LỊCH DỊVỤ LUXURY",
+    bookingTitle: "ĐẶT LỊCH DỊCH VỤ LUXURY",
     bookingStep1: "Chọn Dịch Vụ",
     bookingStep2: "Thông Tin Đặt Lịch",
     bookingStep3: "Xác Nhận & Hoá Đơn",
@@ -439,7 +439,7 @@ const translations = {
 
 const LanguageContext = createContext({
   locale: 'vi',
-  setLocale: () => {},
+  setLocale: () => { },
   t: (key) => key
 });
 

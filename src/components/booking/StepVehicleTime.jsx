@@ -104,6 +104,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           const isStillAvailable = matchingSlot && matchingSlot.availableCount > 0;
 
           const isSlotViolatingAdvanceRule = (timeStr) => {
+            if (!timeStr || !selectedDate) return false;
             const d = new Date();
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -166,18 +167,29 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
   return (
     <section>
-      <h2 className="mb-6 text-xl font-bold text-slate-800 flex items-center gap-2">
+      <h2 
+        className="text-xl font-bold text-slate-800 flex items-center gap-2"
+        style={{ marginBottom: '24px' }}
+      >
         <span className="w-2.5 h-6 rounded-full bg-cyan-500"></span>
         {t('step2Title') || 'Bước 2: Thông tin xe và Thời gian đặt lịch'}
       </h2>
 
       {/* Phone + Vehicle */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div 
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+        style={{ marginBottom: '32px' }}
+      >
         {user ? (
           <>
             {/* Phone (Editable) */}
             <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700 tracking-wide">{t('phoneLabel')}</span>
+              <span 
+                className="block text-sm font-bold text-slate-700 tracking-wide"
+                style={{ marginBottom: '8px' }}
+              >
+                {t('phoneLabel')}
+              </span>
               <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
                 <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">call</span>
                 <input
@@ -194,7 +206,12 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
             {/* Vehicle select */}
             <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700 tracking-wide">{t('selectVehicleLabel')}</span>
+              <span 
+                className="block text-sm font-bold text-slate-700 tracking-wide"
+                style={{ marginBottom: '8px' }}
+              >
+                {t('selectVehicleLabel')}
+              </span>
               {vehicles.length > 0 ? (
                 <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
                   <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
@@ -224,7 +241,12 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           <>
             {/* Phone input */}
             <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700 tracking-wide">{t('phoneLabel')}</span>
+              <span 
+                className="block text-sm font-bold text-slate-700 tracking-wide"
+                style={{ marginBottom: '8px' }}
+              >
+                {t('phoneLabel')}
+              </span>
               <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
                 <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">call</span>
                 <input
@@ -241,7 +263,12 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
             {/* License plate input */}
             <label className="block">
-              <span className="mb-2 block text-sm font-bold text-slate-700 tracking-wide">{t('licensePlateLabel')}</span>
+              <span 
+                className="block text-sm font-bold text-slate-700 tracking-wide"
+                style={{ marginBottom: '8px' }}
+              >
+                {t('licensePlateLabel')}
+              </span>
               <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
                 <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
                 <input
@@ -259,8 +286,11 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       </div>
 
       {/* Date + Time grid */}
-      <div className="mt-10">
-        <p className="mb-4 text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+      <div style={{ marginBottom: '32px' }}>
+        <p 
+          className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2"
+          style={{ marginBottom: '16px' }}
+        >
           <span className="w-1.5 h-3 bg-cyan-500 rounded-full"></span>
           {t('timeSlotsLabel')}{' '}
           <span className="font-normal text-xs text-cyan-600 lowercase tracking-normal">
@@ -301,8 +331,11 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
       {/* Time slots */}
       {!loadingSlots && (
-        <div className="mt-10">
-          <p className="mb-4 text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+        <div style={{ marginBottom: '32px' }}>
+          <p 
+            className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2"
+            style={{ marginBottom: '16px' }}
+          >
             <span className="w-1.5 h-3 bg-cyan-500 rounded-full"></span>
             {t('timeSlotsInDay')}{' '}
             {selectedDate ? (
@@ -327,7 +360,10 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         </div>
       )}
 
-      <div className="flex justify-between items-center mt-8 py-[5px] border-t border-slate-100">
+      <div 
+        className="flex justify-between items-center border-t border-slate-100"
+        style={{ marginTop: '40px', paddingTop: '24px' }}
+      >
         <button
           type="button"
           onClick={onBack}

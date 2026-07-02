@@ -131,13 +131,21 @@ export const bookingService = {
 
     // ── FE-ISSUE-04: Lấy danh sách khung giờ trống ───────────────────────────
     // GET /api/bookings/available-slots?startDate=YYYY-MM-DD
-    getAvailableSlots: async (startDate) => {
+    getAvailableSlots: async (startDate, licensePlate) => {
         if (USE_MOCK_DATA) {
             await delay(400);
             return generateMockTimeSlots();
         }
-        const response = await axiosInstance.get('/bookings/available-slots', { params: { startDate } });
-        return response.data;
+        const response = await axiosInstance.get('/bookings/available-slots', {
+            params: {
+                date: startDate,
+                licensePlate
+            }
+        });
+        if (Array.isArray(response.data) && response.data.length > 0) {
+            return response.data[0].slots || [];
+        }
+        return [];
     },
 
     // ── FE-ISSUE-04: Lấy danh sách dịch vụ ──────────────────────────────────

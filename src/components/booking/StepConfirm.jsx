@@ -95,16 +95,25 @@ export default function StepConfirm({ bookingData, onBack, user }) {
         </div>
       )}
 
-      <h2 className="mb-6 text-xl font-bold text-slate-800 flex items-center gap-2">
+      <h2 
+        className="text-xl font-bold text-slate-800 flex items-center gap-2"
+        style={{ marginBottom: '24px' }}
+      >
         <span className="w-2.5 h-6 rounded-full bg-cyan-500"></span>
         {t('step3Title') || 'Bước 3: Kiểm tra hoá đơn & Xác nhận'}
       </h2>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-start mb-6">
+      <div 
+        className="grid grid-cols-1 lg:grid-cols-2 items-start"
+        style={{ gap: '24px', marginBottom: '24px' }}
+      >
         {/* Left column */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col" style={{ gap: '20px' }}>
           {/* Booking details */}
-          <div className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-4">
+          <div 
+            className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-4"
+            style={{ marginBottom: '20px' }}
+          >
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2">
               <span className="material-symbols-outlined text-slate-500">info</span>
               {locale === 'en' ? 'Booking Details' : 'Thông tin chi tiết'}
@@ -177,69 +186,84 @@ export default function StepConfirm({ bookingData, onBack, user }) {
             </div>
           </div>
 
-          {/* Promo code */}
-          <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
-            <PromoCodeInput onValidateSuccess={(promo) => setAppliedPromo(promo)} />
-          </div>
+          {/* Offers & Discounts Card */}
+          <div 
+            className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-5"
+            style={{ marginBottom: '20px' }}
+          >
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <span className="material-symbols-outlined text-slate-500 text-lg">payments</span>
+              {locale === 'en' ? 'Discounts & Offers' : 'Ưu đãi & Giảm giá'}
+            </h3>
 
-          {/* Reward points */}
-          <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
-            {!user || user.points < 50 ? (
-              <div className="flex items-start gap-3 rounded-2xl bg-purple-50/30 border border-purple-100 p-4">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
-                  <span className="material-symbols-outlined text-lg">stars</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-purple-800 uppercase tracking-wide">
-                    {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
-                  </h4>
-                  <p className="text-xs text-purple-600/90 mt-1 leading-relaxed">
-                    {t('rewardInsufficient').replace('{points}', String(50 - (user?.points || 0)))}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3.5">
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-purple-600">stars</span>
-                    <span className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+            {/* Promo code */}
+            <div>
+              <PromoCodeInput onValidateSuccess={(promo) => setAppliedPromo(promo)} />
+            </div>
+
+            {/* Reward points */}
+            <div className="pt-4 border-t border-slate-100">
+              {!user || user.points < 50 ? (
+                <div className="flex items-start gap-3 rounded-2xl bg-purple-50/30 border border-purple-100 p-4">
+                  <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                    <span className="material-symbols-outlined text-lg">stars</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-purple-800 uppercase tracking-wide">
                       {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
+                    </h4>
+                    <p className="text-xs text-purple-600/90 mt-1 leading-relaxed">
+                      {t('rewardInsufficient').replace('{points}', String(50 - (user?.points || 0)))}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3.5">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-slate-100/50" style={{ marginBottom: '12px' }}>
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-purple-600 text-base">stars</span>
+                      <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        {t('loyaltyTabWallet') || 'Ví điểm & Đổi thưởng'}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50 border border-purple-100 px-2.5 py-0.5 rounded-full tracking-wider">
+                      {user.points} PTS
                     </span>
                   </div>
-                  <span className="text-xs font-extrabold text-purple-700 bg-purple-50 border border-purple-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    {user.points} PTS
-                  </span>
-                </div>
-                
-                <div className="relative group">
-                  <select
-                    value={selectedRewardOption}
-                    onChange={e => setSelectedRewardOption(Number(e.target.value))}
-                    className="w-full rounded-2xl border-2 border-slate-100 bg-white pl-4 pr-10 py-3.5 text-base font-semibold text-slate-800 outline-none appearance-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100/50 transition-all duration-300 cursor-pointer"
+                  
+                  <div 
+                    className="relative flex items-center bg-slate-50/50 border-2 border-slate-100 rounded-2xl focus-within:bg-white focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-100/40 transition-all duration-350"
+                    style={{ padding: '8px' }}
                   >
-                    <option value={0}>{t('rewardNoUse')}</option>
-                    {user.points >= 50  && <option value={50}>{t('rewardUse50')}</option>}
-                    {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
-                  </select>
-                  <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-purple-600 transition-colors duration-300">
-                    keyboard_arrow_down
-                  </span>
+                    <span className="material-symbols-outlined text-purple-600 pl-2.5 text-lg">stars</span>
+                    <select
+                      value={selectedRewardOption}
+                      onChange={e => setSelectedRewardOption(Number(e.target.value))}
+                      className="w-full bg-transparent pl-3 pr-8 py-1.5 text-sm font-semibold text-slate-800 outline-none appearance-none cursor-pointer"
+                    >
+                      <option value={0}>{t('rewardNoUse')}</option>
+                      {user.points >= 50  && <option value={50}>{t('rewardUse50')}</option>}
+                      {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
+                    </select>
+                    <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none text-base">
+                      keyboard_arrow_down
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-1 mt-2">
+                    <p className="text-[11px] text-purple-600/90 font-medium">
+                      {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN'))}
+                    </p>
+                    {isRewardCapped && (
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50/50 border border-amber-100/60 p-2.5 rounded-xl">
+                        <span className="material-symbols-outlined text-sm shrink-0">warning</span>
+                        <span>{t('rewardCappedMsg')}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                
-                <div className="space-y-1">
-                  <p className="text-[11px] text-purple-600/90 font-medium">
-                    {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN'))}
-                  </p>
-                  {isRewardCapped && (
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50/50 border border-amber-100/60 p-2.5 rounded-xl">
-                      <span className="material-symbols-outlined text-sm shrink-0">warning</span>
-                      <span>{t('rewardCappedMsg')}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
@@ -249,13 +273,19 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
       {/* Error */}
       {submitError && (
-        <div className="mb-6 flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
+        <div 
+          className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium"
+          style={{ marginBottom: '24px' }}
+        >
           <span className="material-symbols-outlined text-base">error</span>
           {submitError}
         </div>
       )}
 
-      <div className="flex justify-between items-center mt-6 py-[5px] border-t border-slate-100">
+      <div 
+        className="flex justify-between items-center border-t border-slate-100"
+        style={{ marginTop: '40px', paddingTop: '24px' }}
+      >
         <button
           type="button"
           onClick={onBack}
