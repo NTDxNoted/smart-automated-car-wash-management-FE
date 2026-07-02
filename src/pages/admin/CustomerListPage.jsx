@@ -62,6 +62,29 @@ export default function CustomerListPage() {
     setPage(1);
   };
 
+  const filteredCustomers = customers.filter((customer) => {
+    // 1. Search filter: matches name or phone (case-insensitive)
+    if (debouncedSearch) {
+      const s = debouncedSearch.toLowerCase().trim();
+      const nameMatch = customer.fullName?.toLowerCase().includes(s);
+      const phoneMatch = customer.phone?.includes(s);
+      if (!nameMatch && !phoneMatch) return false;
+    }
+    // 2. Status filter
+    if (status) {
+      const isLocked = customer.isLocked || customer.status === 'LOCKED';
+      const isSuspended = customer.status === 'SUSPENDED';
+      if (status === 'LOCKED' && !isLocked) return false;
+      if (status === 'ACTIVE' && (isLocked || isSuspended)) return false;
+      if (status === 'SUSPENDED' && !isSuspended) return false;
+    }
+    // 3. Tier filter
+    if (tier) {
+      if (customer.tier?.toUpperCase() !== tier.toUpperCase()) return false;
+    }
+    return true;
+  });
+
   return (
     <div className="customer-page-container">
       <div className="customer-page-subtitle"></div>
@@ -134,12 +157,12 @@ export default function CustomerListPage() {
             </div>
           ) : (
             <CustomerTable
-              customers={customers}
+              customers={filteredCustomers}
               onRefresh={loadCustomers}
-              onToggleLock={(id, newLocked) => {
+              onToggleLock={(customerId, newLocked) => {
                 setCustomers((prev) =>
                   prev.map((c) =>
-                    c.id === id
+                    c.customerId === customerId
                       ? {
                           ...c,
                           isLocked: newLocked,

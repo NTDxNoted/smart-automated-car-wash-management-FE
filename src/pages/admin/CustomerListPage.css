@@ -358,7 +358,6 @@
   flex: 0 0 18%;
 }
 
-/* Status capsule badges */
 .customer-status-badge {
   display: flex;
   flex-direction: row;
@@ -367,10 +366,11 @@
   gap: 8px;
   height: 24px;
   border-radius: 9999px;
+  white-space: nowrap;
+  width: max-content;
 }
 
 .customer-status-badge.active {
-  width: 99.16px;
   background: #D1FAE5;
 }
 
@@ -387,7 +387,6 @@
 }
 
 .customer-status-badge.offline {
-  width: 108.47px;
   background: #DEE8FF;
 }
 
@@ -546,17 +545,19 @@
 
 .customer-page-indicator {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   padding: 8px 16px;
-  width: 79.88px;
+  width: auto;
+  min-width: 80px;
+  white-space: nowrap;
   height: 36px;
-  background: #00A9CE;
+  background: #f2f9fa;
   border-radius: 8px;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 14px;
   line-height: 20px;
-  color: #00677F;
-  justify-content: center;
+  color: #020202;
 }

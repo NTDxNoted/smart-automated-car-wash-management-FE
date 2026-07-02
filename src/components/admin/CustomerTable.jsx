@@ -25,11 +25,11 @@ export default function CustomerTable({ customers = [], onRefresh, onToggleLock 
     if (!window.confirm(confirmMessage)) return;
 
     try {
-      const data = await toggleLock(customer.id);
+      const data = await toggleLock(customer.customerId);
       const newLockedState = typeof data?.isLocked === 'boolean' ? data.isLocked : !isLocked;
 
       if (onToggleLock) {
-        onToggleLock(customer.id, newLockedState);
+        onToggleLock(customer.customerId, newLockedState);
       }
       if (onRefresh) onRefresh();
     } catch (err) {
@@ -92,7 +92,7 @@ export default function CustomerTable({ customers = [], onRefresh, onToggleLock 
 
           return (
             <tr
-              key={customer.id}
+              key={customer.customerId}
               className="customer-tbody-row"
             >
               <td className="customer-td name">
@@ -117,7 +117,7 @@ export default function CustomerTable({ customers = [], onRefresh, onToggleLock 
               <td className="customer-td actions">
                 {/* Detail Page Link */}
                 <Link
-                  to={`/admin/customers/${customer.id}`}
+                  to={`/admin/customers/${customer.customerId}`}
                   className="customer-action-btn edit"
                   title="Chi tiết"
                 >
