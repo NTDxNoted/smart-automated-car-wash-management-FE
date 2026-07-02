@@ -3,7 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
 export default function AdminLayout() {
-  const { user, logout } = useAuth();
+  const { auth, logout } = useAuth();
+  const user = auth;
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);

@@ -12,8 +12,21 @@ const TierConfigPage = () => {
   
 
   const fetchTiers = async () => {
-    const res = await adminTierService.getTiers();
-    setTiers(res.data?.data || res.data || []);
+    try {
+      const res = await adminTierService.getTiers();
+      const rawList = res.data?.data || res.data || [];
+      const mapped = rawList.map(t => ({
+        id: t.tierID ?? t.tierId ?? t.TierID ?? t.id,
+        name: t.tierName ?? t.TierName ?? t.name,
+        minSpending: t.minSpending ?? t.MinSpending ?? 0,
+        discountRate: t.discountRate ?? t.DiscountRate ?? 0,
+        bookingWindowDays: t.bookingWindowDays ?? t.BookingWindowDays ?? 7,
+      }));
+      setTiers(mapped);
+    } catch (err) {
+      console.error("Error fetching tiers:", err);
+      setTiers([]);
+    }
   };
 
   useEffect(() => {
@@ -27,10 +40,14 @@ const TierConfigPage = () => {
 
   const handleSubmit = async (form) => {
     const payload = {
-      ...form,
+      tierName: selectedTier.name,
+      TierName: selectedTier.name,
       minSpending: Number(form.minSpending),
+      MinSpending: Number(form.minSpending),
       discountRate: Number(form.discountRate),
+      DiscountRate: Number(form.discountRate),
       bookingWindowDays: Number(form.bookingWindowDays),
+      BookingWindowDays: Number(form.bookingWindowDays),
     };
 
     await adminTierService.updateTier(selectedTier.id, payload);

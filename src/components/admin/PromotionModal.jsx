@@ -1,4 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import AdminSwitch from './AdminSwitch';
+
+const defaultForm = {
+  title: '',
+  promoCode: '',
+  minTier: '',
+  discountType: '',
+  value: '',
+  maxUsage: '',
+  startDate: '',
+  endDate: '',
+  isActive: true,
+};
 
 const PromotionModal = ({
   open,
@@ -6,35 +19,19 @@ const PromotionModal = ({
   onSubmit,
   initialData,
 }) => {
-  const [form, setForm] = useState({
-    title: '',
-    promoCode: '',
-    minTier: '',
-    discountType: '',
-    value: '',
-    maxUsage: '',
-    startDate: '',
-    endDate: '',
-  });
-
+  const [form, setForm] = useState(defaultForm);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (initialData) {
-      setForm(initialData);
-    } else {
       setForm({
-        title: '',
-        promoCode: '',
-        minTier: '',
-        discountType: '',
-        value: '',
-        maxUsage: '',
-        startDate: '',
-        endDate: '',
+        ...defaultForm,
+        ...initialData,
+        isActive: initialData.isActive !== undefined ? initialData.isActive : true,
       });
+    } else {
+      setForm(defaultForm);
     }
-
     setError('');
   }, [initialData, open]);
 
@@ -109,7 +106,7 @@ const PromotionModal = ({
           value={form.discountType}
           onChange={handleChange}
         >
-          <option value="">Select</option>
+          <option value="">Select Discount Type</option>
           <option value="PERCENT">Percent</option>
           <option value="FIXED">Fixed</option>
         </select>
@@ -117,6 +114,7 @@ const PromotionModal = ({
         <input
           name="value"
           type="number"
+          placeholder="Value"
           value={form.value}
           onChange={handleChange}
           min="0"
@@ -126,6 +124,7 @@ const PromotionModal = ({
         <input
           name="maxUsage"
           type="number"
+          placeholder="Max Usage"
           value={form.maxUsage}
           onChange={handleChange}
           min="0"
@@ -145,12 +144,23 @@ const PromotionModal = ({
           onChange={handleChange}
           min={form.startDate || undefined}
         />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '14px 0' }}>
+          <span style={{ color: '#94a3b8', fontSize: '14px' }}>Trạng thái hoạt động:</span>
+          <AdminSwitch
+            checked={form.isActive}
+            onChange={(checked) => setForm({ ...form, isActive: checked })}
+          />
+          <span style={{ color: form.isActive ? '#34d399' : '#f87171', fontSize: '14px', fontWeight: 'bold' }}>
+            {form.isActive ? 'Active' : 'Inactive'}
+          </span>
+        </div>
+
         {error && <p style={{ color: '#f87171' }}>{error}</p>}
+        
         <div className="modal-actions">
           <button onClick={onClose}>Cancel</button>
-          <button onClick={handleSubmit}>
-            Save
-          </button>
+          <button onClick={handleSubmit}>Save</button>
         </div>
       </div>
     </div>

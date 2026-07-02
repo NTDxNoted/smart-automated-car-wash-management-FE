@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
+import adminBookingService from '../../services/adminBookingService';
+
 export default function DashboardPage() {
-  const stats = [
+  const [stats, setStatsData] = useState([
     {
       title: 'Booking hôm nay',
       value: 28,
@@ -24,9 +27,9 @@ export default function DashboardPage() {
       icon: '⚠️',
       color: 'from-red-500 to-pink-600'
     }
-  ];
+  ]);
 
-  const recentBookings = [
+  const [recentBookings, setRecentBookings] = useState([
     {
       id: '#BK001',
       customer: 'Nguyễn Văn A',
@@ -48,15 +51,98 @@ export default function DashboardPage() {
       service: 'Full Combo',
       status: 'Cancelled'
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await adminBookingService.getAll({ pageSize: 1000 });
+        const list = res.data?.data || res.data || [];
+        if (list.length > 0) {
+          const todayDateStr = new Date().toLocaleDateString('en-CA');
+          
+          let bookingsToday = 0;
+          let revenueToday = 0;
+          let pendingCount = 0;
+          let noShowCount = 0;
+
+          list.forEach(b => {
+            const bStatus = b.status?.toUpperCase();
+            const bDate = b.scheduledTime ? new Date(b.scheduledTime).toLocaleDateString('en-CA') : '';
+            const isBToday = bDate === todayDateStr;
+
+            if (isBToday) {
+              bookingsToday++;
+              if (bStatus === 'COMPLETED') {
+                revenueToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
+              }
+              if (bStatus === 'NOSHOW' || bStatus === 'NO-SHOW' || bStatus === 'NO_SHOW') {
+                noShowCount++;
+              }
+            }
+
+            if (bStatus === 'PENDING') {
+              pendingCount++;
+            }
+          });
+
+          let formattedRevenue = revenueToday >= 1000000 
+            ? `${(revenueToday / 1000000).toFixed(1)}M` 
+            : `${revenueToday.toLocaleString()}đ`;
+
+          setStatsData([
+            {
+              title: 'Booking hôm nay',
+              value: bookingsToday,
+              icon: '📅',
+              color: 'from-cyan-500 to-blue-600'
+            },
+            {
+              title: 'Doanh thu',
+              value: formattedRevenue,
+              icon: '💰',
+              color: 'from-emerald-500 to-green-600'
+            },
+            {
+              title: 'Đang Pending',
+              value: pendingCount,
+              icon: '🕒',
+              color: 'from-yellow-500 to-orange-500'
+            },
+            {
+              title: 'No-show',
+              value: noShowCount,
+              icon: '⚠️',
+              color: 'from-red-500 to-pink-600'
+            }
+          ]);
+
+          const sortedList = [...list].sort((a, b) => new Date(b.scheduledTime || b.createdAt) - new Date(a.scheduledTime || a.createdAt));
+          const top5 = sortedList.slice(0, 5).map(b => ({
+            id: b.bookingID ?? b.bookingId ?? b.id,
+            customer: b.customerName ?? b.phone ?? 'Khách',
+            plate: b.licensePlate || '-',
+            service: b.serviceName || 'Rửa Xe',
+            status: b.status || 'Pending'
+          }));
+          if (top5.length > 0) {
+            setRecentBookings(top5);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching dashboard stats:', err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const getStatusStyle = (status) => {
-    switch (status) {
-      case 'Completed':
+    switch (status?.toUpperCase()) {
+      case 'COMPLETED':
         return 'bg-emerald-500/10 text-emerald-400';
-      case 'Pending':
+      case 'PENDING':
         return 'bg-yellow-500/10 text-yellow-400';
-      case 'Cancelled':
+      case 'CANCELLED':
         return 'bg-red-500/10 text-red-400';
       default:
         return 'bg-slate-500/10 text-slate-400';

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import AdminSwitch from './AdminSwitch';
 
 const defaultForm = {
   name: '',
@@ -6,6 +7,7 @@ const defaultForm = {
   price: '',
   duration: '',
   description: '',
+  status: 'Active',
 };
 
 const ServiceModal = ({
@@ -15,14 +17,19 @@ const ServiceModal = ({
   initialData,
 }) => {
   const [form, setForm] = useState(defaultForm);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (initialData) {
-      setForm(initialData);
+      setForm({
+        ...defaultForm,
+        ...initialData,
+      });
     } else {
       setForm(defaultForm);
     }
-  }, [initialData]);
+    setError('');
+  }, [initialData, open]);
 
   if (!open) return null;
 
@@ -53,8 +60,6 @@ const ServiceModal = ({
       duration,
     });
   };
-
-  const [error, setError] = useState('');
 
   return (
     <div className="modal-overlay">
@@ -101,7 +106,20 @@ const ServiceModal = ({
           value={form.description}
           onChange={handleChange}
         />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '14px 0' }}>
+          <span style={{ color: '#94a3b8', fontSize: '14px' }}>Trạng thái hoạt động:</span>
+          <AdminSwitch
+            checked={form.status === 'Active'}
+            onChange={(checked) => setForm({ ...form, status: checked ? 'Active' : 'Inactive' })}
+          />
+          <span style={{ color: form.status === 'Active' ? '#34d399' : '#f87171', fontSize: '14px', fontWeight: 'bold' }}>
+            {form.status === 'Active' ? 'Active' : 'Inactive'}
+          </span>
+        </div>
+
         {error && <p style={{ color: '#f87171' }}>{error}</p>}
+        
         <div className="modal-actions">
           <button onClick={onClose}>Cancel</button>
           <button onClick={handleSubmit}>Save</button>

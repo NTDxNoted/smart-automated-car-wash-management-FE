@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import adminServiceService from '../../services/adminServiceService';
 import ServiceModal from '../../components/admin/ServiceModal';
+import AdminSwitch from '../../components/admin/AdminSwitch';
 
 const ServiceManagementPage = () => {
   const [services, setServices] = useState([]);
@@ -48,6 +49,7 @@ const ServiceManagementPage = () => {
       price: Number(form.price),
       duration: Number(form.duration),
       description: form.description,
+      status: form.status || 'Active',
     };
 
     if (selectedService) {
@@ -140,6 +142,7 @@ const buttonStyle = {
             <th style={thStyle}>Price</th>
             <th style={thStyle}>Duration</th>
             <th style={thStyle}>Description</th>
+            <th style={thStyle}>Status</th>
             <th style={thStyle}>Action</th>
           </tr>
         </thead>
@@ -152,6 +155,27 @@ const buttonStyle = {
               <td style={tdStyle}>{Number(item.price).toLocaleString()}đ</td>
               <td style={tdStyle}>{item.duration} phút</td>
               <td style={tdStyle}>{item.description}</td>
+              <td style={tdStyle}>
+                <AdminSwitch
+                  checked={item.status === 'Active'}
+                  onChange={async (checked) => {
+                    try {
+                      const updatedPayload = {
+                        serviceName: item.name,
+                        serviceCategory: item.category,
+                        price: Number(item.price),
+                        duration: Number(item.duration),
+                        description: item.description,
+                        status: checked ? 'Active' : 'Inactive'
+                      };
+                      await adminServiceService.updateService(item.id, updatedPayload);
+                      await fetchServices();
+                    } catch (err) {
+                      console.error("Error toggling service status:", err);
+                    }
+                  }}
+                />
+              </td>
               <td style={tdStyle}>
                 <button onClick={() => handleEdit(item)} style={buttonStyle}>
                   Edit

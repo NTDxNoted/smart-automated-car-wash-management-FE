@@ -45,21 +45,31 @@ export default function BookingManagementPage() {
   }, [filters]);
 
   return (
-    <div className="p-6">
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Quản lý đặt lịch</h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Danh sách tất cả booking rửa xe và trạng thái
+          </p>
+        </div>
+      </div>
+
       {/* FILTER */}
-      <div className="flex gap-3 mb-4">
+      <div className="grid md:grid-cols-3 gap-4 bg-[#0c0f24] p-5 rounded-2xl border border-white/5 shadow-lg">
         <select
           value={filters.status}
           onChange={(e) =>
             setFilters({ ...filters, status: e.target.value, page: 1 })
           }
-          className="border px-3 py-2 rounded"
+          className="bg-[#070913] border border-white/10 text-white rounded-xl px-4 py-3 outline-none focus:border-cyan-500 transition"
         >
-          <option value="">All status</option>
+          <option value="">Tất cả trạng thái</option>
           <option value="PENDING">Pending</option>
           <option value="COMPLETED">Completed</option>
           <option value="FAILED">Failed</option>
           <option value="CANCELLED">Cancelled</option>
+          <option value="NOSHOW">No-show</option>
         </select>
 
         <input
@@ -68,16 +78,16 @@ export default function BookingManagementPage() {
           onChange={(e) =>
             setFilters({ ...filters, date: e.target.value, page: 1 })
           }
-          className="border px-3 py-2 rounded"
+          className="bg-[#070913] border border-white/10 text-white rounded-xl px-4 py-3 outline-none focus:border-cyan-500 transition"
         />
 
         <input
-          placeholder="Tìm SĐT / biển số"
+          placeholder="Tìm SĐT hoặc biển số..."
           value={filters.keyword}
           onChange={(e) =>
             setFilters({ ...filters, keyword: e.target.value, page: 1 })
           }
-          className="border px-3 py-2 rounded w-64"
+          className="bg-[#070913] border border-white/10 text-white rounded-xl px-4 py-3 outline-none focus:border-cyan-500 transition w-full"
         />
       </div>
 
@@ -87,6 +97,31 @@ export default function BookingManagementPage() {
         loading={loading}
         onRowClick={setSelectedBooking}
       />
+
+      {/* PAGINATION */}
+      <div className="flex justify-end items-center gap-2 mt-4">
+        <button
+          type="button"
+          disabled={filters.page === 1 || loading}
+          onClick={() => setFilters(prev => ({ ...prev, page: Math.max(prev.page - 1, 1) }))}
+          className="px-4 py-2 rounded-xl bg-[#0c0f24] border border-white/5 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent transition cursor-pointer"
+        >
+          Trước
+        </button>
+
+        <span className="px-4 text-slate-400 text-sm font-medium">
+          Trang {filters.page}
+        </span>
+
+        <button
+          type="button"
+          disabled={bookings.length === 0 || loading}
+          onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
+          className="px-4 py-2 rounded-xl bg-[#0c0f24] border border-white/5 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent transition cursor-pointer"
+        >
+          Sau
+        </button>
+      </div>
 
       {/* DRAWER */}
       <BookingDetailDrawer

@@ -126,14 +126,14 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-  if (auth.role === "ADMIN" && localStorage.getItem("admin_token")) {
-    navigate("/admin/dashboard", { replace: true });
-  }
+    if (auth.role === "ADMIN" && localStorage.getItem("admin_token")) {
+      navigate("/admin/dashboard", { replace: true });
+    }
 
-  if (auth.role === "MEMBER" && localStorage.getItem("member_token")) {
-    navigate("/bookings", { replace: true });
-  }
-}, [auth.role, navigate]); 
+    if (auth.role === "MEMBER" && localStorage.getItem("member_token")) {
+      navigate("/bookings", { replace: true });
+    }
+  }, [auth.role, navigate]); 
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -148,102 +148,77 @@ export default function LoginPage() {
     setLoading(true);
     setErrors({});
 
-     let adminError = null;
-
+    let adminError = null;
     
-try {
-   // ===== LOGIN ADMIN TRƯỚC =====
-  try {
-    const adminData = await adminLogin({
-      phone: form.phone.trim(),
-      password: form.password,
-    });
+    try {
+      // ===== LOGIN ADMIN TRƯỚC =====
+      try {
+        const adminData = await adminLogin({
+          phone: form.phone.trim(),
+          password: form.password,
+        });
 
-     localStorage.setItem("admin_token", adminData.token);
-      localStorage.setItem(
-        "admin_user",
-        JSON.stringify({
+        localStorage.setItem("admin_token", adminData.token);
+        localStorage.setItem(
+          "admin_user",
+          JSON.stringify({
+            adminId: adminData.adminId,
+            fullName: adminData.fullName,
+            role: "ADMIN",
+          })
+        );
+
+        setAuth({
+          token: adminData.token,
           adminId: adminData.adminId,
           fullName: adminData.fullName,
           role: "ADMIN",
+        });
+
+        toast.success(`Xin chào Admin ${adminData.fullName}`);
+        navigate("/admin/dashboard", { replace: true });
+        return;
+      } catch (err) {
+        // không phải admin => chuyển tiếp sang login member
+        adminError = err;
+      }
+
+      // ===== LOGIN MEMBER =====
+      const data = await login({
+        phone: form.phone.trim(),
+        password: form.password,
+      });
+
+      localStorage.setItem("member_token", data.token);
+      localStorage.setItem(
+        "member_user",
+        JSON.stringify({
+          customerId: data.customerId,
+          fullName: data.fullName,
+          tier: data.tier,
+          suspendedUntil: data.suspendedUntil ?? null,
+          role: "MEMBER",
         })
       );
 
-    setAuth({
-      token: adminData.token,
-        adminId: adminData.adminId,
-        fullName: adminData.fullName,
-        role: "ADMIN",
-    });
-
-    toast.success(
-      `Xin chào Admin ${adminData.fullName}`
-    );
-
-    navigate("/admin/dashboard", {
-      replace: true,
-    });
-
-    return;
-  } catch (err) {
-    // không phải admin => login member
-    adminError = err;
-  }
-
-  // ===== LOGIN MEMBER =====
-  const data = await login({
-    phone: form.phone.trim(),
-    password: form.password,
-  });
-
-  localStorage.setItem(
-    "member_token",
-    data.token
-  );
-
- localStorage.setItem(
-      "member_user",
-      JSON.stringify({
+      setAuth({
+        token: data.token,
         customerId: data.customerId,
         fullName: data.fullName,
         tier: data.tier,
         suspendedUntil: data.suspendedUntil ?? null,
         role: "MEMBER",
-    })
-  );
+      });
 
-  setAuth({
-    token: data.token,
-      customerId: data.customerId,
-      fullName: data.fullName,
-      tier: data.tier,
-      suspendedUntil: data.suspendedUntil ?? null,
-      role: "MEMBER",
-  });
       toast.success(`Chào mừng, ${data.fullName}!`);
-      navigate("/bookings", {
-    replace: true,
-  });
-
-
-
-      // Redirect: Admin → /admin/dashboard, Member → /
-      // if (data.role === "ADMIN") {
-      //   navigate("/admin/dashboard", { replace: true });
-      // } else {
-      //   navigate("/", { replace: true });
-      // }
-      if (data.role === "ADMIN") {
-        navigate("/admin/dashboard", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      navigate("/bookings", { replace: true });
     } catch (err) {
-      if (err.code === "ACCOUNT_LOCKED") {
-        toast.error("Tài khoản bị khóa, liên hệ Admin", { duration: 5000 });
-        setErrors({ password: "Tài khoản bị khóa, liên hệ Admin" });
-      } else if (err.code === "INVALID_CREDENTIALS") {
-        setErrors({ password: "Sai mật khẩu hoặc tài khoản bị khóa" });
+      if (err.code === "ACCOUNT_LOCKED" || err.message === "ACCOUNT_LOCKED") {
+        toast.error("Tài khoản bị khóa hoặc inactive. Vui lòng liên hệ Admin.", { duration: 5000 });
+        setErrors({ password: "Tài khoản bị khóa (inactive)" });
+      } else if (err.code === "INVALID_CREDENTIALS" || err.message === "INVALID_CREDENTIALS") {
+        toast.error("Sai số điện thoại hoặc mật khẩu.");
+        setErrors({ password: "Sai mật khẩu" });
       } else {
         toast.error("Không thể kết nối máy chủ. Vui lòng thử lại.");
       }

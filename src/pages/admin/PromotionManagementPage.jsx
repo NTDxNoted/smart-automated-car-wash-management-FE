@@ -10,8 +10,48 @@ const PromotionManagementPage = () => {
   const [togglingIds, setTogglingIds] = useState([]);
 
   const fetchPromotions = async () => {
-    const res = await adminPromotionService.getPromotions();
-    setPromotions(res.data?.data || res.data || []);
+    try {
+      const res = await adminPromotionService.getPromotions();
+      const rawList = res.data?.data || res.data || [];
+      const mapped = rawList.map(item => {
+        let dType = item.discountType ?? item.DiscountType;
+        if (dType === 'Percentage') dType = 'PERCENT';
+        if (dType === 'Fixed_Amount') dType = 'FIXED';
+
+        let minTierVal = item.minTier ?? item.MinTierID ?? item.minTierId;
+        let minTierDisplay = '';
+        let minTierId = null;
+
+        if (minTierVal) {
+          if (typeof minTierVal === 'object') {
+            minTierDisplay = minTierVal.tierName ?? minTierVal.TierName ?? minTierVal.name ?? '';
+            minTierId = minTierVal.tierID ?? minTierVal.tierId ?? minTierVal.id;
+          } else {
+            minTierDisplay = minTierVal;
+            minTierId = minTierVal;
+          }
+        }
+
+        return {
+          id: item.promotionId ?? item.promotionID ?? item.PromotionID ?? item.id,
+          title: item.title ?? item.Title,
+          promoCode: item.promoCode ?? item.PromoCode,
+          minTier: minTierDisplay,
+          minTierId: minTierId,
+          minTierID: minTierId,
+          discountType: dType,
+          value: item.value ?? item.discountValue ?? item.DiscountValue,
+          maxUsage: item.maxUsage ?? item.MaxUsage,
+          startDate: item.startDate ?? item.StartDate,
+          endDate: item.endDate ?? item.EndDate,
+          isActive: item.isActive !== undefined ? item.isActive : (item.IsActive !== undefined ? item.IsActive : true),
+        };
+      });
+      setPromotions(mapped);
+    } catch (err) {
+      console.error("Error fetching promotions:", err);
+      setPromotions([]);
+    }
   };
 
   useEffect(() => {
@@ -30,10 +70,27 @@ const PromotionManagementPage = () => {
 
   const handleSubmit = async (form) => {
     const payload = {
-      ...form,
+      title: form.title,
+      promoCode: form.promoCode,
+      minTier: form.minTier,
+      minTierId: form.minTier ? Number(form.minTier) : null,
+      minTierID: form.minTier ? Number(form.minTier) : null,
+      discountValue: Number(form.value),
       value: Number(form.value),
       maxUsage: Number(form.maxUsage),
+      startDate: form.startDate,
+      endDate: form.endDate,
+      isActive: form.isActive !== undefined ? form.isActive : true,
+      IsActive: form.isActive !== undefined ? form.isActive : true,
     };
+
+    if (form.discountType === 'PERCENT' || form.discountType === 'Percentage') {
+      payload.discountType = 'Percentage';
+      payload.DiscountType = 'Percentage';
+    } else if (form.discountType === 'FIXED' || form.discountType === 'Fixed_Amount') {
+      payload.discountType = 'Fixed_Amount';
+      payload.DiscountType = 'Fixed_Amount';
+    }
 
     if (selectedPromotion) {
       await adminPromotionService.updatePromotion(selectedPromotion.id, payload);
