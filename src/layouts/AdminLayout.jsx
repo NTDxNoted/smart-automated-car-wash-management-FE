@@ -1,4 +1,4 @@
-﻿import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import './AdminLayout.css';
@@ -111,10 +111,10 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F0F3FF] text-[#111C2C] flex font-sans overflow-x-hidden">
+    <div className="h-screen bg-[#F0F3FF] text-[#111C2C] flex font-sans overflow-hidden">
 
-      {/* Sidebar Panel - Fixed overlay on mobile, relative flex column on desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-40 admin-sidebar transition-all duration-300 transform md:relative md:translate-x-0 ${sidebarOpen
+      {/* Sidebar Panel - Fixed overlay on mobile, sticky flex column on desktop */}
+      <aside className={`fixed inset-y-0 left-0 z-40 admin-sidebar transition-all duration-300 transform md:sticky md:top-0 md:h-screen md:translate-x-0 ${sidebarOpen
         ? 'translate-x-0 desktop-open'
         : '-translate-x-full desktop-closed'
         } flex flex-col shrink-0`}>

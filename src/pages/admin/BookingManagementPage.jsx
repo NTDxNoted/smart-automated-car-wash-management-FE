@@ -47,7 +47,7 @@ export default function BookingManagementPage() {
   }, [filters]);
 
   return (
-    <div className="booking-page-container">
+    <div className="admin-booking-page-container">
       
       {/* Filters and Search Row */}
       <div className="booking-filters-row">
