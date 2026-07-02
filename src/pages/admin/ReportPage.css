@@ -31,7 +31,6 @@
 .report-tabs-bar {
   display: flex;
   flex-direction: row;
-  border-b-width: 0;
   border-bottom: 1px solid #E2E8F0;
   gap: 8px;
   overflow-x: auto;
