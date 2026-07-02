@@ -9,6 +9,15 @@
   margin: 0 auto;
 }
 
+.dashboard-page-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  color: #64748B;
+  width: 100%;
+}
+
 /* Metric Cards Layout */
 .metrics-grid {
   display: grid;
@@ -39,7 +48,7 @@
   .dashboard-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .chart-section {
     grid-column: span 2 / span 2;
   }
@@ -370,7 +379,8 @@
   align-items: center;
   padding: 0px 0px 0px 16px;
   gap: 12px;
-  width: 217.36px; /* 233.36px total minus padding gap */
+  width: 217.36px;
+  /* 233.36px total minus padding gap */
   height: 32px;
 }
 

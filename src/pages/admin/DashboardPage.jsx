@@ -98,7 +98,7 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, type }) {
             <Icon className="w-5.5 h-5.5" />
           </div>
         </div>
-        
+
         {subtitle && (
           <p className="text-[11px] font-bold tracking-wider text-[#4E5F7C] mt-auto uppercase" style={{ fontFamily: 'Geist, sans-serif', letterSpacing: '0.6px' }}>{subtitle}</p>
         )}
@@ -289,12 +289,12 @@ export default function DashboardPage() {
         </div>
       );
     }
-    
+
     let bgClass = "bg-[#C9DBFD] text-[#4F607D]"; // default (e.g. NL, VT)
     if (customer === 'Hoang Anh') {
       bgClass = "bg-[#00A9CE] text-white";
     }
-    
+
     return (
       <div className={`w-8 h-8 rounded-full ${bgClass} flex items-center justify-center text-[10px] font-bold shadow-sm shrink-0`}>
         {getInitials(customer)}
@@ -363,6 +363,7 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-container">
+      <div className="dashboard-page-subtitle"></div>
       {/* Metric Cards Row */}
       <div className="metrics-grid">
         <MetricCard

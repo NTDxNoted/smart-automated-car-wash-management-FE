@@ -9,6 +9,15 @@
   margin: 0 auto;
 }
 
+.customer-page-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  color: #64748B;
+  width: 100%;
+}
+
 /* Customer Data Panel */
 .customer-data-panel {
   box-sizing: border-box;

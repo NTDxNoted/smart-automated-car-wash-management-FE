@@ -64,13 +64,14 @@ export default function CustomerListPage() {
 
   return (
     <div className="customer-page-container">
+      <div className="customer-page-subtitle"></div>
       {/* CustomerDataPanel */}
       <div className="customer-data-panel">
-        
+
         {/* HorizontalBorder (Header + Filters) */}
         <div className="customer-panel-header">
           <div className="customer-panel-title">Quản lý khách hàng</div>
-          
+
           {/* Filters Row */}
           <div className="customer-filters-row">
             {/* Search Input */}
