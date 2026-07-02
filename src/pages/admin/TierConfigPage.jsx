@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import adminTierService from '../../services/adminTierService';
 import TierModal from '../../components/admin/TierModal';
+import './TierConfigPage.css';
 
 const TierConfigPage = () => {
   const [tiers, setTiers] = useState([]);
@@ -47,87 +48,135 @@ const TierConfigPage = () => {
     };
 
     await adminTierService.updateTier(selectedTier.id, payload);
-
     setOpenModal(false);
     await fetchTiers();
   };
 
-  const getTierBadgeStyle = (name) => {
-    switch (name?.toUpperCase()) {
-      case "PLATINUM":
-        return "bg-gradient-to-r from-slate-350 via-indigo-100 to-indigo-300 text-indigo-950 font-extrabold px-3 py-1 rounded-md text-xs shadow border border-indigo-200/50";
-      case "GOLD":
-        return "bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 font-extrabold px-3 py-1 rounded-md text-xs shadow border border-amber-300/50";
-      case "SILVER":
-        return "bg-gradient-to-r from-slate-450 to-slate-200 text-slate-900 font-extrabold px-3 py-1 rounded-md text-xs shadow border border-slate-350/50";
-      default:
-        return "bg-cyan-950/40 text-cyan-400 px-3 py-1 rounded-md text-xs border border-cyan-500/30 font-bold";
+  const renderTierIcon = (name) => {
+    const norm = name?.toUpperCase() || '';
+    if (norm === 'PLATINUM') {
+      return (
+        <div className="tier-icon-box platinum">
+          <svg className="tier-svg platinum" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+            <path d="M6 3h12l4 6-10 13L2 9z" />
+            <path d="M11 3 8 9l4 13 4-13-3-6" />
+            <path d="M2 9h20" />
+          </svg>
+        </div>
+      );
     }
+    if (norm === 'GOLD') {
+      return (
+        <div className="tier-icon-box gold">
+          <svg className="tier-svg gold" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+        </div>
+      );
+    }
+    if (norm === 'SILVER') {
+      return (
+        <div className="tier-icon-box silver">
+          <svg className="tier-svg silver" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+      );
+    }
+    return (
+      <div className="tier-icon-box member">
+        <svg className="tier-svg member" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+    );
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Panel */}
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Cấu hình hạng thành viên</h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Thiết lập điều kiện chi tiêu để thăng hạng, tỉ lệ giảm giá và quyền lợi đặt lịch
-          </p>
-        </div>
-      </div>
+    <div className="tier-page-container">
+      {/* Page Subtitle */}
+      <div className="tier-page-subtitle"></div>
 
       {/* Tier Config Table Card */}
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl">
-        <h3 className="text-white text-lg font-bold mb-6">
-          Chính sách hạng thành viên
-        </h3>
+      <div className="tier-data-card">
+        {/* Card Header */}
+        <div className="tier-card-header">
+          <h3 className="tier-card-title">Cấu hình hạng thành viên</h3>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <button
+            onClick={() => alert("Tính năng này hiện tại được cấu hình tự động thông qua hệ thống phân hạng mặc định.")}
+            className="tier-add-btn"
+          >
+            <span>+</span> Thêm hạng mới
+          </button>
+        </div>
+
+        {/* Card Body / Table Wrapper */}
+        <div className="tier-table-wrapper">
+          <table className="tier-table">
             <thead>
-              <tr className="border-b border-white/5 bg-white/[0.01] text-slate-455 text-xs font-bold uppercase tracking-wider">
-                <th className="px-6 py-4 text-left">Hạng thành viên</th>
-                <th className="px-6 py-4 text-left">Chi tiêu tối thiểu</th>
-                <th className="px-6 py-4 text-left">Ưu đãi giảm giá</th>
-                <th className="px-6 py-4 text-left">Thời hạn đặt lịch tối đa</th>
-                <th className="px-6 py-4 text-right">Tác vụ</th>
+              <tr className="tier-thead-row">
+                <th className="tier-th name">Tên hạng</th>
+                <th className="tier-th spending">Chi tiêu tối thiểu</th>
+                <th className="tier-th discount">Ưu đãi giảm giá (%)</th>
+                <th className="tier-th window">Số lần booking</th>
+                <th className="tier-th action">Tác vụ</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody>
               {tiers.map((tier) => (
                 <tr
                   key={tier.id}
-                  className="hover:bg-white/[0.01] transition-all duration-150"
+                  className="tier-tbody-row"
                 >
-                  <td className="px-6 py-4">
-                    <span className={getTierBadgeStyle(tier.name)}>
-                      {tier.name}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-slate-200 font-semibold font-mono">
-                    {tier.minSpending?.toLocaleString()}đ
-                  </td>
-                  <td className="px-6 py-4 text-slate-200 font-bold font-mono">
-                    {tier.discountRate}%
-                  </td>
-                  <td className="px-6 py-4 text-slate-350 font-mono text-sm">
-                    {tier.bookingWindowDays} ngày
+                  <td className="tier-td name">
+                    {renderTierIcon(tier.name)}
+                    <span className="tier-name-text">{tier.name}</span>
                   </td>
 
-                  <td className="px-6 py-4 text-right">
+                  <td className="tier-td spending">
+                    <span className="tier-spending-text">
+                      {tier.minSpending?.toLocaleString()}
+                    </span>
+                  </td>
+
+                  <td className="tier-td discount">
+                    <span className="tier-discount-text">
+                      {tier.discountRate}%
+                    </span>
+                  </td>
+
+                  <td className="tier-td window">
+                    <span className="tier-window-text">
+                      {tier.bookingWindowDays}
+                    </span>
+                  </td>
+
+                  <td className="tier-td action">
                     <button
                       onClick={() => handleEdit(tier)}
-                      className="bg-[#070913] hover:bg-white/[0.04] border border-white/10 text-cyan-400 font-bold px-3.5 py-1.5 rounded-lg text-xs transition cursor-pointer"
+                      className="tier-edit-btn"
+                      title="Chỉnh sửa cấu hình hạng"
                     >
-                      Cập nhật
+                      <svg className="w-5.5 h-5.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Card Footer */}
+        <div className="tier-card-footer">
+          <span className="tier-footer-text">
+            Showing {tiers.length} tiers
+          </span>
         </div>
       </div>
 
