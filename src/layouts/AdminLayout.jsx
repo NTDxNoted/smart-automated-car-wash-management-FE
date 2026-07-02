@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import './AdminLayout.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎨 SVG NAVIGATION ICONS
@@ -113,40 +114,40 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-[#F0F3FF] text-[#111C2C] flex font-sans overflow-x-hidden">
 
       {/* Sidebar Panel - Fixed overlay on mobile, relative flex column on desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-all duration-300 transform md:relative md:translate-x-0 ${sidebarOpen
-          ? 'translate-x-0 w-64 md:w-64'
-          : '-translate-x-full md:translate-x-0 md:w-0 md:border-r-0 overflow-hidden'
+      <aside className={`fixed inset-y-0 left-0 z-40 admin-sidebar transition-all duration-300 transform md:relative md:translate-x-0 ${sidebarOpen
+          ? 'translate-x-0 desktop-open'
+          : '-translate-x-full desktop-closed'
         } flex flex-col shrink-0`}>
 
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3 shrink-0">
+        <div className="sidebar-logo-container gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
             {/* Water droplet SVG */}
             <svg className="w-4.5 h-4.5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
             </svg>
           </div>
-          <span className="font-black tracking-wider uppercase text-cyan-400 text-sm">
+          <span className="sidebar-logo-text">
             AUTOWASH
           </span>
         </div>
 
         {/* User Profile - Top aligned */}
-        <div className="p-5 border-b border-white/5 bg-[#0a0d20]/30 shrink-0">
+        <div className="sidebar-user-container shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-md shrink-0">
               {user?.fullName?.charAt(0) || 'A'}
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-semibold text-slate-200 truncate">{user?.fullName || 'Alex Turner'}</p>
-              <p className="text-xs font-semibold text-emerald-500 mt-0.5">Administrator</p>
+              <p className="text-xs sidebar-user-role mt-0.5">Administrator</p>
             </div>
           </div>
         </div>
 
         {/* Navigation Menu Links */}
-        <nav className="flex-grow p-4 space-y-1.5 overflow-y-auto">
-          <div className="px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+        <nav className="flex-grow sidebar-nav-container space-y-1.5 overflow-y-auto">
+          <div className="sidebar-nav-label">
             MENU
           </div>
           {navItems.map((item) => {
@@ -157,12 +158,9 @@ export default function AdminLayout() {
                 key={item.path}
                 to={item.path}
                 onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive
-                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
-                    : 'text-slate-400 hover:bg-white/[0.03] hover:text-slate-200'
-                  }`}
+                className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
               >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <Icon className="w-5 h-5 shrink-0" />
                 <span>{item.label}</span>
               </Link>
             );
@@ -170,8 +168,8 @@ export default function AdminLayout() {
         </nav>
 
         {/* Bottom Section */}
-        <div className="p-4 border-t border-white/5 space-y-1 bg-[#0a0d20] shrink-0">
-          <button className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-white/[0.03] hover:text-slate-200 transition-all cursor-pointer">
+        <div className="sidebar-bottom-container space-y-1 shrink-0">
+          <button className="sidebar-bottom-item">
             <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -182,7 +180,7 @@ export default function AdminLayout() {
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all cursor-pointer"
+            className="sidebar-bottom-item logout"
           >
             <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -226,7 +224,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Content Body */}
-        <main className="flex-grow p-6 overflow-y-auto">
+        <main className="flex-grow p-6 md:p-8 overflow-y-auto">
           <Outlet />
         </main>
       </div>

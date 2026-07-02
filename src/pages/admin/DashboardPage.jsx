@@ -279,6 +279,29 @@ export default function DashboardPage() {
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
   };
 
+  const renderAvatar = (customer) => {
+    if (customer === 'Tran Minh') {
+      return (
+        <div className="w-8 h-8 rounded-full border border-[#BCC8CE] bg-white flex items-center justify-center text-[#BCC8CE] shrink-0">
+          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+      );
+    }
+    
+    let bgClass = "bg-[#C9DBFD] text-[#4F607D]"; // default (e.g. NL, VT)
+    if (customer === 'Hoang Anh') {
+      bgClass = "bg-[#00A9CE] text-white";
+    }
+    
+    return (
+      <div className={`w-8 h-8 rounded-full ${bgClass} flex items-center justify-center text-[10px] font-bold shadow-sm shrink-0`}>
+        {getInitials(customer)}
+      </div>
+    );
+  };
+
   const formatBookingId = (id) => {
     if (!id) return '#AW-0000';
     const cleanId = String(id).replace(/[^a-zA-Z0-9]/g, '');
@@ -293,18 +316,18 @@ export default function DashboardPage() {
     switch (normStatus) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EBF1FF] text-[#4F607D] border border-[#C9DBFD]/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4F607D] mr-1.5"></span>
-            Completed
+          <span className="status-badge-figma completed">
+            <span className="status-dot"></span>
+            <span className="status-text">Completed</span>
           </span>
         );
       case 'PROCESSING':
       case 'IN-PROGRESS':
       case 'IN_PROGRESS':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#00A9CE] text-white shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-white mr-1.5"></span>
-            Processing
+          <span className="status-badge-figma processing">
+            <span className="status-dot"></span>
+            <span className="status-text">Processing</span>
           </span>
         );
       case 'CANCELLED':
@@ -313,24 +336,24 @@ export default function DashboardPage() {
       case 'CANCEL_BY_CUSTOMER':
       case 'FAILED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FFDAD6] text-[#93000A] border border-[#FFBDC3]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#93000A] mr-1.5"></span>
-            Canceled
+          <span className="status-badge-figma cancelled">
+            <span className="status-dot"></span>
+            <span className="status-text">Canceled</span>
           </span>
         );
       case 'NOSHOW':
       case 'NO-SHOW':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>
-            No-show
+          <span className="status-badge-figma completed">
+            <span className="status-dot bg-slate-400"></span>
+            <span className="status-text text-slate-500">No-show</span>
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
-            Pending
+          <span className="status-badge-figma completed">
+            <span className="status-dot bg-amber-500 animate-pulse"></span>
+            <span className="status-text text-amber-700">Pending</span>
           </span>
         );
     }
@@ -510,55 +533,51 @@ export default function DashboardPage() {
 
       {/* Recent Bookings Table */}
       <div className="bookings-table-container">
-        <div className="p-6 border-b border-[#BCC8CE]/40 flex items-center justify-between">
+        <div className="bookings-header-row">
           <h3 className="text-[#111C2C] text-lg font-bold" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
             Recent Bookings
           </h3>
-          <span className="text-xs font-bold text-[#00677F] hover:underline cursor-pointer transition-colors">
+          <button className="bookings-view-all-btn">
             View All
-          </span>
+          </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-[#F0F3FF]">
-              <tr className="text-left text-[#3D494D] text-xs font-bold uppercase tracking-wider border-b border-[#BCC8CE]/40">
-                <th className="px-6 py-4">CODE</th>
-                <th className="px-6 py-4">CUSTOMER</th>
-                <th className="px-6 py-4">LICENSE PLATE</th>
-                <th className="px-6 py-4">SERVICE</th>
-                <th className="px-6 py-4">STATUS</th>
+        <div className="bookings-table-wrapper">
+          <table className="bookings-table">
+            <thead>
+              <tr className="bookings-thead-row">
+                <th className="bookings-th code">CODE</th>
+                <th className="bookings-th customer">CUSTOMER</th>
+                <th className="bookings-th plate">LICENSE PLATE</th>
+                <th className="bookings-th service">SERVICE</th>
+                <th className="bookings-th status">STATUS</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-[#BCC8CE]/30">
+            <tbody>
               {recentBookings.map((booking) => (
                 <tr
                   key={booking.id}
-                  className="hover:bg-[#F0F3FF]/40 transition-all duration-150"
+                  className="bookings-tbody-row"
                 >
-                  <td className="px-6 py-4 text-[#111C2C] font-semibold font-mono text-sm">
+                  <td className="bookings-td code">
                     {formatBookingId(booking.id)}
                   </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#00A9CE] to-[#00677F] flex items-center justify-center text-[10px] font-bold text-white shadow-md shrink-0">
-                        {getInitials(booking.customer)}
-                      </div>
-                      <p className="text-sm font-semibold text-[#111C2C]">{booking.customer}</p>
-                    </div>
+                  <td className="bookings-td customer">
+                    {renderAvatar(booking.customer)}
+                    <span className="bookings-td customer-name">{booking.customer}</span>
                   </td>
 
-                  <td className="px-6 py-4 text-[#3D494D] font-mono text-sm font-semibold tracking-wider">
+                  <td className="bookings-td plate">
                     {booking.plate}
                   </td>
 
-                  <td className="px-6 py-4 text-[#3D494D] text-sm font-medium">
+                  <td className="bookings-td service">
                     {booking.service}
                   </td>
 
-                  <td className="px-6 py-4">
+                  <td className="bookings-td status">
                     {getStatusBadge(booking.status)}
                   </td>
                 </tr>

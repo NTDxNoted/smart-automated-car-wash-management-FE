@@ -5,6 +5,8 @@
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  max-width: 1008px;
+  margin: 0 auto;
 }
 
 /* Metric Cards Layout */
@@ -191,12 +193,273 @@
 
 /* Recent Bookings Table styles */
 .bookings-table-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 944px;
+  height: 422.5px;
   background: #F9F9FF;
   border: 1px solid rgba(188, 200, 206, 0.5);
   box-shadow: 0px 4px 20px rgba(10, 29, 55, 0.05);
   border-radius: 12px;
   overflow: hidden;
 }
+
+/* Recent Bookings Header Row */
+.bookings-header-row {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  width: 942px;
+  height: 81px;
+  background: #F9F9FF;
+  border-bottom: 1px solid rgba(188, 200, 206, 0.5);
+}
+
+.bookings-view-all-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 12px;
+  width: 75.02px;
+  height: 28px;
+  border-radius: 4px;
+  font-family: 'Geist', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.6px;
+  color: #00677F;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bookings-view-all-btn:hover {
+  background: rgba(0, 103, 127, 0.05);
+}
+
+/* Table layout adjustments */
+.bookings-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 942px;
+  height: 339.5px;
+  overflow-y: auto;
+}
+
+.bookings-table {
+  width: 942px;
+  border-collapse: collapse;
+}
+
+/* Thead styling */
+.bookings-thead-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px;
+  width: 942px;
+  height: 49px;
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(188, 200, 206, 0.5);
+}
+
+.bookings-th {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  font-family: 'Geist', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #3D494D;
+}
+
+.bookings-th.code {
+  padding: 16px 16px 16px 24px;
+  width: 96px;
+}
+
+.bookings-th.customer {
+  width: 233.36px;
+}
+
+.bookings-th.plate {
+  width: 187.89px;
+}
+
+.bookings-th.service {
+  width: 257.38px;
+}
+
+.bookings-th.status {
+  padding: 16px 24px 16px 16px;
+  width: 199.38px;
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* Tbody row styling with Zebra Stripe */
+.bookings-tbody-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 942px;
+  height: 73px;
+  background: #F9F9FF;
+  border-bottom: 1px solid rgba(188, 200, 206, 0.3);
+}
+
+.bookings-tbody-row:nth-child(even) {
+  height: 74px;
+  background: rgba(191, 200, 201, 0.1);
+  border-top: 1px solid rgba(188, 200, 206, 0.3);
+}
+
+/* Td cells styling */
+.bookings-td {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  height: 73px;
+  justify-content: center;
+}
+
+.bookings-td.code {
+  padding: 16.5px 16px 16.5px 24px;
+  width: 96px;
+  font-family: 'Geist', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #111C2C;
+}
+
+.bookings-td.customer {
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 0px 0px 16px;
+  gap: 12px;
+  width: 217.36px; /* 233.36px total minus padding gap */
+  height: 32px;
+}
+
+.bookings-td.customer-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #111C2C;
+}
+
+.bookings-td.plate {
+  padding: 26.5px 16px 26.5px 32px;
+  width: 203.89px;
+  font-family: 'Geist', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #3D494D;
+}
+
+.bookings-td.service {
+  padding: 26px 16px 27px;
+  width: 257.38px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #111C2C;
+}
+
+.bookings-td.status {
+  padding: 24.5px 24px 24.5px 16px;
+  width: 199.38px;
+  align-items: flex-end;
+}
+
+/* Dynamic status badge layout */
+.status-badge-figma {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 10px;
+  gap: 6px;
+  height: 24px;
+  border-radius: 9999px;
+}
+
+.status-badge-figma.processing {
+  width: 96.81px;
+  background: #00A9CE;
+}
+
+.status-badge-figma.processing .status-dot {
+  background: #00677F;
+}
+
+.status-badge-figma.processing .status-text {
+  color: #003846;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.status-badge-figma.completed {
+  width: 95.39px;
+  background: #D8E3FA;
+}
+
+.status-badge-figma.completed .status-dot {
+  background: #6D797E;
+}
+
+.status-badge-figma.completed .status-text {
+  color: #3D494D;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.status-badge-figma.cancelled {
+  width: 86.89px;
+  background: #FFDAD6;
+}
+
+.status-badge-figma.cancelled .status-dot {
+  background: #BA1A1A;
+}
+
+.status-badge-figma.cancelled .status-text {
+  color: #93000A;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
 
 /* Fast Status Card Items */
 .fast-status-item {
