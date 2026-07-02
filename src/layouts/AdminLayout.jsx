@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+﻿import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import './AdminLayout.css';
@@ -128,7 +128,7 @@ export default function AdminLayout() {
             </svg>
           </div>
           <span className="sidebar-logo-text">
-            AUTOWASH
+            AUTOWASH PRO
           </span>
         </div>
 
@@ -209,10 +209,10 @@ export default function AdminLayout() {
             <h1 className="text-2xl font-bold text-[#111C2C] tracking-tight">
               {location.pathname === '/admin/dashboard'
                 ? 'Overview'
-                : (navItems.find((item) => 
-                    location.pathname === item.path || 
-                    (item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path + '/'))
-                  )?.label || 'Dashboard')}
+                : (navItems.find((item) =>
+                  location.pathname === item.path ||
+                  (item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path + '/'))
+                )?.label || 'Dashboard')}
             </h1>
           </div>
 
