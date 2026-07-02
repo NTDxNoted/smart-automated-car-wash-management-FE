@@ -403,6 +403,38 @@
   line-height: 16px;
 }
 
+.customer-status-badge.locked {
+  background: #FFDAD6;
+}
+
+.customer-status-badge.locked .status-dot {
+  background: #BA1A1A;
+}
+
+.customer-status-badge.locked .status-text {
+  color: #93000A;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.customer-status-badge.suspended {
+  background: #FEF3C7;
+}
+
+.customer-status-badge.suspended .status-dot {
+  background: #D97706;
+}
+
+.customer-status-badge.suspended .status-text {
+  color: #92400E;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+}
+
 .customer-status-badge .status-dot {
   width: 8px;
   height: 8px;

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { toggleLock } from '../../services/adminCustomerService';
 
-export default function CustomerTable({ customers = [], onRefresh }) {
+export default function CustomerTable({ customers = [], onRefresh, onToggleLock }) {
   const getTierBadgeClass = (tier) => {
     switch (tier?.toUpperCase()) {
       case 'GOLD':
@@ -16,13 +16,53 @@ export default function CustomerTable({ customers = [], onRefresh }) {
     }
   };
 
-  const handleToggleLock = async (id) => {
+  const handleToggleLock = async (customer) => {
+    const isLocked = customer.isLocked || customer.status === 'LOCKED';
+    const confirmMessage = isLocked
+      ? `Bạn có chắc chắn muốn mở khóa tài khoản của khách hàng ${customer.fullName || ''}?`
+      : `Bạn có chắc chắn muốn khóa tài khoản của khách hàng ${customer.fullName || ''}?`;
+
+    if (!window.confirm(confirmMessage)) return;
+
     try {
-      await toggleLock(id);
+      const data = await toggleLock(customer.id);
+      const newLockedState = typeof data?.isLocked === 'boolean' ? data.isLocked : !isLocked;
+
+      if (onToggleLock) {
+        onToggleLock(customer.id, newLockedState);
+      }
       if (onRefresh) onRefresh();
     } catch (err) {
       console.error('Toggle lock error:', err);
     }
+  };
+
+  const getStatusBadge = (customer) => {
+    const isLocked = customer.isLocked || customer.status === 'LOCKED';
+    const isSuspended = customer.status === 'SUSPENDED';
+
+    if (isLocked) {
+      return (
+        <div className="customer-status-badge locked">
+          <span className="status-dot" />
+          <span className="status-text">Bị khóa</span>
+        </div>
+      );
+    }
+    if (isSuspended) {
+      return (
+        <div className="customer-status-badge suspended">
+          <span className="status-dot" />
+          <span className="status-text">Tạm đình chỉ</span>
+        </div>
+      );
+    }
+    return (
+      <div className="customer-status-badge active">
+        <span className="status-dot" />
+        <span className="status-text">Hoạt động</span>
+      </div>
+    );
   };
 
   if (customers.length === 0) {
@@ -72,13 +112,10 @@ export default function CustomerTable({ customers = [], onRefresh }) {
                 </span>
               </td>
               <td className="customer-td status">
-                <div className={`customer-status-badge ${isLocked ? 'offline' : 'active'}`}>
-                  <span className="status-dot" />
-                  <span className="status-text">{isLocked ? 'Ngoại tuyến' : 'Hoạt động'}</span>
-                </div>
+                {getStatusBadge(customer)}
               </td>
               <td className="customer-td actions">
-                {/* Edit Button -> navigate to detail */}
+                {/* Detail Page Link */}
                 <Link
                   to={`/admin/customers/${customer.id}`}
                   className="customer-action-btn edit"
@@ -92,14 +129,21 @@ export default function CustomerTable({ customers = [], onRefresh }) {
 
                 {/* Toggle Lock Button */}
                 <button
-                  onClick={() => handleToggleLock(customer.id)}
+                  onClick={() => handleToggleLock(customer)}
                   className="customer-action-btn lock"
                   title={isLocked ? "Mở khóa tài khoản" : "Khóa tài khoản"}
                 >
-                  <svg className="w-[13.33px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
+                  {isLocked ? (
+                    <svg className="w-[14px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                    </svg>
+                  ) : (
+                    <svg className="w-[14px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  )}
                 </button>
               </td>
             </tr>

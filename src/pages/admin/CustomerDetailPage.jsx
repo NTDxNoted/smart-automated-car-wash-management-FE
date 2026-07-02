@@ -31,32 +31,30 @@ export default function CustomerDetailPage() {
   const handleToggleLock = async () => {
     if (lockLoading) return;
 
-    const ok = window.confirm(
-      'Bạn có chắc muốn thay đổi trạng thái tài khoản?'
-    );
+    const isCurrentlyLocked = customer.isLocked || customer.status === 'LOCKED';
+    const confirmMessage = isCurrentlyLocked
+      ? `Bạn có chắc chắn muốn mở khóa tài khoản của khách hàng ${customer.fullName || ''}?`
+      : `Bạn có chắc chắn muốn khóa tài khoản của khách hàng ${customer.fullName || ''}?`;
 
-    if (!ok) return;
+    if (!window.confirm(confirmMessage)) return;
 
     try {
       setLockLoading(true);
 
       const data = await toggleLock(id);
 
-      setCustomer((prev) => ({
-        ...prev,
-        isLocked:
+      setCustomer((prev) => {
+        const isPrevLocked = prev.isLocked || prev.status === 'LOCKED';
+        const newLocked =
           typeof data?.isLocked === 'boolean'
             ? data.isLocked
-            : !prev.isLocked,
-        status:
-          typeof data?.isLocked === 'boolean'
-            ? data.isLocked
-              ? 'LOCKED'
-              : 'ACTIVE'
-            : prev.isLocked
-              ? 'ACTIVE'
-              : 'LOCKED',
-      }));
+            : !isPrevLocked;
+        return {
+          ...prev,
+          isLocked: newLocked,
+          status: newLocked ? 'LOCKED' : 'ACTIVE',
+        };
+      });
     } catch (err) {
       console.error(err);
       alert('Không thể cập nhật trạng thái tài khoản');
@@ -109,7 +107,7 @@ export default function CustomerDetailPage() {
           </h2>
 
           <LockToggleButton
-            isLocked={customer.isLocked}
+            isLocked={customer.isLocked || customer.status === 'LOCKED'}
             loading={lockLoading}
             onClick={handleToggleLock}
           />

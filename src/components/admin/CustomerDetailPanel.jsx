@@ -38,17 +38,29 @@ export default function CustomerDetailPanel({ customer }) {
 
       <div className="bg-[#070913] p-4 rounded-lg">
         <p className="text-slate-400 text-xs">Trạng thái</p>
-        <span
-          className={`inline-block mt-2 px-2 py-1 rounded text-xs font-semibold ${
-            customer.isLocked || customer.status === 'LOCKED'
-              ? 'bg-red-500/20 text-red-400 border border-red-500/20'
-              : 'bg-green-500/20 text-green-400 border border-green-500/20'
-          }`}
-        >
-          {customer.isLocked || customer.status === 'LOCKED'
-            ? 'Bị khóa'
-            : 'Hoạt động'}
-        </span>
+        {(() => {
+          const isLocked = customer.isLocked || customer.status === 'LOCKED';
+          const isSuspended = customer.status === 'SUSPENDED';
+          if (isLocked) {
+            return (
+              <span className="inline-block mt-2 px-2 py-1 rounded text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/20">
+                Bị khóa
+              </span>
+            );
+          }
+          if (isSuspended) {
+            return (
+              <span className="inline-block mt-2 px-2 py-1 rounded text-xs font-semibold bg-yellow-500/20 text-yellow-400 border border-yellow-500/20">
+                Tạm đình chỉ
+              </span>
+            );
+          }
+          return (
+            <span className="inline-block mt-2 px-2 py-1 rounded text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/20">
+              Hoạt động
+            </span>
+          );
+        })()}
       </div>
     </div>
   );

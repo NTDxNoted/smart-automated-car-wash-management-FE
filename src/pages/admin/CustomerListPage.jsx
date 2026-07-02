@@ -133,7 +133,23 @@ export default function CustomerListPage() {
               <p className="text-sm font-medium">Đang tải danh sách khách hàng...</p>
             </div>
           ) : (
-            <CustomerTable customers={customers} onRefresh={loadCustomers} />
+            <CustomerTable
+              customers={customers}
+              onRefresh={loadCustomers}
+              onToggleLock={(id, newLocked) => {
+                setCustomers((prev) =>
+                  prev.map((c) =>
+                    c.id === id
+                      ? {
+                          ...c,
+                          isLocked: newLocked,
+                          status: newLocked ? "LOCKED" : "ACTIVE",
+                        }
+                      : c
+                  )
+                );
+              }}
+            />
           )}
         </div>
 
