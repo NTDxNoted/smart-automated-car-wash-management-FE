@@ -261,6 +261,13 @@
   border-collapse: collapse;
 }
 
+.bookings-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #FFFFFF;
+}
+
 /* Thead styling */
 .bookings-thead-row {
   display: flex;
@@ -272,6 +279,9 @@
   height: 49px;
   background: #FFFFFF;
   border-bottom: 1px solid rgba(188, 200, 206, 0.5);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .bookings-th {
@@ -286,6 +296,10 @@
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: #3D494D;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #FFFFFF;
 }
 
 .bookings-th.code {

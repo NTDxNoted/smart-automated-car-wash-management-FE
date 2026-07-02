@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+﻿import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import './AdminLayout.css';
@@ -102,7 +102,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { label: 'Tổng quan', path: '/admin/dashboard', icon: OverviewIcon },
-    { label: 'Đặt lịch', path: '/admin/bookings', icon: BookingIcon },
+    { label: 'Lịch khách hàng', path: '/admin/bookings', icon: BookingIcon },
     { label: 'Khách hàng', path: '/admin/customers', icon: CustomersIcon },
     { label: 'Dịch vụ', path: '/admin/services', icon: ServicesIcon },
     { label: 'Khuyến mãi', path: '/admin/promotions', icon: PromotionsIcon },
@@ -115,8 +115,8 @@ export default function AdminLayout() {
 
       {/* Sidebar Panel - Fixed overlay on mobile, relative flex column on desktop */}
       <aside className={`fixed inset-y-0 left-0 z-40 admin-sidebar transition-all duration-300 transform md:relative md:translate-x-0 ${sidebarOpen
-          ? 'translate-x-0 desktop-open'
-          : '-translate-x-full desktop-closed'
+        ? 'translate-x-0 desktop-open'
+        : '-translate-x-full desktop-closed'
         } flex flex-col shrink-0`}>
 
         {/* Logo */}
