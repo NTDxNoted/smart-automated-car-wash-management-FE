@@ -94,12 +94,18 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, isWarning = fal
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{title}</p>
           <p className="text-3xl font-bold text-white mt-3 tracking-tight">{value}</p>
           {subtitle && (
-            <p className="text-xs text-slate-400 mt-2 font-medium">{subtitle}</p>
+            <p className="text-xs text-slate-400 mt-2.5 font-medium">{subtitle}</p>
           )}
           {trend && (
-            <div className="flex items-center gap-1.5 mt-2">
+            <div className="flex items-center gap-1.5 mt-2.5">
               <TrendingUpIcon className="w-3.5 h-3.5 text-cyan-400" />
               <p className="text-xs font-semibold text-cyan-400">{trend}</p>
+            </div>
+          )}
+          {isWarning && (
+            <div className="mt-2.5 flex items-center gap-1.5 text-red-400 text-xs font-semibold">
+              <AlertTriangleIcon className="w-3.5 h-3.5 text-red-400" />
+              <span>Requires follow-up</span>
             </div>
           )}
         </div>
@@ -111,16 +117,6 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, isWarning = fal
           <Icon className="w-6 h-6" />
         </div>
       </div>
-      {isWarning && (
-        <div className="mt-3 flex items-center gap-1.5 text-red-400 text-[11px] font-semibold">
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-          Yêu cầu xử lý
-        </div>
-      )}
     </div>
   );
 }
@@ -145,25 +141,32 @@ export default function DashboardPage() {
   ]);
   const [recentBookings, setRecentBookings] = useState([
     {
-      id: 'BK001',
-      customer: 'Nguyễn Văn Anh',
-      plate: '51H-123.45',
+      id: '1042',
+      customer: 'Nguyen Linh',
+      plate: '29A-123.45',
       service: 'Premium Wash + Wax',
+      status: 'Processing'
+    },
+    {
+      id: '1041',
+      customer: 'Tran Minh',
+      plate: '30G-987.65',
+      service: 'Standard Wash',
       status: 'Completed'
     },
     {
-      id: 'BK002',
-      customer: 'Trần Minh Bảo',
-      plate: '30G-987.65',
-      service: 'Standard Wash',
-      status: 'Pending'
-    },
-    {
-      id: 'BK003',
-      customer: 'Lê Quốc Khánh',
-      plate: '43A-555.22',
+      id: '1040',
+      customer: 'Hoang Anh',
+      plate: '51F-555.22',
       service: 'Interior Detailing',
       status: 'Cancelled'
+    },
+    {
+      id: '1039',
+      customer: 'Vu Tuan',
+      plate: '29C-444.11',
+      service: 'Express Wash',
+      status: 'Completed'
     }
   ]);
 
@@ -277,10 +280,10 @@ export default function DashboardPage() {
   const formatBookingId = (id) => {
     if (!id) return '#AW-0000';
     const cleanId = String(id).replace(/[^a-zA-Z0-9]/g, '');
-    if (cleanId.length > 6) {
-      return `#BK-${cleanId.slice(-4).toUpperCase()}`;
+    if (cleanId.length > 4) {
+      return `#AW-${cleanId.slice(-4).toUpperCase()}`;
     }
-    return `#BK-${cleanId.toUpperCase()}`;
+    return `#AW-${cleanId.toUpperCase()}`;
   };
 
   const getStatusBadge = (status) => {
@@ -288,8 +291,8 @@ export default function DashboardPage() {
     switch (normStatus) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800/60 text-slate-300 border border-white/5">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>
             Completed
           </span>
         );
@@ -297,17 +300,20 @@ export default function DashboardPage() {
       case 'IN-PROGRESS':
       case 'IN_PROGRESS':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mr-1.5 animate-pulse"></span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500 text-white shadow-sm border border-cyan-400/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-white mr-1.5"></span>
             Processing
           </span>
         );
       case 'CANCELLED':
+      case 'CANCEL':
+      case 'CANCEL_BY_ADMIN':
+      case 'CANCEL_BY_CUSTOMER':
       case 'FAILED':
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-red-400 mr-1.5"></span>
-            Cancelled
+            Canceled
           </span>
         );
       case 'NOSHOW':
@@ -330,52 +336,30 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#0c0f24] p-6 rounded-2xl border border-white/5">
-        <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
-            Tổng quan vận hành
-          </h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Theo dõi trạng thái và doanh thu hệ thống rửa xe hôm nay
-          </p>
-        </div>
-        <div className="flex items-center gap-4 self-start sm:self-center">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span>Máy chủ: Hoạt động</span>
-          </div>
-          <button className="p-2.5 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 text-slate-300 hover:text-white rounded-xl transition-all relative cursor-pointer">
-            <BellIcon className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-cyan-500 rounded-full"></span>
-          </button>
-        </div>
-      </div>
-
       {/* Metric Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <MetricCard
-          title="Doanh thu hôm nay"
+          title="Today's Revenue"
           value={revenueTodayStr}
-          trend="+8.2% so với hôm qua"
+          trend="+8.2% vs yesterday"
           icon={BriefcaseIcon}
         />
         <MetricCard
-          title="Lượng đặt lịch"
+          title="Active Bookings"
           value={bookingsToday.toString()}
-          subtitle={`${processingCount} xe đang xử lý`}
+          subtitle="14 currently processing"
           icon={CalendarIcon}
         />
         <MetricCard
-          title="Hạng mục chờ"
+          title="Pending Services"
           value={pendingCount.toString()}
-          subtitle="Đợi trung bình: 12 phút"
+          subtitle="Avg wait time: 12m"
           icon={ClockIcon}
         />
         <MetricCard
           title="No-shows"
           value={noShowCount.toString()}
-          isWarning={noShowCount > 0}
+          isWarning={true}
           icon={AlertTriangleIcon}
         />
       </div>
@@ -387,15 +371,18 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-white font-bold text-lg">
-                Doanh thu tuần này
+                Revenue This Week
               </h3>
               <p className="text-slate-400 text-sm">
-                Tổng quan hiệu suất doanh thu trong 7 ngày qua
+                7-day performance overview
               </p>
             </div>
-            <span className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-white/[0.02] border border-white/5 text-slate-350 hover:bg-white/[0.05] transition-all cursor-pointer">
-              Tuần này
-            </span>
+            <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white/[0.02] border border-white/5 text-slate-350 hover:bg-white/[0.05] transition-all cursor-pointer shadow-sm">
+              <span>This Week</span>
+              <svg className="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
           </div>
 
           <div className="w-full h-64">
@@ -449,7 +436,7 @@ export default function DashboardPage() {
 
           <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl flex items-center justify-between text-xs">
             <span className="text-slate-400">
-              💡 Doanh thu cao nhất tuần: <span className="font-semibold text-white">{Math.max(...chartData.map(d => d.revenue))}M</span>
+              💡 Highest this week: <span className="font-semibold text-white">{Math.max(...chartData.map(d => d.revenue))}M</span>
             </span>
           </div>
         </div>
@@ -458,19 +445,19 @@ export default function DashboardPage() {
         <div className="bg-[#0c0f24] border border-white/5 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
           <div>
             <h3 className="text-white font-bold text-lg mb-6">
-              Trạng thái nhanh
+              Fast Status
             </h3>
 
             <div className="space-y-5">
               {/* Progress: Vehicles Processing */}
               <div className="pb-5 border-b border-white/5">
                 <div className="flex items-center justify-between mb-2.5">
-                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Xe đang xử lý</p>
+                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Vehicles Processing</p>
                   <p className="text-lg font-bold text-white">{processingCount}</p>
                 </div>
                 <div className="w-full bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all"
+                    className="h-full bg-cyan-500 rounded-full transition-all"
                     style={{ width: '70%' }}
                   />
                 </div>
@@ -479,18 +466,18 @@ export default function DashboardPage() {
               {/* Staff Online avatars */}
               <div className="pb-5 border-b border-white/5">
                 <div className="flex items-center justify-between">
-                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Nhân viên online</p>
+                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Staff Online</p>
                   <div className="flex items-center -space-x-2">
-                    <div className="w-7 h-7 rounded-full bg-cyan-600 border border-[#0c0f24] flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                      AL
+                    <div className="w-7 h-7 rounded-full bg-cyan-500 border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
+                      J
                     </div>
-                    <div className="w-7 h-7 rounded-full bg-teal-600 border border-[#0c0f24] flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                      TR
+                    <div className="w-7 h-7 rounded-full bg-slate-500 border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
+                      M
                     </div>
-                    <div className="w-7 h-7 rounded-full bg-blue-600 border border-[#0c0f24] flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                      JD
+                    <div className="w-7 h-7 rounded-full bg-blue-500 border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
+                      S
                     </div>
-                    <div className="w-7 h-7 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center text-[9px] font-bold text-slate-350 shadow-sm">
+                    <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/50 flex items-center justify-center text-[9px] font-bold text-slate-300 shadow-sm shrink-0">
                       +5
                     </div>
                   </div>
@@ -500,7 +487,7 @@ export default function DashboardPage() {
               {/* Completion Rate */}
               <div className="pt-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Tỉ lệ hoàn thành</p>
+                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Completion Rate</p>
                   <div className="flex items-center gap-2">
                     <p className="text-lg font-bold text-white">92%</p>
                     <CheckCircleIcon className="w-5.5 h-5.5 text-emerald-400" />
@@ -516,10 +503,10 @@ export default function DashboardPage() {
       <div className="bg-[#0c0f24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-6 border-b border-white/5 flex items-center justify-between">
           <h3 className="text-white text-lg font-bold">
-            Đặt lịch gần đây
+            Recent Bookings
           </h3>
           <span className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 cursor-pointer transition-colors">
-            Xem tất cả
+            View All
           </span>
         </div>
 
@@ -527,11 +514,11 @@ export default function DashboardPage() {
           <table className="w-full">
             <thead className="bg-white/[0.01]">
               <tr className="text-left text-slate-450 text-xs font-bold uppercase tracking-wider border-b border-white/5">
-                <th className="px-6 py-4">Mã đơn</th>
-                <th className="px-6 py-4">Khách hàng</th>
-                <th className="px-6 py-4">Biển số</th>
-                <th className="px-6 py-4">Dịch vụ</th>
-                <th className="px-6 py-4">Trạng thái</th>
+                <th className="px-6 py-4">CODE</th>
+                <th className="px-6 py-4">CUSTOMER</th>
+                <th className="px-6 py-4">LICENSE PLATE</th>
+                <th className="px-6 py-4">SERVICE</th>
+                <th className="px-6 py-4">STATUS</th>
               </tr>
             </thead>
 
@@ -555,7 +542,7 @@ export default function DashboardPage() {
                   </td>
 
                   <td className="px-6 py-4 text-slate-300 font-mono text-sm font-semibold tracking-wider">
-                    {booking.plate}
+                     {booking.plate}
                   </td>
 
                   <td className="px-6 py-4 text-slate-300 text-sm">

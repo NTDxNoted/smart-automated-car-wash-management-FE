@@ -40,8 +40,10 @@ function CustomersIcon({ className }) {
 function ServicesIcon({ className }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 11 12 14 22 4" />
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+      <circle cx="7" cy="17" r="2" />
+      <circle cx="17" cy="17" r="2" />
+      <path d="M13 17H9" />
     </svg>
   );
 }
@@ -49,7 +51,8 @@ function ServicesIcon({ className }) {
 function PromotionsIcon({ className }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      <path d="M12 2H2v10l9.29 9.29c.39.39 1.02.39 1.41 0l7.59-7.59c.39-.39.39-1.02 0-1.41L12 2z" />
+      <circle cx="5" cy="5" r="1" />
     </svg>
   );
 }
@@ -57,8 +60,8 @@ function PromotionsIcon({ className }) {
 function TiersIcon({ className }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      <circle cx="12" cy="12" r="10" />
+      <polygon points="12 8 13.9 11.9 18.2 12.5 15.1 15.6 15.8 19.9 12 17.9 8.2 19.9 8.9 15.6 5.8 12.5 10.1 11.9" />
     </svg>
   );
 }
@@ -68,6 +71,15 @@ function ReportsIcon({ className }) {
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
       <polyline points="17 6 23 6 23 12" />
+    </svg>
+  );
+}
+
+function BellIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
     </svg>
   );
 }
@@ -100,11 +112,14 @@ export default function AdminLayout() {
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-transform duration-300 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-0'} md:relative md:translate-x-0 flex flex-col`}>
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center shadow-lg shadow-cyan-500/25">
-            <span className="text-white text-base font-bold">W</span>
+          <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
+            {/* Water droplet SVG */}
+            <svg className="w-4.5 h-4.5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+            </svg>
           </div>
-          <span className="font-black tracking-wider uppercase bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent text-sm">
-            AutoWash Admin
+          <span className="font-black tracking-wider uppercase text-cyan-400 text-sm">
+            AUTOWASH
           </span>
         </div>
 
@@ -115,16 +130,17 @@ export default function AdminLayout() {
               {user?.fullName?.charAt(0) || 'A'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-semibold text-slate-200 truncate">{user?.fullName || 'Administrator'}</p>
-              <span className="inline-block text-[9px] uppercase px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/10 mt-0.5">
-                Admin
-              </span>
+              <p className="text-sm font-semibold text-slate-200 truncate">{user?.fullName || 'Alex Turner'}</p>
+              <p className="text-xs font-semibold text-emerald-500 mt-0.5">Administrator</p>
             </div>
           </div>
         </div>
 
         {/* Navigation Menu Links */}
         <nav className="flex-grow p-4 space-y-1.5 overflow-y-auto">
+          <div className="px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            MENU
+          </div>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -154,7 +170,7 @@ export default function AdminLayout() {
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
-            <span>Trợ giúp</span>
+            <span>Help Center</span>
           </button>
 
           <button
@@ -166,7 +182,7 @@ export default function AdminLayout() {
               <polyline points="16 17 21 12 16 7" />
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
-            <span>Đăng xuất</span>
+            <span>Logout</span>
           </button>
         </div>
       </aside>
@@ -184,13 +200,20 @@ export default function AdminLayout() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-lg font-bold text-slate-200">
-              {navItems.find((item) => location.pathname === item.path)?.label || 'Dashboard'}
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              {location.pathname === '/admin/dashboard' 
+                ? 'Overview' 
+                : (navItems.find((item) => location.pathname === item.path)?.label || 'Dashboard')}
             </h1>
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-slate-400">
-            <span>Server: <span className="text-emerald-400 font-semibold">Online</span></span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-slate-400">
+              <span>Server: <span className="text-emerald-400 font-bold">• Online</span></span>
+            </div>
+            <button className="p-2.5 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 text-slate-350 hover:text-white rounded-xl transition-all relative cursor-pointer shadow-sm">
+              <BellIcon className="w-5 h-5" />
+            </button>
           </div>
         </header>
 
