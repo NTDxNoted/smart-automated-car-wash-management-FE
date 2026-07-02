@@ -83,35 +83,41 @@ function BellIcon({ className }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎛️ CUSTOM METRIC CARD COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-function MetricCard({ title, value, subtitle, trend, icon: Icon, isWarning = false }) {
+function MetricCard({ title, value, subtitle, trend, icon: Icon, type }) {
+  const isWarning = type === 'no-shows';
   return (
-    <div className={`metric-card-custom ${isWarning ? 'warning' : ''}`}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{title}</p>
-          <p className="text-3xl font-bold text-white mt-3 tracking-tight">{value}</p>
-          {subtitle && (
-            <p className="text-xs text-slate-400 mt-2.5 font-medium">{subtitle}</p>
-          )}
-          {trend && (
-            <div className="flex items-center gap-1.5 mt-2.5">
-              <TrendingUpIcon className="w-3.5 h-3.5 text-cyan-400" />
-              <p className="text-xs font-semibold text-cyan-400">{trend}</p>
-            </div>
-          )}
-          {isWarning && (
-            <div className="mt-2.5 flex items-center gap-1.5 text-red-400 text-xs font-semibold">
-              <AlertTriangleIcon className="w-3.5 h-3.5 text-red-400" />
-              <span>Requires follow-up</span>
-            </div>
-          )}
+    <div className={`metric-card-custom ${type}`}>
+      <div className="card-overlay-blur" />
+      <div className="card-content-wrapper">
+        <div className="flex items-start justify-between w-full">
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-[#3D494D] uppercase tracking-wider">{title}</p>
+            <p className="text-4xl font-extrabold text-[#111C2C] mt-2.5 tracking-tighter" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>{value}</p>
+          </div>
+          <div className="metric-icon-bg">
+            <Icon className="w-5.5 h-5.5" />
+          </div>
         </div>
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isWarning
-          ? 'bg-red-500/10 text-red-400 border border-red-500/10'
-          : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/10'
-          }`}>
-          <Icon className="w-6 h-6" />
-        </div>
+        
+        {subtitle && (
+          <p className="text-[11px] font-bold tracking-wider text-[#4E5F7C] mt-auto uppercase" style={{ fontFamily: 'Geist, sans-serif', letterSpacing: '0.6px' }}>{subtitle}</p>
+        )}
+        {trend && (
+          <div className="flex items-center gap-1 mt-auto">
+            <span className="text-[11px] font-bold text-[#00677F] tracking-wider flex items-center gap-1 uppercase" style={{ fontFamily: 'Geist, sans-serif', letterSpacing: '0.6px' }}>
+              <svg className="w-3 h-3 text-[#00677F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+              {trend}
+            </span>
+          </div>
+        )}
+        {isWarning && (
+          <div className="mt-auto flex items-center gap-1 text-[#BA1A1A] text-[11px] font-bold uppercase tracking-wider" style={{ fontFamily: 'Geist, sans-serif', letterSpacing: '0.6px' }}>
+            <AlertTriangleIcon className="w-3.5 h-3.5 text-[#BA1A1A]" />
+            <span>Requires follow-up</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -287,8 +293,8 @@ export default function DashboardPage() {
     switch (normStatus) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800/60 text-slate-300 border border-white/5">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EBF1FF] text-[#4F607D] border border-[#C9DBFD]/60">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4F607D] mr-1.5"></span>
             Completed
           </span>
         );
@@ -296,7 +302,7 @@ export default function DashboardPage() {
       case 'IN-PROGRESS':
       case 'IN_PROGRESS':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500 text-white shadow-sm border border-cyan-400/20">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#00A9CE] text-white shadow-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-white mr-1.5"></span>
             Processing
           </span>
@@ -307,23 +313,23 @@ export default function DashboardPage() {
       case 'CANCEL_BY_CUSTOMER':
       case 'FAILED':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400 mr-1.5"></span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FFDAD6] text-[#93000A] border border-[#FFBDC3]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#93000A] mr-1.5"></span>
             Canceled
           </span>
         );
       case 'NOSHOW':
       case 'NO-SHOW':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-500 mr-1.5"></span>
             No-show
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-1.5 animate-pulse"></span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
             Pending
           </span>
         );
@@ -341,24 +347,27 @@ export default function DashboardPage() {
           value={revenueTodayStr}
           trend="+8.2% vs yesterday"
           icon={BriefcaseIcon}
+          type="revenue"
         />
         <MetricCard
           title="Active Bookings"
           value={bookingsToday.toString()}
           subtitle="14 currently processing"
           icon={CalendarIcon}
+          type="bookings"
         />
         <MetricCard
           title="Pending Services"
           value={pendingCount.toString()}
           subtitle="Avg wait time: 12m"
           icon={ClockIcon}
+          type="services"
         />
         <MetricCard
           title="No-shows"
           value={noShowCount.toString()}
-          isWarning={true}
           icon={AlertTriangleIcon}
+          type="no-shows"
         />
       </div>
 
@@ -368,16 +377,16 @@ export default function DashboardPage() {
         <div className="chart-section dashboard-card flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-white font-bold text-lg">
+              <h3 className="text-[#111C2C] font-bold text-lg" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
                 Revenue This Week
               </h3>
-              <p className="text-slate-400 text-sm">
+              <p className="text-[#3D494D] text-sm">
                 7-day performance overview
               </p>
             </div>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white/[0.02] border border-white/5 text-slate-350 hover:bg-white/[0.05] transition-all cursor-pointer shadow-sm">
+            <button className="chart-option-btn">
               <span>This Week</span>
-              <svg className="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-3.5 h-3.5 ml-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </button>
@@ -388,105 +397,109 @@ export default function DashboardPage() {
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#00677F" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#00677F" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.03)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(188, 200, 206, 0.2)" vertical={false} />
                 <XAxis
                   dataKey="day"
-                  stroke="#64748b"
-                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  stroke="#6D797E"
+                  tick={{ fontSize: 11, fill: '#6D797E' }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  stroke="#64748b"
-                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  stroke="#6D797E"
+                  tick={{ fontSize: 11, fill: '#6D797E' }}
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(val) => `${val}M`}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0c0f24',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '12px',
-                    color: '#f8fafc',
+                    backgroundColor: '#263142',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#EBF1FF',
+                    boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
                   }}
-                  itemStyle={{ color: '#06b6d4' }}
-                  labelStyle={{ color: '#94a3b8', fontWeight: 'bold' }}
-                  formatter={(value) => [`${value}M`, 'Doanh thu']}
+                  itemStyle={{ color: '#00A9CE' }}
+                  labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
+                  formatter={(value) => [`${value}M`, 'Revenue']}
                 />
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#06b6d4"
+                  stroke="#00677F"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
-                  dot={{ fill: '#06b6d4', strokeWidth: 1, r: 4 }}
-                  activeDot={{ r: 6, strokeWidth: 0 }}
+                  dot={{ fill: '#F9F9FF', stroke: '#00677F', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, strokeWidth: 0, fill: '#00677F' }}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl text-xs text-slate-400">
-            <span className="font-semibold text-white">{maxRevenueItem.revenue}M</span> • Peak on {maxRevenueItem.day}
+          <div className="mt-4 p-3 bg-[#F0F3FF] border border-transparent rounded-xl text-xs text-[#3D494D] flex items-center justify-between">
+            <span>
+              Peak performance this week: <span className="font-bold text-[#00677F]">{maxRevenueItem.revenue}M</span> on {maxRevenueItem.day}
+            </span>
           </div>
         </div>
 
         {/* Quick Summary / Fast Status */}
         <div className="dashboard-card flex flex-col justify-between">
           <div>
-            <h3 className="text-white font-bold text-lg mb-6">
+            <h3 className="text-[#111C2C] font-bold text-lg mb-6" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
               Fast Status
             </h3>
 
-            <div className="space-y-5">
+            <div className="space-y-4">
               {/* Progress: Vehicles Processing */}
-              <div className="pb-5 border-b border-white/5">
-                <div className="flex items-center justify-between mb-2.5">
-                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Vehicles Processing</p>
-                  <p className="text-lg font-bold text-white">{processingCount}</p>
+              <div className="fast-status-item">
+                <div className="flex items-center justify-between w-full mb-1">
+                  <p className="text-[#3D494D] text-xs font-semibold uppercase tracking-wider">Vehicles Processing</p>
+                  <p className="text-3xl font-extrabold text-[#111C2C]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>{processingCount}</p>
                 </div>
-                <div className="w-full bg-white/[0.04] rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-[#BCC8CE]/30 rounded-full h-2 overflow-hidden relative">
                   <div
-                    className="h-full bg-cyan-500 rounded-full transition-all"
+                    className="h-full bg-[#00677F] rounded-full transition-all"
                     style={{ width: '70%' }}
                   />
                 </div>
               </div>
 
               {/* Staff Online avatars */}
-              <div className="pb-5 border-b border-white/5">
-                <div className="flex items-center justify-between">
-                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Staff Online</p>
-                  <div className="flex items-center -space-x-2">
-                    <div className="w-7 h-7 rounded-full bg-[#0891b2] border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
-                      AL
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-[#06b6d4] border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
-                      TR
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-[#14b8a6] border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
-                      JD
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/50 flex items-center justify-center text-[9px] font-bold text-slate-350 shadow-sm shrink-0">
-                      +5
-                    </div>
+              <div className="fast-status-item">
+                <div className="flex items-center justify-between w-full mb-2">
+                  <p className="text-[#3D494D] text-xs font-semibold uppercase tracking-wider">Staff Online</p>
+                  <p className="text-3xl font-extrabold text-[#111C2C]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>8</p>
+                </div>
+                <div className="flex items-center -space-x-2">
+                  <div className="w-7 h-7 rounded-full bg-[#00A9CE] border border-[#F9F9FF] flex items-center justify-center text-[10px] font-bold text-[#003846] shadow-sm shrink-0">
+                    J
+                  </div>
+                  <div className="w-7 h-7 rounded-full bg-[#C9DBFD] border border-[#F9F9FF] flex items-center justify-center text-[10px] font-bold text-[#4F607D] shadow-sm shrink-0">
+                    M
+                  </div>
+                  <div className="w-7 h-7 rounded-full bg-[#949D9E] border border-[#F9F9FF] flex items-center justify-center text-[10px] font-bold text-[#2C3536] shadow-sm shrink-0">
+                    S
+                  </div>
+                  <div className="w-7 h-7 rounded-full bg-[#D8E3FA] border border-[#F9F9FF] flex items-center justify-center text-[9px] font-bold text-[#3D494D] shadow-sm shrink-0">
+                    +5
                   </div>
                 </div>
               </div>
 
               {/* Completion Rate */}
-              <div className="pt-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Completion Rate</p>
+              <div className="fast-status-item">
+                <div className="flex items-center justify-between w-full">
+                  <p className="text-[#3D494D] text-xs font-semibold uppercase tracking-wider">Completion Rate</p>
                   <div className="flex items-center gap-2">
-                    <p className="text-lg font-bold text-white">92%</p>
-                    <CheckCircleIcon className="w-5.5 h-5.5 text-emerald-400" />
+                    <p className="text-3xl font-extrabold text-[#111C2C]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>92%</p>
+                    <CheckCircleIcon className="w-6 h-6 text-[#00677F]" />
                   </div>
                 </div>
               </div>
@@ -497,19 +510,19 @@ export default function DashboardPage() {
 
       {/* Recent Bookings Table */}
       <div className="bookings-table-container">
-        <div className="p-6 border-b border-white/5 flex items-center justify-between">
-          <h3 className="text-white text-lg font-bold">
+        <div className="p-6 border-b border-[#BCC8CE]/40 flex items-center justify-between">
+          <h3 className="text-[#111C2C] text-lg font-bold" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
             Recent Bookings
           </h3>
-          <span className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 cursor-pointer transition-colors">
+          <span className="text-xs font-bold text-[#00677F] hover:underline cursor-pointer transition-colors">
             View All
           </span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-white/[0.01]">
-              <tr className="text-left text-slate-450 text-xs font-bold uppercase tracking-wider border-b border-white/5">
+            <thead className="bg-[#F0F3FF]">
+              <tr className="text-left text-[#3D494D] text-xs font-bold uppercase tracking-wider border-b border-[#BCC8CE]/40">
                 <th className="px-6 py-4">CODE</th>
                 <th className="px-6 py-4">CUSTOMER</th>
                 <th className="px-6 py-4">LICENSE PLATE</th>
@@ -518,30 +531,30 @@ export default function DashboardPage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-[#BCC8CE]/30">
               {recentBookings.map((booking) => (
                 <tr
                   key={booking.id}
-                  className="hover:bg-white/[0.01] transition-all duration-150"
+                  className="hover:bg-[#F0F3FF]/40 transition-all duration-150"
                 >
-                  <td className="px-6 py-4 text-white font-medium font-mono text-sm">
+                  <td className="px-6 py-4 text-[#111C2C] font-semibold font-mono text-sm">
                     {formatBookingId(booking.id)}
                   </td>
 
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#00A9CE] to-[#00677F] flex items-center justify-center text-[10px] font-bold text-white shadow-md shrink-0">
                         {getInitials(booking.customer)}
                       </div>
-                      <p className="text-sm font-medium text-slate-200">{booking.customer}</p>
+                      <p className="text-sm font-semibold text-[#111C2C]">{booking.customer}</p>
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 text-slate-300 font-mono text-sm font-semibold tracking-wider">
+                  <td className="px-6 py-4 text-[#3D494D] font-mono text-sm font-semibold tracking-wider">
                     {booking.plate}
                   </td>
 
-                  <td className="px-6 py-4 text-slate-300 text-sm">
+                  <td className="px-6 py-4 text-[#3D494D] text-sm font-medium">
                     {booking.service}
                   </td>
 

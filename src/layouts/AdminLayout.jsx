@@ -1,4 +1,4 @@
-﻿import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
@@ -110,7 +110,7 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#070913] text-slate-100 flex font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#F0F3FF] text-[#111C2C] flex font-sans overflow-x-hidden">
 
       {/* Sidebar Panel - Fixed overlay on mobile, relative flex column on desktop */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-all duration-300 transform md:relative md:translate-x-0 ${sidebarOpen
@@ -197,18 +197,18 @@ export default function AdminLayout() {
       {/* Main Content Side - Flex column layout */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Top Header */}
-        <header className="h-16 bg-[#0c0f24]/60 backdrop-blur-md border-b border-white/5 px-6 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-20 bg-white/85 backdrop-blur-md border-b border-[#BCC8CE] px-8 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 text-slate-400 hover:text-white focus:outline-none cursor-pointer flex items-center justify-center rounded-lg hover:bg-white/5 transition-all"
+              className="p-2 text-slate-500 hover:text-slate-900 focus:outline-none cursor-pointer flex items-center justify-center rounded-lg hover:bg-slate-100 transition-all"
               title="Toggle Sidebar"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-[#111C2C] tracking-tight">
               {location.pathname === '/admin/dashboard'
                 ? 'Overview'
                 : (navItems.find((item) => location.pathname === item.path)?.label || 'Dashboard')}
@@ -216,10 +216,10 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm text-slate-400">
-              <span>Server: <span className="text-emerald-400 font-bold">• Online</span></span>
+            <div className="flex items-center gap-2 text-sm text-[#3D494D] font-medium">
+              <span>Server: <span className="text-[#34C759] font-bold">• Online</span></span>
             </div>
-            <button className="p-2.5 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 text-slate-350 hover:text-white rounded-xl transition-all relative cursor-pointer shadow-sm">
+            <button className="w-10 h-10 bg-[#E7EEFF] hover:bg-[#d8e3fa] text-[#3D494D] hover:text-[#111c2c] rounded-full flex items-center justify-center transition-all relative cursor-pointer shadow-sm">
               <BellIcon className="w-5 h-5" />
             </button>
           </div>
