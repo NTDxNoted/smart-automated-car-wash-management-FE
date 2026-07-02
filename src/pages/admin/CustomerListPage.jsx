@@ -132,7 +132,7 @@ export default function CustomerListPage() {
               <p className="text-sm font-medium">Đang tải danh sách khách hàng...</p>
             </div>
           ) : (
-            <CustomerTable customers={customers} />
+            <CustomerTable customers={customers} onRefresh={loadCustomers} />
           )}
         </div>
 
@@ -154,7 +154,7 @@ export default function CustomerListPage() {
               type="button"
               disabled={customers.length === 0 || loading}
               onClick={() => setPage((prev) => prev + 1)}
-              className="customer-page-btn"
+              className="customer-page-btn next"
             >
               Sau
             </button>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
+import { toggleLock } from '../../services/adminCustomerService';
 
-export default function CustomerTable({ customers = [] }) {
+export default function CustomerTable({ customers = [], onRefresh }) {
   const getTierBadgeClass = (tier) => {
     switch (tier?.toUpperCase()) {
       case 'GOLD':
@@ -15,14 +16,13 @@ export default function CustomerTable({ customers = [] }) {
     }
   };
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return 'Chưa có';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+  const handleToggleLock = async (id) => {
+    try {
+      await toggleLock(id);
+      if (onRefresh) onRefresh();
+    } catch (err) {
+      console.error('Toggle lock error:', err);
+    }
   };
 
   if (customers.length === 0) {
@@ -40,14 +40,16 @@ export default function CustomerTable({ customers = [] }) {
           <th className="customer-th name">Tên khách hàng</th>
           <th className="customer-th phone">Số điện thoại</th>
           <th className="customer-th tier">Hạng</th>
-          <th className="customer-th spending">Tổng chi tiêu</th>
-          <th className="customer-th last-visit">Ldn đến cuối</th>
-          <th className="customer-th actions"></th>
+          <th className="customer-th points">Điểm tích lũy</th>
+          <th className="customer-th status">Trạng thái</th>
+          <th className="customer-th actions">Tác vụ</th>
         </tr>
       </thead>
 
       <tbody>
         {customers.map((customer) => {
+          const isLocked = customer.isLocked || customer.status === 'LOCKED';
+
           return (
             <tr
               key={customer.id}
@@ -64,23 +66,41 @@ export default function CustomerTable({ customers = [] }) {
                   {customer.tier || 'Member'}
                 </span>
               </td>
-              <td className="customer-td spending">
-                <span className="customer-spending-text">
-                  {Number(customer.totalSpending || 0).toLocaleString()} đ
+              <td className="customer-td points">
+                <span className="customer-points-text">
+                  {Number(customer.points || 0).toLocaleString()} pts
                 </span>
               </td>
-              <td className="customer-td last-visit">
-                <span className="customer-visit-text">
-                  {formatDate(customer.lastVisit || customer.LastVisit)}
-                </span>
+              <td className="customer-td status">
+                <div className={`customer-status-badge ${isLocked ? 'offline' : 'active'}`}>
+                  <span className="status-dot" />
+                  <span className="status-text">{isLocked ? 'Ngoại tuyến' : 'Hoạt động'}</span>
+                </div>
               </td>
               <td className="customer-td actions">
+                {/* Edit Button -> navigate to detail */}
                 <Link
                   to={`/admin/customers/${customer.id}`}
-                  className="customer-detail-link"
+                  className="customer-action-btn edit"
+                  title="Chi tiết"
                 >
-                  Chi tiết
+                  <svg className="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
                 </Link>
+
+                {/* Toggle Lock Button */}
+                <button
+                  onClick={() => handleToggleLock(customer.id)}
+                  className="customer-action-btn lock"
+                  title={isLocked ? "Mở khóa tài khoản" : "Khóa tài khoản"}
+                >
+                  <svg className="w-[13.33px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
               </td>
             </tr>
           );
