@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+﻿import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
@@ -111,14 +111,13 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-[#070913] text-slate-100 flex font-sans overflow-x-hidden">
-      
+
       {/* Sidebar Panel - Fixed overlay on mobile, relative flex column on desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-all duration-300 transform md:relative md:translate-x-0 ${
-        sidebarOpen 
-          ? 'translate-x-0 w-64 md:w-64' 
+      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-all duration-300 transform md:relative md:translate-x-0 ${sidebarOpen
+          ? 'translate-x-0 w-64 md:w-64'
           : '-translate-x-full md:translate-x-0 md:w-0 md:border-r-0 overflow-hidden'
-      } flex flex-col shrink-0`}>
-        
+        } flex flex-col shrink-0`}>
+
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
@@ -158,11 +157,10 @@ export default function AdminLayout() {
                 key={item.path}
                 to={item.path}
                 onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive
                     ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
                     : 'text-slate-400 hover:bg-white/[0.03] hover:text-slate-200'
-                }`}
+                  }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                 <span>{item.label}</span>
@@ -211,8 +209,8 @@ export default function AdminLayout() {
               </svg>
             </button>
             <h1 className="text-xl font-bold text-white tracking-tight">
-              {location.pathname === '/admin/dashboard' 
-                ? 'Overview' 
+              {location.pathname === '/admin/dashboard'
+                ? 'Overview'
                 : (navItems.find((item) => location.pathname === item.path)?.label || 'Dashboard')}
             </h1>
           </div>

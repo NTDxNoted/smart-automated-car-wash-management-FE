@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import './DashboardPage.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎨 SVG ICON COMPONENTS (Self-contained, no external package required)
@@ -84,11 +85,7 @@ function BellIcon({ className }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function MetricCard({ title, value, subtitle, trend, icon: Icon, isWarning = false }) {
   return (
-    <div className={`rounded-2xl p-6 border transition-all duration-300 hover:translate-y-[-2px] ${
-      isWarning 
-        ? 'bg-red-500/[0.02] border-red-500/20 hover:border-red-500/35 hover:shadow-[0_8px_20px_rgba(239,68,68,0.06)]' 
-        : 'bg-[#0c0f24] border-white/5 hover:border-cyan-500/20 hover:shadow-[0_8px_20px_rgba(6,182,212,0.05)]'
-    }`}>
+    <div className={`metric-card-custom ${isWarning ? 'warning' : ''}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{title}</p>
@@ -109,11 +106,10 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, isWarning = fal
             </div>
           )}
         </div>
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-          isWarning
-            ? 'bg-red-500/10 text-red-400 border border-red-500/10'
-            : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/10'
-        }`}>
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isWarning
+          ? 'bg-red-500/10 text-red-400 border border-red-500/10'
+          : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/10'
+          }`}>
           <Icon className="w-6 h-6" />
         </div>
       </div>
@@ -177,7 +173,7 @@ export default function DashboardPage() {
         const list = res.data?.data || res.data || [];
         if (list.length > 0) {
           const todayDateStr = new Date().toLocaleDateString('en-CA');
-          
+
           let bToday = 0;
           let rToday = 0;
           let pCount = 0;
@@ -236,8 +232,8 @@ export default function DashboardPage() {
           setNoShowCount(nsCount);
           setProcessingCount(prCount > 0 ? prCount : Math.min(Math.ceil(bToday * 0.4), bToday) || 14);
 
-          let formattedRevenue = rToday >= 1000000 
-            ? `${(rToday / 1000000).toFixed(1)}M` 
+          let formattedRevenue = rToday >= 1000000
+            ? `${(rToday / 1000000).toFixed(1)}M`
             : `${rToday.toLocaleString()}đ`;
           setRevenueTodayStr(formattedRevenue);
 
@@ -334,10 +330,12 @@ export default function DashboardPage() {
     }
   };
 
+  const maxRevenueItem = chartData.reduce((prev, curr) => (curr.revenue > prev.revenue) ? curr : prev, chartData[0]) || { day: 'T8', revenue: 15.2 };
+
   return (
-    <div className="space-y-6">
+    <div className="dashboard-container">
       {/* Metric Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="metrics-grid">
         <MetricCard
           title="Today's Revenue"
           value={revenueTodayStr}
@@ -365,9 +363,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Charts & Side panel Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="dashboard-grid">
         {/* Weekly Revenue AreaChart */}
-        <div className="lg:col-span-2 bg-[#0c0f24] border border-white/5 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+        <div className="chart-section dashboard-card flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-white font-bold text-lg">
@@ -390,26 +388,26 @@ export default function DashboardPage() {
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.03)" vertical={false} />
-                <XAxis 
-                  dataKey="day" 
+                <XAxis
+                  dataKey="day"
                   stroke="#64748b"
                   tick={{ fontSize: 11, fill: '#64748b' }}
                   axisLine={false}
                   tickLine={false}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#64748b"
                   tick={{ fontSize: 11, fill: '#64748b' }}
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(val) => `${val}M`}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: '#0c0f24',
                     border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -420,10 +418,10 @@ export default function DashboardPage() {
                   labelStyle={{ color: '#94a3b8', fontWeight: 'bold' }}
                   formatter={(value) => [`${value}M`, 'Doanh thu']}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#06b6d4" 
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#06b6d4"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
@@ -434,15 +432,13 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
 
-          <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl flex items-center justify-between text-xs">
-            <span className="text-slate-400">
-              💡 Highest this week: <span className="font-semibold text-white">{Math.max(...chartData.map(d => d.revenue))}M</span>
-            </span>
+          <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl text-xs text-slate-400">
+            <span className="font-semibold text-white">{maxRevenueItem.revenue}M</span> • Peak on {maxRevenueItem.day}
           </div>
         </div>
 
         {/* Quick Summary / Fast Status */}
-        <div className="bg-[#0c0f24] border border-white/5 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+        <div className="dashboard-card flex flex-col justify-between">
           <div>
             <h3 className="text-white font-bold text-lg mb-6">
               Fast Status
@@ -468,16 +464,16 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Staff Online</p>
                   <div className="flex items-center -space-x-2">
-                    <div className="w-7 h-7 rounded-full bg-cyan-500 border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
-                      J
+                    <div className="w-7 h-7 rounded-full bg-[#0891b2] border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
+                      AL
                     </div>
-                    <div className="w-7 h-7 rounded-full bg-slate-500 border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
-                      M
+                    <div className="w-7 h-7 rounded-full bg-[#06b6d4] border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
+                      TR
                     </div>
-                    <div className="w-7 h-7 rounded-full bg-blue-500 border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
-                      S
+                    <div className="w-7 h-7 rounded-full bg-[#14b8a6] border border-[#0c0f24] flex items-center justify-center text-[10px] font-black text-white shadow-sm shrink-0">
+                      JD
                     </div>
-                    <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/50 flex items-center justify-center text-[9px] font-bold text-slate-300 shadow-sm shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/50 flex items-center justify-center text-[9px] font-bold text-slate-350 shadow-sm shrink-0">
                       +5
                     </div>
                   </div>
@@ -500,7 +496,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Bookings Table */}
-      <div className="bg-[#0c0f24] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bookings-table-container">
         <div className="p-6 border-b border-white/5 flex items-center justify-between">
           <h3 className="text-white text-lg font-bold">
             Recent Bookings
@@ -542,7 +538,7 @@ export default function DashboardPage() {
                   </td>
 
                   <td className="px-6 py-4 text-slate-300 font-mono text-sm font-semibold tracking-wider">
-                     {booking.plate}
+                    {booking.plate}
                   </td>
 
                   <td className="px-6 py-4 text-slate-300 text-sm">
