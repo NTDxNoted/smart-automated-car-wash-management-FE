@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import adminServiceService from '../../services/adminServiceService';
 import ServiceModal from '../../components/admin/ServiceModal';
-import AdminSwitch from '../../components/admin/AdminSwitch';
+import './ServiceManagementPage.css';
 
 const ServiceManagementPage = () => {
   const [services, setServices] = useState([]);
@@ -42,6 +42,43 @@ const ServiceManagementPage = () => {
     setOpenModal(true);
   };
 
+  const handleToggleStatus = async (item) => {
+    try {
+      const newStatus = item.status === 'Active' ? 'Inactive' : 'Active';
+      const updatedPayload = {
+        serviceName: item.name,
+        serviceCategory: item.category,
+        price: Number(item.price),
+        duration: Number(item.duration),
+        description: item.description,
+        status: newStatus
+      };
+      await adminServiceService.updateService(item.id, updatedPayload);
+      await fetchServices();
+    } catch (err) {
+      console.error("Error toggling service status:", err);
+    }
+  };
+
+  const handleDelete = async (item) => {
+    const confirmed = window.confirm(`Bạn có chắc chắn muốn ngưng hoạt động dịch vụ "${item.name}" không?`);
+    if (!confirmed) return;
+    try {
+      const updatedPayload = {
+        serviceName: item.name,
+        serviceCategory: item.category,
+        price: Number(item.price),
+        duration: Number(item.duration),
+        description: item.description,
+        status: 'Inactive'
+      };
+      await adminServiceService.updateService(item.id, updatedPayload);
+      await fetchServices();
+    } catch (err) {
+      console.error("Error deactivating service:", err);
+    }
+  };
+
   const handleSubmit = async (form) => {
     const payload = {
       serviceName: form.name,
@@ -79,96 +116,101 @@ const ServiceManagementPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Panel */}
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Quản lý dịch vụ</h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Thiết lập danh mục dịch vụ rửa xe, đơn giá và thời gian hoàn thành dự kiến
-          </p>
-        </div>
-      </div>
+    <div className="service-page-container">
+      {/* Service Subtitle */}
+      <div className="service-page-subtitle"></div>
 
-      {/* Services List Table */}
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white text-lg font-bold">
-            Danh mục dịch vụ
-          </h3>
+      {/* Service Data Card */}
+      <div className="service-data-card">
+        {/* Card Header */}
+        <div className="service-card-header">
+          <div className="service-card-title">Quản lý dịch vụ</div>
 
           <button
             onClick={handleCreate}
-            className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition duration-200 shadow-md shadow-cyan-500/10 cursor-pointer flex items-center gap-1.5"
+            className="service-add-btn"
           >
             <span>+</span> Thêm dịch vụ
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        {/* Card Body / Table wrapper */}
+        <div className="service-table-wrapper">
+          <table className="service-table">
             <thead>
-              <tr className="border-b border-white/5 bg-white/[0.01] text-slate-450 text-xs font-bold uppercase tracking-wider">
-                <th className="px-6 py-4 text-left">Tên dịch vụ</th>
-                <th className="px-6 py-4 text-left">Phân loại</th>
-                <th className="px-6 py-4 text-left">Đơn giá</th>
-                <th className="px-6 py-4 text-left">Thời gian</th>
-                <th className="px-6 py-4 text-left">Mô tả</th>
-                <th className="px-6 py-4 text-left">Trạng thái</th>
-                <th className="px-6 py-4 text-right">Tác vụ</th>
+              <tr className="service-thead-row">
+                <th className="service-th name">Tên dịch vụ</th>
+                <th className="service-th category">Phân loại</th>
+                <th className="service-th price">Đơn giá</th>
+                <th className="service-th duration">Thời gian</th>
+                <th className="service-th description">Mô tả</th>
+                <th className="service-th status">Trạng thái</th>
+                <th className="service-th action">Tác vụ</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody>
               {services.map((item) => (
                 <tr
                   key={item.id}
-                  className="hover:bg-white/[0.01] transition-all duration-150"
+                  className="service-tbody-row"
                 >
-                  <td className="px-6 py-4 text-slate-200 font-semibold text-sm">
-                    {item.name}
+                  <td className="service-td name">
+                    <span className="service-name-text">{item.name}</span>
                   </td>
-                  <td className="px-6 py-4 text-slate-350">
-                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-white/[0.04] border border-white/5">
-                      {item.category}
+
+                  <td className="service-td category">
+                    <span className="service-category-text">{item.category}</span>
+                  </td>
+
+                  <td className="service-td price">
+                    <span className="service-price-text">
+                      {Number(item.price).toLocaleString()} đ
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-slate-200 font-semibold">
-                    {Number(item.price).toLocaleString()}đ
+
+                  <td className="service-td duration">
+                    <span className="service-duration-text">{item.duration} Phút</span>
                   </td>
-                  <td className="px-6 py-4 text-slate-300 font-mono text-sm">
-                    {item.duration} phút
+
+                  <td className="service-td description">
+                    <span className="service-description-text truncate" title={item.description}>
+                      {item.description || '-'}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-slate-400 text-xs max-w-xs truncate">
-                    {item.description || '-'}
+
+                  <td className="service-td status">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(item)}
+                      className={`service-status-capsule ${item.status === 'Active' ? 'active' : 'inactive'}`}
+                      title="Click để đổi trạng thái"
+                    >
+                      {item.status === 'Active' ? 'Đang hoạt động' : 'Ngưng hoạt động'}
+                    </button>
                   </td>
-                  <td className="px-6 py-4">
-                    <AdminSwitch
-                      checked={item.status === 'Active'}
-                      onChange={async (checked) => {
-                        try {
-                          const updatedPayload = {
-                            serviceName: item.name,
-                            serviceCategory: item.category,
-                            price: Number(item.price),
-                            duration: Number(item.duration),
-                            description: item.description,
-                            status: checked ? 'Active' : 'Inactive'
-                          };
-                          await adminServiceService.updateService(item.id, updatedPayload);
-                          await fetchServices();
-                        } catch (err) {
-                          console.error("Error toggling service status:", err);
-                        }
-                      }}
-                    />
-                  </td>
-                  <td className="px-6 py-4 text-right">
+
+                  <td className="service-td action">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="bg-[#070913] hover:bg-white/[0.04] border border-white/10 text-cyan-400 font-bold px-3.5 py-1.5 rounded-lg text-xs transition cursor-pointer"
+                      className="service-action-btn edit"
+                      title="Sửa"
                     >
-                      Sửa
+                      <svg className="w-[13.98px] h-[13.98px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(item)}
+                      className="service-action-btn delete"
+                      title="Ngưng hoạt động"
+                    >
+                      <svg className="w-[12.25px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
                     </button>
                   </td>
                 </tr>
