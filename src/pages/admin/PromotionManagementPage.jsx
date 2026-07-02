@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import adminPromotionService from '../../services/adminPromotionService';
 import PromotionModal from '../../components/admin/PromotionModal';
-import AdminSwitch from '../../components/admin/AdminSwitch';
+import './PromotionManagementPage.css';
 
 const PromotionManagementPage = () => {
   const [promotions, setPromotions] = useState([]);
@@ -116,122 +116,133 @@ const PromotionManagementPage = () => {
   };
 
   const getTierDisplayBadge = (tier) => {
-    if (!tier) return <span className="text-slate-500">-</span>;
+    if (!tier) return <span className="text-slate-400">-</span>;
     const tierName = String(tier);
     switch (tierName.toUpperCase()) {
       case "PLATINUM":
-        return (
-          <span className="bg-gradient-to-r from-slate-300 via-indigo-100 to-indigo-300 text-indigo-950 font-bold px-2 py-0.5 rounded text-[10px] shadow border border-indigo-200/50">
-            {tierName}
-          </span>
-        );
+        return <span className="promo-tier-badge platinum">{tierName}</span>;
       case "GOLD":
-        return (
-          <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 font-bold px-2 py-0.5 rounded text-[10px] shadow border border-amber-300/50">
-            {tierName}
-          </span>
-        );
+        return <span className="promo-tier-badge gold">{tierName}</span>;
       case "SILVER":
-        return (
-          <span className="bg-gradient-to-r from-slate-400 to-slate-200 text-slate-900 font-bold px-2 py-0.5 rounded text-[10px] shadow border border-slate-350/50">
-            {tierName}
-          </span>
-        );
+        return <span className="promo-tier-badge silver">{tierName}</span>;
       default:
-        return (
-          <span className="bg-cyan-950/40 text-cyan-400 px-2 py-0.5 rounded text-[10px] border border-cyan-500/30 font-bold">
-            {tierName}
-          </span>
-        );
+        return <span className="promo-tier-badge member">{tierName}</span>;
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Panel */}
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Quản lý khuyến mãi</h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Thiết lập mã giảm giá, chương trình tri ân thành viên và giới hạn lượt áp dụng
-          </p>
-        </div>
-      </div>
+    <div className="promo-page-container">
+      {/* Page Subtitle */}
+      <div className="promo-page-subtitle"></div>
 
-      {/* Promotion List Table */}
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white text-lg font-bold">
-            Chương trình ưu đãi
-          </h3>
+      {/* Promotions List Card */}
+      <div className="promo-data-card">
+        {/* Card Header */}
+        <div className="promo-card-header">
+          <h3 className="promo-card-title">Quản lý khuyến mãi</h3>
 
           <button
             onClick={handleCreate}
-            className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition duration-200 shadow-md shadow-cyan-500/10 cursor-pointer flex items-center gap-1.5"
+            className="promo-add-btn"
           >
             <span>+</span> Thêm khuyến mãi
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        {/* Card Body / Table Wrapper */}
+        <div className="promo-table-wrapper">
+          <table className="promo-table">
             <thead>
-              <tr className="border-b border-white/5 bg-white/[0.01] text-slate-455 text-xs font-bold uppercase tracking-wider">
-                <th className="px-6 py-4 text-left">Tên ưu đãi</th>
-                <th className="px-6 py-4 text-left">Mã ưu đãi</th>
-                <th className="px-6 py-4 text-left">Hạng áp dụng</th>
-                <th className="px-6 py-4 text-left">Loại giảm</th>
-                <th className="px-6 py-4 text-left">Mức giảm</th>
-                <th className="px-6 py-4 text-left">Giới hạn</th>
-                <th className="px-6 py-4 text-left">Trạng thái</th>
-                <th className="px-6 py-4 text-right">Tác vụ</th>
+              <tr className="promo-thead-row">
+                <th className="promo-th name">Tên ưu đãi</th>
+                <th className="promo-th code">Mã ưu đãi</th>
+                <th className="promo-th tier">Hạng áp dụng</th>
+                <th className="promo-th type">Loại giảm</th>
+                <th className="promo-th value">Mức giảm</th>
+                <th className="promo-th limit">Giới hạn</th>
+                <th className="promo-th status">Trạng thái</th>
+                <th className="promo-th action">Tác vụ</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
-              {promotions.map((item) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-white/[0.01] transition-all duration-150"
-                >
-                  <td className="px-6 py-4 text-slate-200 font-semibold text-sm">
-                    {item.title}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="px-2.5 py-1 rounded font-mono bg-cyan-950/40 text-cyan-400 border border-cyan-500/20 text-xs font-bold">
-                      {item.promoCode}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {getTierDisplayBadge(item.minTier)}
-                  </td>
-                  <td className="px-6 py-4 text-slate-300 text-xs font-bold">
-                    {item.discountType === 'PERCENT' ? 'Phần trăm' : 'Tiền mặt'}
-                  </td>
-                  <td className="px-6 py-4 text-slate-200 font-semibold font-mono">
-                    {item.discountType === 'PERCENT' ? `${item.value}%` : `${item.value?.toLocaleString()}đ`}
-                  </td>
-                  <td className="px-6 py-4 text-slate-350 font-mono text-xs">
-                    {item.maxUsage?.toLocaleString() || 'Không giới hạn'}
-                  </td>
-                  <td className="px-6 py-4">
-                    <AdminSwitch
-                      checked={item.isActive}
-                      loading={togglingIds.includes(item.id)}
-                      disabled={togglingIds.includes(item.id)}
-                      onChange={() => handleToggle(item)}
-                    />
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="bg-[#070913] hover:bg-white/[0.04] border border-white/10 text-cyan-400 font-bold px-3.5 py-1.5 rounded-lg text-xs transition cursor-pointer"
-                    >
-                      Sửa
-                    </button>
+            <tbody>
+              {promotions.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="p-0 border-none">
+                    <div className="promo-empty-row">
+                      <div className="promo-empty-container">
+                        {/* Folder/Box SVG */}
+                        <svg className="promo-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                        </svg>
+                        <div className="promo-empty-margin">
+                          <div className="promo-empty-text-wrapper">
+                            <span className="promo-empty-text">No promotions found.</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                promotions.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="promo-tbody-row"
+                  >
+                    <td className="promo-td name">
+                      <span className="promo-name-text" title={item.title}>{item.title}</span>
+                    </td>
+
+                    <td className="promo-td code">
+                      <span className="promo-code-badge">{item.promoCode}</span>
+                    </td>
+
+                    <td className="promo-td tier">
+                      {getTierDisplayBadge(item.minTier)}
+                    </td>
+
+                    <td className="promo-td type">
+                      <span className="promo-type-text">
+                        {item.discountType === 'PERCENT' ? 'Phần trăm' : 'Tiền mặt'}
+                      </span>
+                    </td>
+
+                    <td className="promo-td value">
+                      <span className="promo-value-text">
+                        {item.discountType === 'PERCENT' ? `${item.value}%` : `${item.value?.toLocaleString()}đ`}
+                      </span>
+                    </td>
+
+                    <td className="promo-td limit">
+                      <span className="promo-limit-text">
+                        {item.maxUsage?.toLocaleString() || 'Không giới hạn'}
+                      </span>
+                    </td>
+
+                    <td className="promo-td status">
+                      <button
+                        type="button"
+                        onClick={() => handleToggle(item)}
+                        disabled={togglingIds.includes(item.id)}
+                        className={`promo-status-capsule ${item.isActive ? 'active' : 'inactive'}`}
+                        title="Click để đổi trạng thái"
+                      >
+                        {item.isActive ? 'Đang hoạt động' : 'Ngưng hoạt động'}
+                      </button>
+                    </td>
+
+                    <td className="promo-td action">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="promo-action-btn edit"
+                      >
+                        Sửa
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

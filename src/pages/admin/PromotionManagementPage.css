@@ -1,0 +1,464 @@
+/* PromotionManagementPage.css */
+
+.promo-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1008px;
+  margin: 0 auto;
+}
+
+.promo-page-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #475569;
+  width: 100%;
+}
+
+/* Card container */
+.promo-data-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px 0px 24px;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Card Header */
+.promo-card-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  width: 100%;
+  height: 77px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.promo-card-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  color: #1E293B;
+}
+
+.promo-add-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  gap: 8px;
+  width: 153.25px;
+  height: 36px;
+  background: #00677F;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.promo-add-btn:hover {
+  background: #005266;
+}
+
+/* Card Body / Table Container */
+.promo-table-wrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 910px;
+  margin: 24px 24px 0;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.promo-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.promo-thead-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  height: 52px;
+  background: #F8FAFC;
+}
+
+.promo-th {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 24px;
+  height: 52px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+  justify-content: center;
+}
+
+.promo-th.name {
+  width: 22%;
+  flex: 0 0 22%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-th.code {
+  width: 13%;
+  flex: 0 0 13%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-th.tier {
+  width: 12%;
+  flex: 0 0 12%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-th.type {
+  width: 12%;
+  flex: 0 0 12%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-th.value {
+  width: 10%;
+  flex: 0 0 10%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-th.limit {
+  width: 10%;
+  flex: 0 0 10%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-th.status {
+  width: 11%;
+  flex: 0 0 11%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-th.action {
+  width: 10%;
+  flex: 0 0 10%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 0;
+  overflow: hidden;
+  padding: 16px 8px;
+}
+
+/* Empty State / Placeholder Row */
+.promo-empty-row {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 47.5px 24px 48px;
+  width: 100%;
+  height: 156.5px;
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+}
+
+.promo-empty-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 100%;
+  height: 60px;
+}
+
+.promo-empty-icon {
+  width: 32px;
+  height: 32px;
+  color: #CBD5E1;
+}
+
+.promo-empty-margin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 0px 0px;
+}
+
+.promo-empty-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px;
+  width: 100%;
+}
+
+.promo-empty-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #94A3B8;
+  text-align: center;
+}
+
+/* Data Rows */
+.promo-tbody-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 100%;
+  height: 60px;
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+}
+
+.promo-td {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 24px;
+  height: 60px;
+  justify-content: center;
+}
+
+.promo-td.name {
+  width: 22%;
+  flex: 0 0 22%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-name-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #1E293B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.promo-td.code {
+  width: 13%;
+  flex: 0 0 13%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-code-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(0, 103, 127, 0.05);
+  border: none;
+  color: #00677F;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.promo-td.tier {
+  width: 12%;
+  flex: 0 0 12%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Custom Tier Badges */
+.promo-tier-badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.promo-tier-badge.platinum {
+  background: #E9D5FF;
+  border: 1px solid #D8B4FE;
+  color: #6B21A8;
+}
+
+.promo-tier-badge.gold {
+  background: #FEF08A;
+  border: 1px solid #FDE047;
+  color: #854D0E;
+}
+
+.promo-tier-badge.silver {
+  background: #E2E8F0;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+}
+
+.promo-tier-badge.member {
+  background: #00A9CE;
+  border: 1px solid #57D5FC;
+  color: #003846;
+}
+
+.promo-td.type {
+  width: 12%;
+  flex: 0 0 12%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-type-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.promo-td.value {
+  width: 10%;
+  flex: 0 0 10%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-value-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #1E293B;
+  white-space: nowrap;
+}
+
+.promo-td.limit {
+  width: 10%;
+  flex: 0 0 10%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-limit-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.promo-td.status {
+  width: 11%;
+  flex: 0 0 11%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.promo-status-capsule {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.promo-status-capsule.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.promo-status-capsule.inactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+}
+
+.promo-td.action {
+  width: 10%;
+  flex: 0 0 10%;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+  padding: 16px 8px;
+}
+
+.promo-action-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.promo-action-btn.edit {
+  color: #0EA5E9;
+  border: 1.5px solid #0EA5E9;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 4px 12px;
+}
+
+.promo-action-btn.edit:hover {
+  background: rgba(14, 165, 233, 0.05);
+}
