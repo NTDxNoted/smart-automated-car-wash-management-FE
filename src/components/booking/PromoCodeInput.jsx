@@ -44,7 +44,8 @@ export default function PromoCodeInput({ onValidateSuccess }) {
       </p>
 
       <div 
-        className="flex items-center bg-slate-50/50 border-2 border-slate-100 rounded-2xl p-1.5 focus-within:bg-white focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/40 transition-all duration-350"
+        className="flex items-center bg-slate-50/50 border-2 border-slate-100 rounded-2xl focus-within:bg-white focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/40 transition-all duration-350"
+        style={{ padding: '8px' }}
       >
         <span className="material-symbols-outlined text-slate-400 pl-2.5 text-lg">tag</span>
         <input

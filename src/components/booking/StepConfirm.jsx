@@ -232,7 +232,8 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                   </div>
                   
                   <div 
-                    className="relative flex items-center bg-slate-50/50 border-2 border-slate-100 rounded-2xl p-1.5 focus-within:bg-white focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-100/40 transition-all duration-350"
+                    className="relative flex items-center bg-slate-50/50 border-2 border-slate-100 rounded-2xl focus-within:bg-white focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-100/40 transition-all duration-350"
+                    style={{ padding: '8px' }}
                   >
                     <span className="material-symbols-outlined text-purple-600 pl-2.5 text-lg">stars</span>
                     <select
