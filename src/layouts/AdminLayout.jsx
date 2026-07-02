@@ -98,7 +98,8 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-[#070913] text-slate-100 flex font-sans">
       {/* Sidebar - Desktop */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-transform duration-300 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-0'} md:relative md:translate-x-0 flex flex-col`}>
-        <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3">
+        {/* Logo */}
+        <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center shadow-lg shadow-cyan-500/25">
             <span className="text-white text-base font-bold">W</span>
           </div>
@@ -107,6 +108,22 @@ export default function AdminLayout() {
           </span>
         </div>
 
+        {/* User Profile - Top aligned */}
+        <div className="p-5 border-b border-white/5 bg-[#0a0d20]/30 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-md shrink-0">
+              {user?.fullName?.charAt(0) || 'A'}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-sm font-semibold text-slate-200 truncate">{user?.fullName || 'Administrator'}</p>
+              <span className="inline-block text-[9px] uppercase px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/10 mt-0.5">
+                Admin
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Menu Links */}
         <nav className="flex-grow p-4 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -129,9 +146,10 @@ export default function AdminLayout() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-white/5 space-y-2 bg-[#0a0d20]">
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-450 hover:bg-white/[0.03] hover:text-slate-200 transition-all cursor-pointer">
-            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {/* Bottom Section */}
+        <div className="p-4 border-t border-white/5 space-y-1 bg-[#0a0d20] shrink-0">
+          <button className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-white/[0.03] hover:text-slate-200 transition-all cursor-pointer">
+            <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
               <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -139,28 +157,16 @@ export default function AdminLayout() {
             <span>Trợ giúp</span>
           </button>
 
-          <div className="flex items-center gap-3 mb-3 px-2 pt-2 border-t border-white/5">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-md shrink-0">
-              {user?.fullName?.charAt(0) || 'A'}
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-xs font-semibold text-slate-200 truncate">{user?.fullName || 'Administrator'}</p>
-              <span className="inline-block text-[9px] uppercase px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/10 mt-0.5">
-                Admin
-              </span>
-            </div>
-          </div>
-
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border border-white/5 hover:border-red-500/20 hover:text-red-400 transition-all bg-white/[0.01] hover:bg-red-500/5 cursor-pointer"
+            className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all cursor-pointer"
           >
-            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <polyline points="16 17 21 12 16 7" />
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
-            Đăng xuất
+            <span>Đăng xuất</span>
           </button>
         </div>
       </aside>
