@@ -26,17 +26,7 @@ function BookingIcon({ className }) {
   );
 }
 
-function CustomersIcon({ className }) {
-  return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-}
-
+// Sidebar Car Icon representing Services
 function ServicesIcon({ className }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,6 +38,7 @@ function ServicesIcon({ className }) {
   );
 }
 
+// Sidebar Tag Icon representing Promotions
 function PromotionsIcon({ className }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -57,11 +48,23 @@ function PromotionsIcon({ className }) {
   );
 }
 
+// Sidebar Star Badge representing Tiers Configuration
 function TiersIcon({ className }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
       <polygon points="12 8 13.9 11.9 18.2 12.5 15.1 15.6 15.8 19.9 12 17.9 8.2 19.9 8.9 15.6 5.8 12.5 10.1 11.9" />
+    </svg>
+  );
+}
+
+function CustomersIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
   );
 }
@@ -89,7 +92,7 @@ export default function AdminLayout() {
   const user = auth;
   const navigate = useNavigate();
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
 
   const handleLogout = () => {
     logout();
@@ -107,9 +110,15 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#070913] text-slate-100 flex font-sans">
-      {/* Sidebar - Desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-transform duration-300 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-0'} md:relative md:translate-x-0 flex flex-col`}>
+    <div className="min-h-screen bg-[#070913] text-slate-100 flex font-sans overflow-x-hidden">
+      
+      {/* Sidebar Panel - Fixed overlay on mobile, relative flex column on desktop */}
+      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-all duration-300 transform md:relative md:translate-x-0 ${
+        sidebarOpen 
+          ? 'translate-x-0 w-64 md:w-64' 
+          : '-translate-x-full md:translate-x-0 md:w-0 md:border-r-0 overflow-hidden'
+      } flex flex-col shrink-0`}>
+        
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
@@ -148,7 +157,7 @@ export default function AdminLayout() {
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => setSidebarOpen(false)}
+                onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
                 className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   isActive
                     ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
@@ -187,14 +196,15 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main Content Side */}
+      {/* Main Content Side - Flex column layout */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Top Header */}
         <header className="h-16 bg-[#0c0f24]/60 backdrop-blur-md border-b border-white/5 px-6 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 text-slate-400 hover:text-white md:hidden focus:outline-none"
+              className="p-2 text-slate-400 hover:text-white focus:outline-none cursor-pointer flex items-center justify-center rounded-lg hover:bg-white/5 transition-all"
+              title="Toggle Sidebar"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -227,7 +237,7 @@ export default function AdminLayout() {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
         />
       )}
     </div>
