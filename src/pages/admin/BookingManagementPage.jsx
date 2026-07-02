@@ -46,31 +46,39 @@ export default function BookingManagementPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Header Panel */}
+      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white">Quản lý đặt lịch</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Quản lý đặt lịch</h2>
           <p className="text-slate-400 text-sm mt-1">
-            Danh sách tất cả booking rửa xe và trạng thái
+            Theo dõi, check-in và xử lý thanh toán cho đơn đặt rửa xe
           </p>
         </div>
       </div>
 
-      {/* FILTER */}
-      <div className="grid md:grid-cols-3 gap-4 bg-[#0c0f24] p-5 rounded-2xl border border-white/5 shadow-lg">
-        <select
-          value={filters.status}
-          onChange={(e) =>
-            setFilters({ ...filters, status: e.target.value, page: 1 })
-          }
-          className="bg-[#070913] border border-white/10 text-white rounded-xl px-4 py-3 outline-none focus:border-cyan-500 transition"
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="PENDING">Pending</option>
-          <option value="COMPLETED">Completed</option>
-          <option value="FAILED">Failed</option>
-          <option value="CANCELLED">Cancelled</option>
-          <option value="NOSHOW">No-show</option>
-        </select>
+      {/* FILTER PANEL */}
+      <div className="grid md:grid-cols-3 gap-4 bg-[#0c0f24] p-5 rounded-2xl border border-white/5 shadow-xl">
+        <div className="relative">
+          <select
+            value={filters.status}
+            onChange={(e) =>
+              setFilters({ ...filters, status: e.target.value, page: 1 })
+            }
+            className="w-full bg-[#070913] border border-white/10 text-slate-200 rounded-xl px-4 py-3 outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/35 transition cursor-pointer appearance-none"
+          >
+            <option value="">Tất cả trạng thái</option>
+            <option value="PENDING">Chờ xử lý (Pending)</option>
+            <option value="COMPLETED">Đã hoàn thành (Completed)</option>
+            <option value="FAILED">Thất bại (Failed)</option>
+            <option value="CANCELLED">Đã hủy (Cancelled)</option>
+            <option value="NOSHOW">Không đến (No-show)</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+            </svg>
+          </div>
+        </div>
 
         <input
           type="date"
@@ -78,17 +86,25 @@ export default function BookingManagementPage() {
           onChange={(e) =>
             setFilters({ ...filters, date: e.target.value, page: 1 })
           }
-          className="bg-[#070913] border border-white/10 text-white rounded-xl px-4 py-3 outline-none focus:border-cyan-500 transition"
+          className="bg-[#070913] border border-white/10 text-slate-200 rounded-xl px-4 py-3 outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/35 transition w-full"
         />
 
-        <input
-          placeholder="Tìm SĐT hoặc biển số..."
-          value={filters.keyword}
-          onChange={(e) =>
-            setFilters({ ...filters, keyword: e.target.value, page: 1 })
-          }
-          className="bg-[#070913] border border-white/10 text-white rounded-xl px-4 py-3 outline-none focus:border-cyan-500 transition w-full"
-        />
+        <div className="relative">
+          <input
+            placeholder="Tìm kiếm theo SĐT hoặc biển số..."
+            value={filters.keyword}
+            onChange={(e) =>
+              setFilters({ ...filters, keyword: e.target.value, page: 1 })
+            }
+            className="w-full bg-[#070913] border border-white/10 text-slate-200 rounded-xl pl-10 pr-4 py-3 outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/35 transition"
+          />
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg className="h-4.5 w-4.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       {/* TABLE */}
@@ -99,28 +115,30 @@ export default function BookingManagementPage() {
       />
 
       {/* PAGINATION */}
-      <div className="flex justify-end items-center gap-2 mt-4">
-        <button
-          type="button"
-          disabled={filters.page === 1 || loading}
-          onClick={() => setFilters(prev => ({ ...prev, page: Math.max(prev.page - 1, 1) }))}
-          className="px-4 py-2 rounded-xl bg-[#0c0f24] border border-white/5 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent transition cursor-pointer"
-        >
-          Trước
-        </button>
-
-        <span className="px-4 text-slate-400 text-sm font-medium">
+      <div className="flex justify-between items-center bg-[#0c0f24] px-6 py-4 rounded-2xl border border-white/5 shadow-md">
+        <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
           Trang {filters.page}
         </span>
 
-        <button
-          type="button"
-          disabled={bookings.length === 0 || loading}
-          onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
-          className="px-4 py-2 rounded-xl bg-[#0c0f24] border border-white/5 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent transition cursor-pointer"
-        >
-          Sau
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            disabled={filters.page === 1 || loading}
+            onClick={() => setFilters(prev => ({ ...prev, page: Math.max(prev.page - 1, 1) }))}
+            className="px-4.5 py-2 text-xs font-bold rounded-xl bg-[#070913] border border-white/5 text-slate-350 hover:bg-white/[0.04] disabled:opacity-40 disabled:hover:bg-transparent transition cursor-pointer"
+          >
+            ← Trước
+          </button>
+
+          <button
+            type="button"
+            disabled={bookings.length === 0 || loading}
+            onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
+            className="px-4.5 py-2 text-xs font-bold rounded-xl bg-[#070913] border border-white/5 text-slate-350 hover:bg-white/[0.04] disabled:opacity-40 disabled:hover:bg-transparent transition cursor-pointer"
+          >
+            Sau →
+          </button>
+        </div>
       </div>
 
       {/* DRAWER */}

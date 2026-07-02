@@ -2,6 +2,76 @@ import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 🎨 SVG NAVIGATION ICONS
+// ─────────────────────────────────────────────────────────────────────────────
+function OverviewIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  );
+}
+
+function BookingIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  );
+}
+
+function CustomersIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function ServicesIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 11 12 14 22 4" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+    </svg>
+  );
+}
+
+function PromotionsIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
+}
+
+function TiersIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  );
+}
+
+function ReportsIcon({ className }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+      <polyline points="17 6 23 6 23 12" />
+    </svg>
+  );
+}
+
 export default function AdminLayout() {
   const { auth, logout } = useAuth();
   const user = auth;
@@ -15,62 +85,82 @@ export default function AdminLayout() {
   };
 
   const navItems = [
-    { label: 'Tổng quan', path: '/admin/dashboard', icon: '📊' },
-    { label: 'Đặt lịch', path: '/admin/bookings', icon: '📅' },
-    { label: 'Khách hàng', path: '/admin/customers', icon: '👥' },
-    { label: 'Dịch vụ', path: '/admin/services', icon: '🛠️' },
-    { label: 'Khuyến mãi', path: '/admin/promotions', icon: '🏷️' },
-    { label: 'Cấu hình hạng', path: '/admin/tiers', icon: '👑' },
-    { label: 'Báo cáo & RFM', path: '/admin/reports', icon: '📈' },
+    { label: 'Tổng quan', path: '/admin/dashboard', icon: OverviewIcon },
+    { label: 'Đặt lịch', path: '/admin/bookings', icon: BookingIcon },
+    { label: 'Khách hàng', path: '/admin/customers', icon: CustomersIcon },
+    { label: 'Dịch vụ', path: '/admin/services', icon: ServicesIcon },
+    { label: 'Khuyến mãi', path: '/admin/promotions', icon: PromotionsIcon },
+    { label: 'Cấu hình hạng', path: '/admin/tiers', icon: TiersIcon },
+    { label: 'Báo cáo & RFM', path: '/admin/reports', icon: ReportsIcon },
   ];
 
   return (
     <div className="min-h-screen bg-[#070913] text-slate-100 flex font-sans">
       {/* Sidebar - Desktop */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0f24] border-r border-white/5 transition-transform duration-300 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-0'} md:relative md:translate-x-0 flex flex-col`}>
-        <div className="h-16 flex items-center px-6 border-b border-white/5 gap-2">
-          <span className="text-cyan-400 text-lg">⟡</span>
-          <span className="font-black tracking-wider uppercase bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">AutoWash Admin</span>
+        <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3">
+          <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center shadow-lg shadow-cyan-500/25">
+            <span className="text-white text-base font-bold">W</span>
+          </div>
+          <span className="font-black tracking-wider uppercase bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent text-sm">
+            AutoWash Admin
+          </span>
         </div>
 
-        <nav className="flex-grow p-4 space-y-1">
+        <nav className="flex-grow p-4 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
+            const Icon = item.icon;
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   isActive
-                    ? 'bg-cyan-500/10 text-cyan-400 border-l-2 border-cyan-400'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                    ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
+                    : 'text-slate-400 hover:bg-white/[0.03] hover:text-slate-200'
                 }`}
               >
-                <span>{item.icon}</span>
-                {item.label}
+                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 mb-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white">
+        <div className="p-4 border-t border-white/5 space-y-2 bg-[#0a0d20]">
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-450 hover:bg-white/[0.03] hover:text-slate-200 transition-all cursor-pointer">
+            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <span>Trợ giúp</span>
+          </button>
+
+          <div className="flex items-center gap-3 mb-3 px-2 pt-2 border-t border-white/5">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-md shrink-0">
               {user?.fullName?.charAt(0) || 'A'}
             </div>
             <div className="overflow-hidden">
               <p className="text-xs font-semibold text-slate-200 truncate">{user?.fullName || 'Administrator'}</p>
-              <span className="inline-block text-[9px] uppercase px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-semibold border border-red-500/10 mt-0.5">
+              <span className="inline-block text-[9px] uppercase px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/10 mt-0.5">
                 Admin
               </span>
             </div>
           </div>
+
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold border border-white/5 hover:border-red-500/20 hover:text-red-400 transition-all bg-white/[0.02] hover:bg-red-500/5"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border border-white/5 hover:border-red-500/20 hover:text-red-400 transition-all bg-white/[0.01] hover:bg-red-500/5 cursor-pointer"
           >
-            🚪 Đăng xuất
+            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Đăng xuất
           </button>
         </div>
       </aside>
@@ -99,7 +189,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Content Body */}
-        <main className="flex-grow p-6 pt-20 overflow-y-auto">
+        <main className="flex-grow p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>

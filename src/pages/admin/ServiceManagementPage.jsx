@@ -78,123 +78,114 @@ const ServiceManagementPage = () => {
     await fetchServices();
   };
 
-  const thStyle = {
-  textAlign: "left",
-  padding: "14px 18px",
-  color: "#38bdf8",
-  borderBottom: "1px solid #334155",
-  fontWeight: 700,
-};
-
-const tdStyle = {
-  padding: "16px 18px",
-  color: "#e2e8f0",
-  borderBottom: "1px solid #1e293b",
-};
-
-const buttonStyle = {
-  background: "#0ea5e9",
-  border: "none",
-  color: "#fff",
-  padding: "8px 16px",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: 600,
-};
-
   return (
-  <div className="admin-page">
-    <div className="admin-page-header">
-      <h2>Service Management</h2>
-    </div>
-
-    <div
-      style={{
-        background: "#07111f",
-        border: "1px solid #1e293b",
-        borderRadius: "12px",
-        padding: "20px",
-        marginTop: "20px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h3 style={{ color: "#fff", fontSize: "20px", margin: 0 }}>
-          Quản lý dịch vụ
-        </h3>
-
-        <button onClick={handleCreate} style={buttonStyle}>
-          + Add Service
-        </button>
+    <div className="space-y-6">
+      {/* Header Panel */}
+      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Quản lý dịch vụ</h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Thiết lập danh mục dịch vụ rửa xe, đơn giá và thời gian hoàn thành dự kiến
+          </p>
+        </div>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Name</th>
-            <th style={thStyle}>Category</th>
-            <th style={thStyle}>Price</th>
-            <th style={thStyle}>Duration</th>
-            <th style={thStyle}>Description</th>
-            <th style={thStyle}>Status</th>
-            <th style={thStyle}>Action</th>
-          </tr>
-        </thead>
+      {/* Services List Table */}
+      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-white text-lg font-bold">
+            Danh mục dịch vụ
+          </h3>
 
-        <tbody>
-          {services.map((item) => (
-            <tr key={item.id}>
-              <td style={tdStyle}>{item.name}</td>
-              <td style={tdStyle}>{item.category}</td>
-              <td style={tdStyle}>{Number(item.price).toLocaleString()}đ</td>
-              <td style={tdStyle}>{item.duration} phút</td>
-              <td style={tdStyle}>{item.description}</td>
-              <td style={tdStyle}>
-                <AdminSwitch
-                  checked={item.status === 'Active'}
-                  onChange={async (checked) => {
-                    try {
-                      const updatedPayload = {
-                        serviceName: item.name,
-                        serviceCategory: item.category,
-                        price: Number(item.price),
-                        duration: Number(item.duration),
-                        description: item.description,
-                        status: checked ? 'Active' : 'Inactive'
-                      };
-                      await adminServiceService.updateService(item.id, updatedPayload);
-                      await fetchServices();
-                    } catch (err) {
-                      console.error("Error toggling service status:", err);
-                    }
-                  }}
-                />
-              </td>
-              <td style={tdStyle}>
-                <button onClick={() => handleEdit(item)} style={buttonStyle}>
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <button
+            onClick={handleCreate}
+            className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition duration-200 shadow-md shadow-cyan-500/10 cursor-pointer flex items-center gap-1.5"
+          >
+            <span>+</span> Thêm dịch vụ
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/5 bg-white/[0.01] text-slate-450 text-xs font-bold uppercase tracking-wider">
+                <th className="px-6 py-4 text-left">Tên dịch vụ</th>
+                <th className="px-6 py-4 text-left">Phân loại</th>
+                <th className="px-6 py-4 text-left">Đơn giá</th>
+                <th className="px-6 py-4 text-left">Thời gian</th>
+                <th className="px-6 py-4 text-left">Mô tả</th>
+                <th className="px-6 py-4 text-left">Trạng thái</th>
+                <th className="px-6 py-4 text-right">Tác vụ</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-white/5">
+              {services.map((item) => (
+                <tr
+                  key={item.id}
+                  className="hover:bg-white/[0.01] transition-all duration-150"
+                >
+                  <td className="px-6 py-4 text-slate-200 font-semibold text-sm">
+                    {item.name}
+                  </td>
+                  <td className="px-6 py-4 text-slate-350">
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-white/[0.04] border border-white/5">
+                      {item.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-slate-200 font-semibold">
+                    {Number(item.price).toLocaleString()}đ
+                  </td>
+                  <td className="px-6 py-4 text-slate-300 font-mono text-sm">
+                    {item.duration} phút
+                  </td>
+                  <td className="px-6 py-4 text-slate-400 text-xs max-w-xs truncate">
+                    {item.description || '-'}
+                  </td>
+                  <td className="px-6 py-4">
+                    <AdminSwitch
+                      checked={item.status === 'Active'}
+                      onChange={async (checked) => {
+                        try {
+                          const updatedPayload = {
+                            serviceName: item.name,
+                            serviceCategory: item.category,
+                            price: Number(item.price),
+                            duration: Number(item.duration),
+                            description: item.description,
+                            status: checked ? 'Active' : 'Inactive'
+                          };
+                          await adminServiceService.updateService(item.id, updatedPayload);
+                          await fetchServices();
+                        } catch (err) {
+                          console.error("Error toggling service status:", err);
+                        }
+                      }}
+                    />
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="bg-[#070913] hover:bg-white/[0.04] border border-white/10 text-cyan-400 font-bold px-3.5 py-1.5 rounded-lg text-xs transition cursor-pointer"
+                    >
+                      Sửa
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <ServiceModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onSubmit={handleSubmit}
+        initialData={selectedService}
+      />
     </div>
-
-    <ServiceModal
-      open={openModal}
-      onClose={() => setOpenModal(false)}
-      onSubmit={handleSubmit}
-      initialData={selectedService}
-    />
-  </div>
-);
+  );
 };
 
 export default ServiceManagementPage;

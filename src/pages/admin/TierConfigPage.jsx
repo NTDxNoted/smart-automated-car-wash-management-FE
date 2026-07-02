@@ -2,14 +2,10 @@ import React, { useEffect, useState } from 'react';
 import adminTierService from '../../services/adminTierService';
 import TierModal from '../../components/admin/TierModal';
 
-const CAN_MUTATE_TIER_STRUCTURE = false;
-
-
 const TierConfigPage = () => {
   const [tiers, setTiers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedTier, setSelectedTier] = useState(null);
-  
 
   const fetchTiers = async () => {
     try {
@@ -56,95 +52,83 @@ const TierConfigPage = () => {
     await fetchTiers();
   };
 
-  const thStyle = {
-    textAlign: "left",
-    padding: "14px 18px",
-    color: "#38bdf8",
-    borderBottom: "1px solid #334155",
-    fontWeight: 700,
-  };
-
-  const tdStyle = {
-    padding: "16px 18px",
-    color: "#e2e8f0",
-    borderBottom: "1px solid #1e293b",
+  const getTierBadgeStyle = (name) => {
+    switch (name?.toUpperCase()) {
+      case "PLATINUM":
+        return "bg-gradient-to-r from-slate-350 via-indigo-100 to-indigo-300 text-indigo-950 font-extrabold px-3 py-1 rounded-md text-xs shadow border border-indigo-200/50";
+      case "GOLD":
+        return "bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 font-extrabold px-3 py-1 rounded-md text-xs shadow border border-amber-300/50";
+      case "SILVER":
+        return "bg-gradient-to-r from-slate-450 to-slate-200 text-slate-900 font-extrabold px-3 py-1 rounded-md text-xs shadow border border-slate-350/50";
+      default:
+        return "bg-cyan-950/40 text-cyan-400 px-3 py-1 rounded-md text-xs border border-cyan-500/30 font-bold";
+    }
   };
 
   return (
-    <div className="admin-page">
-      <div className="admin-page-header">
-        <h2>Tier Configuration</h2>
+    <div className="space-y-6">
+      {/* Header Panel */}
+      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Cấu hình hạng thành viên</h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Thiết lập điều kiện chi tiêu để thăng hạng, tỉ lệ giảm giá và quyền lợi đặt lịch
+          </p>
+        </div>
       </div>
 
-      <div
-        style={{
-          background: "#07111f",
-          border: "1px solid #1e293b",
-          borderRadius: "12px",
-          padding: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <h3
-          style={{
-            color: "#fff",
-            marginBottom: "20px",
-            fontSize: "20px",
-          }}
-        >
-          Cấu hình hạng thành viên
+      {/* Tier Config Table Card */}
+      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5 shadow-xl">
+        <h3 className="text-white text-lg font-bold mb-6">
+          Chính sách hạng thành viên
         </h3>
 
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={thStyle}>Tier Name</th>
-              <th style={thStyle}>Min Spending</th>
-              <th style={thStyle}>Discount Rate</th>
-              <th style={thStyle}>Booking Window Days</th>
-              <th style={thStyle}>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {tiers.map((tier) => (
-              <tr key={tier.id}>
-                <td style={tdStyle}>{tier.name}</td>
-                <td style={tdStyle}>
-                  {tier.minSpending?.toLocaleString()}
-                </td>
-                <td style={tdStyle}>
-                  {tier.discountRate}%
-                </td>
-                <td style={tdStyle}>
-                  {tier.bookingWindowDays} ngày
-                </td>
-
-                <td style={tdStyle}>
-                  <button
-                    onClick={() => handleEdit(tier)}
-                    style={{
-                      background: "#0ea5e9",
-                      border: "none",
-                      color: "#fff",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Edit
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/5 bg-white/[0.01] text-slate-455 text-xs font-bold uppercase tracking-wider">
+                <th className="px-6 py-4 text-left">Hạng thành viên</th>
+                <th className="px-6 py-4 text-left">Chi tiêu tối thiểu</th>
+                <th className="px-6 py-4 text-left">Ưu đãi giảm giá</th>
+                <th className="px-6 py-4 text-left">Thời hạn đặt lịch tối đa</th>
+                <th className="px-6 py-4 text-right">Tác vụ</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody className="divide-y divide-white/5">
+              {tiers.map((tier) => (
+                <tr
+                  key={tier.id}
+                  className="hover:bg-white/[0.01] transition-all duration-150"
+                >
+                  <td className="px-6 py-4">
+                    <span className={getTierBadgeStyle(tier.name)}>
+                      {tier.name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-slate-200 font-semibold font-mono">
+                    {tier.minSpending?.toLocaleString()}đ
+                  </td>
+                  <td className="px-6 py-4 text-slate-200 font-bold font-mono">
+                    {tier.discountRate}%
+                  </td>
+                  <td className="px-6 py-4 text-slate-350 font-mono text-sm">
+                    {tier.bookingWindowDays} ngày
+                  </td>
+
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => handleEdit(tier)}
+                      className="bg-[#070913] hover:bg-white/[0.04] border border-white/10 text-cyan-400 font-bold px-3.5 py-1.5 rounded-lg text-xs transition cursor-pointer"
+                    >
+                      Cập nhật
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <TierModal
