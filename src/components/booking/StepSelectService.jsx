@@ -144,6 +144,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
           disabled={!bookingData.service}
           onClick={onNext}
           className="rounded-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 px-12 py-3.5 text-lg transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
+          style={{ padding: '14px 48px' }}
         >
           {t('btnContinue')}
           <span className="material-symbols-outlined text-lg">arrow_forward</span>
