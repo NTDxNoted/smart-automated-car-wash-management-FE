@@ -14,6 +14,9 @@ export const getCustomers = async ({
     params: {
       tier: tier || undefined,
       isLocked,
+      status: status || undefined,
+      search: search || undefined,
+      keyword: search || undefined,
       page,
     },
   });

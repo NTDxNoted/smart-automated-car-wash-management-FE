@@ -1,0 +1,343 @@
+/* TierConfigPage.css */
+
+.tier-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1008px;
+  margin: 0 auto;
+}
+
+.tier-page-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  color: #64748B;
+  width: 100%;
+}
+
+/* Tier Table Card */
+.tier-data-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Card Header */
+.tier-card-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  width: 100%;
+  height: 77px;
+  background: rgba(248, 250, 252, 0.5);
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.tier-card-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: #1E293B;
+}
+
+.tier-add-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 8px;
+  width: 157.25px;
+  height: 36px;
+  background: #00677F;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tier-add-btn:hover {
+  background: #005266;
+}
+
+/* Card Body / Table */
+.tier-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  height: 325px;
+  overflow-y: auto;
+}
+
+.tier-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tier-thead-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  height: 48px;
+  background: rgba(241, 245, 249, 0.8);
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.tier-th {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 24px;
+  height: 48px;
+  font-family: 'Nimbus Sans', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #64748B;
+  justify-content: center;
+}
+
+.tier-th.name {
+  width: 18%;
+  flex: 0 0 18%;
+}
+
+.tier-th.spending {
+  width: 22.5%;
+  flex: 0 0 22.5%;
+}
+
+.tier-th.discount {
+  width: 22%;
+  flex: 0 0 22%;
+}
+
+.tier-th.window {
+  width: 22.5%;
+  flex: 0 0 22.5%;
+}
+
+.tier-th.action {
+  width: 15%;
+  flex: 0 0 15%;
+  align-items: flex-end;
+  text-align: right;
+  padding-right: 72px;
+}
+
+/* Data Rows */
+.tier-tbody-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 100%;
+  height: 69px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.tier-tbody-row:last-child {
+  border-bottom: none;
+}
+
+.tier-td {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 24px;
+  height: 69px;
+  box-sizing: border-box;
+}
+
+.tier-td.name {
+  width: 18%;
+  flex: 0 0 18%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 0 24px;
+  height: 69px;
+  box-sizing: border-box;
+}
+
+/* Custom Tier Icon styles */
+.tier-icon-box {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.tier-icon-box.member {
+  background: #E2E8F0;
+}
+
+.tier-icon-box.silver {
+  background: #CBD5E1;
+}
+
+.tier-icon-box.gold {
+  background: #FEF9C3;
+}
+
+.tier-icon-box.platinum {
+  background: #1E293B;
+}
+
+.tier-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.tier-svg.member {
+  color: #64748B;
+}
+
+.tier-svg.silver {
+  color: #475569;
+}
+
+.tier-svg.gold {
+  color: #CA8A04;
+}
+
+.tier-svg.platinum {
+  color: #CBD5E1;
+}
+
+.tier-name-text {
+  font-family: 'ABeeZee', sans-serif;
+  font-weight: 450;
+  font-size: 14px;
+  line-height: 1;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1px;
+}
+
+.tier-td.spending {
+  width: 22.5%;
+  flex: 0 0 22.5%;
+}
+
+.tier-spending-text {
+  font-family: 'ABeeZee', sans-serif;
+  font-weight: 450;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.tier-td.discount {
+  width: 22%;
+  flex: 0 0 22%;
+}
+
+.tier-discount-text {
+  font-family: 'ABeeZee', sans-serif;
+  font-weight: 450;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.tier-td.window {
+  width: 22.5%;
+  flex: 0 0 22.5%;
+}
+
+.tier-window-text {
+  font-family: 'ABeeZee', sans-serif;
+  font-weight: 450;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.tier-td.action {
+  width: 15%;
+  flex: 0 0 15%;
+  align-items: flex-end;
+  padding-right: 72px;
+}
+
+.tier-edit-btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tier-edit-btn:hover {
+  background: rgba(100, 116, 139, 0.08);
+  color: #334155;
+}
+
+/* Card Footer */
+.tier-card-footer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 24px;
+  width: 100%;
+  height: 53px;
+  background: rgba(248, 250, 252, 0.5);
+  border-top: 1px solid #E2E8F0;
+}
+
+.tier-footer-text {
+  font-family: 'ABeeZee', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #64748B;
+}

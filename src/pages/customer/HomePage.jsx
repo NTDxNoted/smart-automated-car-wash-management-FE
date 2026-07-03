@@ -193,7 +193,7 @@ export default function HomePage() {
               style={{ left: `${sliderPosition}%` }}
             >
               <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)] z-30 cursor-ew-resize hover:scale-105 transition-all">
-                <span className="material-symbols-outlined text-xs sm:text-sm font-bold">unfold_more</span>
+                <span className="material-symbols-outlined text-xs sm:text-sm font-bold rotate-90">unfold_more</span>
               </div>
             </div>
 

@@ -3,6 +3,15 @@ import Papa from "papaparse";
 
 const PAGE_SIZE = 20;
 
+const HEADER_LABELS = {
+  customer: "Khách hàng",
+  recency: "Recency (Ngày)",
+  frequency: "Frequency (Lần)",
+  monetary: "Monetary (VNĐ)",
+  points: "Points",
+  tier: "Tier",
+};
+
 export default function RfmTable({ data }) {
   const [sortKey, setSortKey] = useState("monetary");
   const [sortDir, setSortDir] = useState("desc");
@@ -68,32 +77,56 @@ export default function RfmTable({ data }) {
     setSortDir("desc");
   };
 
+  const getTierBadge = (tier) => {
+    const t = String(tier || "").toUpperCase();
+    switch (t) {
+      case "GOLD":
+        return <span className="rfm-tier-badge gold">Gold</span>;
+      case "SILVER":
+        return <span className="rfm-tier-badge silver">Silver</span>;
+      case "PLATINUM":
+        return <span className="rfm-tier-badge platinum">Platinum</span>;
+      default:
+        return <span className="rfm-tier-badge member">Member</span>;
+    }
+  };
+
+  const startIdx = data.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const endIdx = Math.min(page * PAGE_SIZE, sortedData.length);
+
   return (
-    <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5">
-      <div className="flex justify-between mb-4">
-        <h3 className="text-white font-semibold">RFM Analysis</h3>
+    <div className="rfm-data-card">
+      <div className="rfm-card-header">
+        <h3 className="rfm-card-title">Phân tích RFM khách hàng</h3>
 
         <button
           onClick={exportCSV}
-          className="px-4 py-2 bg-cyan-600 text-white rounded-lg"
+          className="rfm-export-btn"
         >
-          Export CSV
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Xuất dữ liệu CSV
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="rfm-table-wrapper">
+        <table className="rfm-table">
           <thead>
-            <tr>
+            <tr className="rfm-thead-row">
               {["customer", "recency", "frequency", "monetary", "points", "tier"].map(
                 (item) => (
                   <th
                     key={item}
                     onClick={() => handleSort(item)}
-                    className="text-left p-3 cursor-pointer text-white"
+                    className={`rfm-th ${item}`}
                   >
-                    {item.toUpperCase()}
-                    {sortKey === item ? ` ${sortDir === "asc" ? "▲" : "▼"}` : ""}
+                    <span>{HEADER_LABELS[item]}</span>
+                    {sortKey === item && (
+                      <span className="rfm-th-arrow">
+                        {sortDir === "asc" ? "▲" : "▼"}
+                      </span>
+                    )}
                   </th>
                 )
               )}
@@ -102,39 +135,47 @@ export default function RfmTable({ data }) {
 
           <tbody>
             {paginatedData.map((row) => (
-              <tr key={row.customer} className="border-t border-white/5">
-                <td className="p-3">{row.customer}</td>
-                <td className="p-3">{row.recency}</td>
-                <td className="p-3">{row.frequency}</td>
-                <td className="p-3">{row.monetary.toLocaleString()}</td>
-                <td className="p-3">{row.points}</td>
-                <td className="p-3">{row.tier}</td>
+              <tr key={row.customer} className="rfm-tbody-row">
+                <td className="rfm-td customer">{row.customer}</td>
+                <td className="rfm-td recency">{row.recency} ngày</td>
+                <td className="rfm-td frequency">{row.frequency} lần</td>
+                <td className="rfm-td monetary">{row.monetary?.toLocaleString()}đ</td>
+                <td className="rfm-td points">{row.points?.toLocaleString()}</td>
+                <td className="rfm-td tier">
+                  {getTierBadge(row.tier)}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="flex items-center justify-end gap-3 mt-4 text-white">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-          className="px-3 py-1 rounded bg-white/10 disabled:opacity-40"
-        >
-          Prev
-        </button>
+      <div className="rfm-pagination">
+        <div className="rfm-pagination-info">
+          Hiển thị {startIdx} đến {endIdx} trong số {sortedData.length} khách hàng
+        </div>
 
-        <span>
-          Page {page} / {totalPages}
-        </span>
+        <div className="rfm-pagination-actions">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            className="rfm-pagination-btn"
+          >
+            Trước
+          </button>
 
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-          className="px-3 py-1 rounded bg-white/10 disabled:opacity-40"
-        >
-          Next
-        </button>
+          <span className="rfm-pagination-pagespan">
+            Trang {page} / {totalPages}
+          </span>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+            className="rfm-pagination-btn"
+          >
+            Sau
+          </button>
+        </div>
       </div>
     </div>
   );

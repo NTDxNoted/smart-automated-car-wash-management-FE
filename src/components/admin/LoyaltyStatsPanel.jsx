@@ -1,33 +1,30 @@
 function Card({ title, value }) {
   return (
-    <div className="bg-[#0c0f24] p-5 rounded-2xl border border-white/5">
-      <p className="text-slate-400">{title}</p>
-
-      <h3 className="text-white text-2xl font-bold mt-2">
+    <div className="report-stat-card">
+      <span className="report-stat-label">{title}</span>
+      <h3 className="report-stat-value">
         {value}
       </h3>
     </div>
   );
 }
 
-export default function LoyaltyStatsPanel({
-  stats,
-}) {
+export default function LoyaltyStatsPanel({ stats }) {
   return (
-    <div className="grid md:grid-cols-3 gap-5">
+    <div className="report-stats-grid">
       <Card
-        title="Total Points"
-        value={stats.totalPoints.toLocaleString()}
+        title="Tổng điểm đang lưu hành"
+        value={stats.totalPoints?.toLocaleString()}
       />
 
       <Card
-        title="Expiring Soon"
-        value={stats.expiringSoon.toLocaleString()}
+        title="Sắp hết hạn (≤ 30 ngày)"
+        value={stats.expiringSoon?.toLocaleString()}
       />
 
       <Card
-        title="Expired"
-        value={stats.expired.toLocaleString()}
+        title="Đã hết hạn"
+        value={stats.expired?.toLocaleString()}
       />
     </div>
   );

@@ -7,43 +7,57 @@ import {
   Legend,
 } from "recharts";
 
-const COLORS = [
-  "#22c55e",
-  "#f59e0b",
-  "#ef4444",
-];
+const STATUS_COLORS = {
+  PENDING: "#F59E0B",
+  CONFIRMED: "#00677F",
+  PROCESSING: "#0EA5E9",
+  COMPLETED: "#10B981",
+  CANCELLED: "#EF4444",
+};
 
-export default function BookingStatusPieChart({
-  data,
-}) {
+const DEFAULT_COLORS = ["#00677F", "#10B981", "#F59E0B", "#EF4444", "#64748B"];
+
+export default function BookingStatusPieChart({ data }) {
   return (
-    <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5">
-      <h3 className="text-white font-semibold mb-4">
-        Booking Status
+    <div className="report-chart-card">
+      <h3 className="report-chart-title">
+        Trạng thái đặt lịch
       </h3>
 
-      <ResponsiveContainer width="100%" aspect={2}>
+      <ResponsiveContainer width="100%" aspect={1.8}>
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy="50%"
-            outerRadius={90}
+            outerRadius={75}
             dataKey="value"
-            label
+            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+            labelLine={false}
           >
-            {data.map((entry, index) => (
-              <Cell
-                key={index}
-                fill={
-                  COLORS[index % COLORS.length]
-                }
-              />
-            ))}
+            {data.map((entry, index) => {
+              const key = entry.name?.toUpperCase() || "";
+              const fill = STATUS_COLORS[key] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+              return (
+                <Cell
+                  key={index}
+                  fill={fill}
+                />
+              );
+            })}
           </Pie>
 
-          <Tooltip />
-          <Legend verticalAlign="bottom" />
+          <Tooltip
+            contentStyle={{
+              background: '#FFFFFF',
+              border: '1px solid #BCC8CE',
+              borderRadius: '8px',
+              boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
+              fontSize: '12px',
+              fontFamily: 'Inter, sans-serif',
+            }}
+          />
+          <Legend verticalAlign="bottom" height={36} iconType="circle" />
         </PieChart>
       </ResponsiveContainer>
     </div>
