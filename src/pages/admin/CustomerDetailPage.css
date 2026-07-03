@@ -1,0 +1,321 @@
+/* CustomerDetailPage.css */
+
+.detail-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1008px;
+  margin: 0 auto;
+}
+
+.back-link-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #0891b2; /* Cyan-600 */
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  width: fit-content;
+}
+
+.back-link-wrapper:hover {
+  color: #06b6d4; /* Cyan-500 */
+  transform: translateX(-4px);
+}
+
+.detail-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+  border-radius: 16px;
+  width: 100%;
+}
+
+.detail-card-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.detail-card-title {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  color: #111C2C;
+  margin: 0;
+}
+
+.detail-card-subtitle {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 26px;
+  color: #111C2C;
+  margin: 0 0 20px 0;
+}
+
+/* Detail Info Grid */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.detail-item-box {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.02), 0px 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.detail-item-box:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+.detail-item-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  color: #64748B;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-item-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+/* Premium Badges in detail cards */
+.badge-container {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+/* Custom premium buttons */
+.premium-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.premium-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.premium-btn.lock-btn {
+  background: #EF4444;
+  color: #FFFFFF;
+}
+
+.premium-btn.lock-btn:hover:not(:disabled) {
+  background: #DC2626;
+  box-shadow: 0px 4px 12px rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+.premium-btn.unlock-btn {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.premium-btn.unlock-btn:hover:not(:disabled) {
+  background: #059669;
+  box-shadow: 0px 4px 12px rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Booking History Table Styles */
+.detail-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.detail-table th {
+  padding: 14px 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 18px;
+  color: #475569;
+  border-bottom: 2px solid #E2E8F0;
+  background: #F8FAFC;
+}
+
+.detail-table td {
+  padding: 14px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.detail-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.detail-table tbody tr:hover {
+  background-color: #F8FAFC;
+}
+
+/* Custom premium booking status badges */
+.booking-status-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 14px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.booking-status-capsule.completed {
+  background: #D1FAE5;
+  color: #065F46;
+  border-color: #A7F3D0;
+}
+
+.booking-status-capsule.pending {
+  background: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+
+.booking-status-capsule.failed,
+.booking-status-capsule.noshow {
+  background: #FEE2E2;
+  color: #991B1B;
+  border-color: #FCA5A5;
+}
+
+.booking-status-capsule.cancelled {
+  background: #F1F5F9;
+  color: #475569;
+  border-color: #E2E8F0;
+}
+
+/* Customer Status Badge */
+.cust-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  border: 1px solid transparent;
+}
+
+.cust-status-badge.active {
+  background: #D1FAE5;
+  color: #065F46;
+  border-color: #A7F3D0;
+}
+
+.cust-status-badge.locked {
+  background: #FEE2E2;
+  color: #991B1B;
+  border-color: #FCA5A5;
+}
+
+.cust-status-badge.suspended {
+  background: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+
+/* Customer Tier Badge */
+.cust-tier-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cust-tier-badge.member {
+  background: rgba(6, 182, 212, 0.1);
+  color: #0891b2;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.cust-tier-badge.silver {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  color: #334155;
+  border: 1px solid #94a3b8;
+}
+
+.cust-tier-badge.gold {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400E;
+  border: 1px solid #f59e0b;
+}
+
+.cust-tier-badge.platinum {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: #0369a1;
+  border: 1px solid #38bdf8;
+}

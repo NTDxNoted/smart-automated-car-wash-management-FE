@@ -1,0 +1,330 @@
+/* ServiceManagementPage.css */
+
+.service-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1008px;
+  margin: 0 auto;
+}
+
+.service-page-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  color: #64748B;
+  width: 100%;
+}
+
+/* Service Data Card */
+.service-data-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Card Header */
+.service-card-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  width: 100%;
+  height: 77px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.service-card-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: #1E293B;
+}
+
+.service-add-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  gap: 8px;
+  width: 144.25px;
+  height: 36px;
+  background: #00677F;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.service-add-btn:hover {
+  background: #005266;
+}
+
+/* Table body/content container */
+.service-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  width: 100%;
+  background: #FFFFFF;
+  overflow-y: auto;
+}
+
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.service-thead-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  height: 45px;
+  background: #F8FAFC;
+}
+
+.service-th {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 11.5px 16px;
+  height: 45px;
+  border-bottom: 2px solid #E2E8F0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #1E293B;
+  justify-content: center;
+}
+
+.service-th.name {
+  width: 16%;
+  flex: 0 0 16%;
+  border-radius: 6px 0px 0px 6px;
+}
+
+.service-th.category {
+  width: 11%;
+  flex: 0 0 11%;
+}
+
+.service-th.price {
+  width: 11%;
+  flex: 0 0 11%;
+}
+
+.service-th.duration {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.service-th.description {
+  width: 29%;
+  flex: 0 0 29%;
+}
+
+.service-th.status {
+  width: 14%;
+  flex: 0 0 14%;
+}
+
+.service-th.action {
+  width: 9%;
+  flex: 0 0 9%;
+  align-items: center;
+  text-align: center;
+  border-radius: 0px 6px 6px 0px;
+}
+
+/* Body Rows */
+.service-tbody-row {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 100%;
+  height: 74.5px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.service-td {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 26.5px 16px 27px;
+  height: 73.5px;
+  justify-content: center;
+}
+
+.service-td.name {
+  width: 16%;
+  flex: 0 0 16%;
+  padding: 16.5px 16px 17px;
+}
+
+.service-name-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #1E293B;
+}
+
+.service-td.category {
+  width: 11%;
+  flex: 0 0 11%;
+}
+
+.service-category-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.service-td.price {
+  width: 11%;
+  flex: 0 0 11%;
+}
+
+.service-price-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.service-td.duration {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.service-duration-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.service-td.description {
+  width: 29%;
+  flex: 0 0 29%;
+  max-width: 320px;
+}
+
+.service-description-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #64748B;
+  width: 100%;
+}
+
+.service-td.status {
+  width: 14%;
+  flex: 0 0 14%;
+  padding: 16px 16px 14.5px;
+}
+
+/* Status capsule */
+.service-status-capsule {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.service-status-capsule.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.service-status-capsule.inactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+}
+
+.service-td.action {
+  width: 9%;
+  flex: 0 0 9%;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  gap: 8px;
+  height: 28px;
+}
+
+.service-action-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 7px 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.service-action-btn.edit {
+  width: 21.98px;
+  height: 27.98px;
+  color: #0EA5E9;
+}
+
+.service-action-btn.edit:hover {
+  color: #0284c7;
+}
+
+.service-action-btn.delete {
+  width: 20.25px;
+  height: 28px;
+  color: #EF4444;
+}
+
+.service-action-btn.delete:hover {
+  color: #dc2626;
+}

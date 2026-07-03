@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import adminPromotionService from '../../services/adminPromotionService';
 import PromotionModal from '../../components/admin/PromotionModal';
-import AdminSwitch from '../../components/admin/AdminSwitch';
+import './PromotionManagementPage.css';
 
 const PromotionManagementPage = () => {
   const [promotions, setPromotions] = useState([]);
@@ -10,8 +10,48 @@ const PromotionManagementPage = () => {
   const [togglingIds, setTogglingIds] = useState([]);
 
   const fetchPromotions = async () => {
-    const res = await adminPromotionService.getPromotions();
-    setPromotions(res.data?.data || res.data || []);
+    try {
+      const res = await adminPromotionService.getPromotions();
+      const rawList = res.data?.data || res.data || [];
+      const mapped = rawList.map(item => {
+        let dType = item.discountType ?? item.DiscountType;
+        if (dType === 'Percentage') dType = 'PERCENT';
+        if (dType === 'Fixed_Amount') dType = 'FIXED';
+
+        let minTierVal = item.minTier ?? item.MinTierID ?? item.minTierId;
+        let minTierDisplay = '';
+        let minTierId = null;
+
+        if (minTierVal) {
+          if (typeof minTierVal === 'object') {
+            minTierDisplay = minTierVal.tierName ?? minTierVal.TierName ?? minTierVal.name ?? '';
+            minTierId = minTierVal.tierID ?? minTierVal.tierId ?? minTierVal.id;
+          } else {
+            minTierDisplay = minTierVal;
+            minTierId = minTierVal;
+          }
+        }
+
+        return {
+          id: item.promotionId ?? item.promotionID ?? item.PromotionID ?? item.id,
+          title: item.title ?? item.Title,
+          promoCode: item.promoCode ?? item.PromoCode,
+          minTier: minTierDisplay,
+          minTierId: minTierId,
+          minTierID: minTierId,
+          discountType: dType,
+          value: item.value ?? item.discountValue ?? item.DiscountValue,
+          maxUsage: item.maxUsage ?? item.MaxUsage,
+          startDate: item.startDate ?? item.StartDate,
+          endDate: item.endDate ?? item.EndDate,
+          isActive: item.isActive !== undefined ? item.isActive : (item.IsActive !== undefined ? item.IsActive : true),
+        };
+      });
+      setPromotions(mapped);
+    } catch (err) {
+      console.error("Error fetching promotions:", err);
+      setPromotions([]);
+    }
   };
 
   useEffect(() => {
@@ -30,10 +70,27 @@ const PromotionManagementPage = () => {
 
   const handleSubmit = async (form) => {
     const payload = {
-      ...form,
+      title: form.title,
+      promoCode: form.promoCode,
+      minTier: form.minTier,
+      minTierId: form.minTier ? Number(form.minTier) : null,
+      minTierID: form.minTier ? Number(form.minTier) : null,
+      discountValue: Number(form.value),
       value: Number(form.value),
       maxUsage: Number(form.maxUsage),
+      startDate: form.startDate,
+      endDate: form.endDate,
+      isActive: form.isActive !== undefined ? form.isActive : true,
+      IsActive: form.isActive !== undefined ? form.isActive : true,
     };
+
+    if (form.discountType === 'PERCENT' || form.discountType === 'Percentage') {
+      payload.discountType = 'Percentage';
+      payload.DiscountType = 'Percentage';
+    } else if (form.discountType === 'FIXED' || form.discountType === 'Fixed_Amount') {
+      payload.discountType = 'Fixed_Amount';
+      payload.DiscountType = 'Fixed_Amount';
+    }
 
     if (selectedPromotion) {
       await adminPromotionService.updatePromotion(selectedPromotion.id, payload);
@@ -58,102 +115,137 @@ const PromotionManagementPage = () => {
     }
   };
 
-  const thStyle = {
-    textAlign: "left",
-    padding: "14px 18px",
-    color: "#38bdf8",
-    borderBottom: "1px solid #334155",
-    fontWeight: 700,
-  };
-
-  const tdStyle = {
-    padding: "16px 18px",
-    color: "#e2e8f0",
-    borderBottom: "1px solid #1e293b",
-  };
-
-  const buttonStyle = {
-    background: "#0ea5e9",
-    border: "none",
-    color: "#fff",
-    padding: "8px 16px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: 600,
+  const getTierDisplayBadge = (tier) => {
+    if (!tier) return <span className="text-slate-400">-</span>;
+    const tierName = String(tier);
+    switch (tierName.toUpperCase()) {
+      case "PLATINUM":
+        return <span className="promo-tier-badge platinum">{tierName}</span>;
+      case "GOLD":
+        return <span className="promo-tier-badge gold">{tierName}</span>;
+      case "SILVER":
+        return <span className="promo-tier-badge silver">{tierName}</span>;
+      default:
+        return <span className="promo-tier-badge member">{tierName}</span>;
+    }
   };
 
   return (
-    <div className="admin-page">
-      <div className="admin-page-header">
-        <h2>Promotion Management</h2>
-      </div>
+    <div className="promo-page-container">
+      {/* Page Subtitle */}
+      <div className="promo-page-subtitle"></div>
 
-      <div
-        style={{
-          background: "#07111f",
-          border: "1px solid #1e293b",
-          borderRadius: "12px",
-          padding: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <h3 style={{ color: "#fff", fontSize: "20px", margin: 0 }}>
-            Quản lý khuyến mãi
-          </h3>
+      {/* Promotions List Card */}
+      <div className="promo-data-card">
+        {/* Card Header */}
+        <div className="promo-card-header">
+          <h3 className="promo-card-title">Quản lý khuyến mãi</h3>
 
-          <button onClick={handleCreate} style={buttonStyle}>
-            + Add Promotion
+          <button
+            onClick={handleCreate}
+            className="promo-add-btn"
+          >
+            <span>+</span> Thêm khuyến mãi
           </button>
         </div>
 
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th style={thStyle}>Title</th>
-              <th style={thStyle}>Promo Code</th>
-              <th style={thStyle}>Min Tier</th>
-              <th style={thStyle}>Discount Type</th>
-              <th style={thStyle}>Value</th>
-              <th style={thStyle}>Max Usage</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle}>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {promotions.map((item) => (
-              <tr key={item.id}>
-                <td style={tdStyle}>{item.title}</td>
-                <td style={tdStyle}>{item.promoCode}</td>
-                <td style={tdStyle}>{item.minTier}</td>
-                <td style={tdStyle}>{item.discountType}</td>
-                <td style={tdStyle}>{item.value}</td>
-                <td style={tdStyle}>{item.maxUsage}</td>
-                <td style={tdStyle}>
-                  <AdminSwitch
-                    checked={item.isActive}
-                    loading={togglingIds.includes(item.id)}
-                    disabled={togglingIds.includes(item.id)}
-                    onChange={() => handleToggle(item)}
-                  />
-                </td>
-                <td style={tdStyle}>
-                  <button onClick={() => handleEdit(item)} style={buttonStyle}>
-                    Edit
-                  </button>
-                </td>
+        {/* Card Body / Table Wrapper */}
+        <div className="promo-table-wrapper">
+          <table className="promo-table">
+            <thead>
+              <tr className="promo-thead-row">
+                <th className="promo-th name">Tên ưu đãi</th>
+                <th className="promo-th code">Mã ưu đãi</th>
+                <th className="promo-th tier">Hạng áp dụng</th>
+                <th className="promo-th type">Loại giảm</th>
+                <th className="promo-th value">Mức giảm</th>
+                <th className="promo-th limit">Giới hạn</th>
+                <th className="promo-th status">Trạng thái</th>
+                <th className="promo-th action">Tác vụ</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {promotions.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="p-0 border-none">
+                    <div className="promo-empty-row">
+                      <div className="promo-empty-container">
+                        {/* Folder/Box SVG */}
+                        <svg className="promo-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                        </svg>
+                        <div className="promo-empty-margin">
+                          <div className="promo-empty-text-wrapper">
+                            <span className="promo-empty-text">No promotions found.</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                promotions.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="promo-tbody-row"
+                  >
+                    <td className="promo-td name">
+                      <span className="promo-name-text" title={item.title}>{item.title}</span>
+                    </td>
+
+                    <td className="promo-td code">
+                      <span className="promo-code-badge">{item.promoCode}</span>
+                    </td>
+
+                    <td className="promo-td tier">
+                      {getTierDisplayBadge(item.minTier)}
+                    </td>
+
+                    <td className="promo-td type">
+                      <span className="promo-type-text">
+                        {item.discountType === 'PERCENT' ? 'Phần trăm' : 'Tiền mặt'}
+                      </span>
+                    </td>
+
+                    <td className="promo-td value">
+                      <span className="promo-value-text">
+                        {item.discountType === 'PERCENT' ? `${item.value}%` : `${item.value?.toLocaleString()}đ`}
+                      </span>
+                    </td>
+
+                    <td className="promo-td limit">
+                      <span className="promo-limit-text">
+                        {item.maxUsage?.toLocaleString() || 'Không giới hạn'}
+                      </span>
+                    </td>
+
+                    <td className="promo-td status">
+                      <button
+                        type="button"
+                        onClick={() => handleToggle(item)}
+                        disabled={togglingIds.includes(item.id)}
+                        className={`promo-status-capsule ${item.isActive ? 'active' : 'inactive'}`}
+                        title="Click để đổi trạng thái"
+                      >
+                        {item.isActive ? 'Đang hoạt động' : 'Ngưng hoạt động'}
+                      </button>
+                    </td>
+
+                    <td className="promo-td action">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="promo-action-btn edit"
+                      >
+                        Sửa
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <PromotionModal

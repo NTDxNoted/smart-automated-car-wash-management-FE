@@ -3,11 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 
 import CustomerDetailPanel from '../../components/admin/CustomerDetailPanel';
 import LockToggleButton from '../../components/admin/LockToggleButton';
-
-import {
-  getCustomerDetail,
-  toggleLock,
-} from '../../services/adminCustomerService';
+import { getCustomerDetail, toggleLock } from '../../services/adminCustomerService';
+import './CustomerDetailPage.css';
 
 export default function CustomerDetailPage() {
   const { id } = useParams();
@@ -31,32 +28,30 @@ export default function CustomerDetailPage() {
   const handleToggleLock = async () => {
     if (lockLoading) return;
 
-    const ok = window.confirm(
-      'Bạn có chắc muốn thay đổi trạng thái tài khoản?'
-    );
+    const isCurrentlyLocked = customer.isLocked || customer.status === 'LOCKED';
+    const confirmMessage = isCurrentlyLocked
+      ? `Bạn có chắc chắn muốn mở khóa tài khoản của khách hàng ${customer.fullName || ''}?`
+      : `Bạn có chắc chắn muốn khóa tài khoản của khách hàng ${customer.fullName || ''}?`;
 
-    if (!ok) return;
+    if (!window.confirm(confirmMessage)) return;
 
     try {
       setLockLoading(true);
 
       const data = await toggleLock(id);
 
-      setCustomer((prev) => ({
-        ...prev,
-        isLocked:
+      setCustomer((prev) => {
+        const isPrevLocked = prev.isLocked || prev.status === 'LOCKED';
+        const newLocked =
           typeof data?.isLocked === 'boolean'
             ? data.isLocked
-            : !prev.isLocked,
-        status:
-          typeof data?.isLocked === 'boolean'
-            ? data.isLocked
-              ? 'LOCKED'
-              : 'ACTIVE'
-            : prev.isLocked
-              ? 'ACTIVE'
-              : 'LOCKED',
-      }));
+            : !isPrevLocked;
+        return {
+          ...prev,
+          isLocked: newLocked,
+          status: newLocked ? 'LOCKED' : 'ACTIVE',
+        };
+      });
     } catch (err) {
       console.error(err);
       alert('Không thể cập nhật trạng thái tài khoản');
@@ -65,10 +60,45 @@ export default function CustomerDetailPage() {
     }
   };
 
+  const getBookingStatusBadge = (status) => {
+    switch (status?.toUpperCase()) {
+      case "COMPLETED":
+        return "booking-status-capsule completed";
+      case "PENDING":
+        return "booking-status-capsule pending";
+      case "FAILED":
+        return "booking-status-capsule failed";
+      case "CANCELLED":
+        return "booking-status-capsule cancelled";
+      case "NOSHOW":
+        return "booking-status-capsule failed";
+      default:
+        return "booking-status-capsule pending";
+    }
+  };
+
+  const getBookingStatusText = (status) => {
+    switch (status?.toUpperCase()) {
+      case "COMPLETED":
+        return "Hoàn thành";
+      case "PENDING":
+        return "Chờ xử lý";
+      case "FAILED":
+        return "Thất bại";
+      case "CANCELLED":
+        return "Đã hủy";
+      case "NOSHOW":
+        return "Vắng mặt";
+      default:
+        return status || "Chờ xử lý";
+    }
+  };
+
   if (!customer) {
     return (
-      <div className="text-slate-400">
-        Đang tải thông tin khách hàng...
+      <div className="py-12 text-center text-slate-500 bg-white rounded-2xl border border-[#BCC8CE] shadow-sm">
+        <div className="inline-block w-8 h-8 border-4 border-slate-200 border-t-cyan-500 rounded-full animate-spin mb-2"></div>
+        <p className="text-sm font-medium">Đang tải thông tin khách hàng...</p>
       </div>
     );
   }
@@ -76,22 +106,17 @@ export default function CustomerDetailPage() {
   const bookingHistory = customer.bookingHistory || [];
 
   return (
-    <div className="space-y-6">
-      <Link
-        to="/admin/customers"
-        className="text-cyan-400"
-      >
-        ← Quay lại
+    <div className="detail-page-container">
+      <Link to="/admin/customers" className="back-link-wrapper">
+        <span>←</span> Quay lại danh sách
       </Link>
 
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5">
-        <div className="flex justify-between mb-6">
-          <h2 className="text-xl font-bold">
-            Chi tiết khách hàng
-          </h2>
+      <div className="detail-card">
+        <div className="detail-card-header">
+          <h2 className="detail-card-title">Chi tiết khách hàng</h2>
 
           <LockToggleButton
-            isLocked={customer.isLocked}
+            isLocked={customer.isLocked || customer.status === 'LOCKED'}
             loading={lockLoading}
             onClick={handleToggleLock}
           />
@@ -100,61 +125,52 @@ export default function CustomerDetailPage() {
         <CustomerDetailPanel customer={customer} />
       </div>
 
-      <div className="bg-[#0c0f24] p-6 rounded-2xl border border-white/5">
-        <h3 className="font-semibold mb-4">
-          Lịch sử booking
-        </h3>
+      <div className="detail-card">
+        <h3 className="detail-card-subtitle">Lịch sử booking</h3>
 
         {bookingHistory.length === 0 ? (
-          <div className="py-10 text-center text-slate-400 border border-dashed border-white/10 rounded-xl">
-            Chưa có lịch sử booking
+          <div className="py-10 text-center text-slate-400 border border-dashed border-slate-200 rounded-2xl font-medium">
+            Chưa có lịch sử đặt lịch (booking) của khách hàng này.
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10 text-slate-400">
-                <th className="text-left py-3">Mã</th>
-                <th className="text-left py-3">Dịch vụ</th>
-                <th className="text-left py-3">Ngày</th>
-                <th className="text-left py-3">Trạng thái</th>
-                <th className="text-left py-3">Tổng tiền</th>
-                <th className="text-left py-3">Thao tác</th>
-              </tr>
-            </thead>
+          <div className="detail-table-wrapper">
+            <table className="detail-table">
+              <thead>
+                <tr>
+                  <th>Mã</th>
+                  <th>Dịch vụ</th>
+                  <th>Ngày</th>
+                  <th>Trạng thái</th>
+                  <th style={{ textAlign: 'right' }}>Tổng tiền</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {bookingHistory.map((booking) => {
-                const isCompleted = booking.status === 'Completed';
+              <tbody>
+                {bookingHistory.map((booking) => {
+                  const bDate = booking.bookingDate || booking.scheduledTime || booking.createdAt;
+                  const formattedDate = bDate ? new Date(bDate).toLocaleDateString("vi-VN") : "-";
+                  const price = booking.totalAmount || booking.finalAmount || booking.totalPrice || 0;
+                  const bId = booking.bookingId || booking.bookingID || booking.id;
 
-                return (
-                  <tr
-                    key={booking.id}
-                    className="border-b border-white/5"
-                  >
-                    <td className="py-3">{booking.id}</td>
-                    <td>{booking.serviceName}</td>
-                    <td>{booking.bookingDate}</td>
-                    <td>{booking.status}</td>
-                    <td>{booking.totalAmount || booking.totalPrice || 0}</td>
-                    <td>
-                      {!isCompleted ? (
-                        <button
-                          type="button"
-                          className="text-cyan-400 hover:underline"
-                        >
-                          Sửa tài chính
-                        </button>
-                      ) : (
-                        <span className="text-slate-500">
-                          Đã hoàn tất
+                  return (
+                    <tr key={bId}>
+                      <td style={{ fontWeight: '600' }}>#{bId}</td>
+                      <td>{booking.serviceName || booking.service?.serviceName || "Rửa xe cơ bản"}</td>
+                      <td>{formattedDate}</td>
+                      <td>
+                        <span className={getBookingStatusBadge(booking.status)}>
+                          {getBookingStatusText(booking.status)}
                         </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: '600' }}>
+                        {price.toLocaleString()}đ
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

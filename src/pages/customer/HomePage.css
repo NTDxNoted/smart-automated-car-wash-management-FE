@@ -48,7 +48,7 @@ body {
    ════════════════════════════════════════════ */
 
 /* 1. Nhắm thẳng vào thẻ div chứa nội dung bên trong thanh Header */
-header.sticky div.w-full {
+.header-area div.w-full {
 
   /* Bạn muốn thụt lề 2 bên góc bao nhiêu thì tự sửa số ở đây nhé: */
   padding-left: 24px !important;
@@ -68,7 +68,7 @@ header.sticky div.w-full {
 }
 
 /* 1. Đảm bảo thanh Header là một tấm kính mờ tinh tế đè lên ảnh nền */
-header.sticky {
+.header-area {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -80,7 +80,7 @@ header.sticky {
 }
 
 /* 2. Bạn tự Padding nội dung thoải mái ở đây */
-header.sticky div.w-full {
+.header-area div.w-full {
   padding-left: 32px !important;
   /* Thụt lề trái theo ý bạn */
   padding-right: 32px !important;

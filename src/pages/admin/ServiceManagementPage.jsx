@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import adminServiceService from '../../services/adminServiceService';
 import ServiceModal from '../../components/admin/ServiceModal';
+import './ServiceManagementPage.css';
 
 const ServiceManagementPage = () => {
   const [services, setServices] = useState([]);
@@ -41,6 +42,43 @@ const ServiceManagementPage = () => {
     setOpenModal(true);
   };
 
+  const handleToggleStatus = async (item) => {
+    try {
+      const newStatus = item.status === 'Active' ? 'Inactive' : 'Active';
+      const updatedPayload = {
+        serviceName: item.name,
+        serviceCategory: item.category,
+        price: Number(item.price),
+        duration: Number(item.duration),
+        description: item.description,
+        status: newStatus
+      };
+      await adminServiceService.updateService(item.id, updatedPayload);
+      await fetchServices();
+    } catch (err) {
+      console.error("Error toggling service status:", err);
+    }
+  };
+
+  const handleDelete = async (item) => {
+    const confirmed = window.confirm(`Bạn có chắc chắn muốn ngưng hoạt động dịch vụ "${item.name}" không?`);
+    if (!confirmed) return;
+    try {
+      const updatedPayload = {
+        serviceName: item.name,
+        serviceCategory: item.category,
+        price: Number(item.price),
+        duration: Number(item.duration),
+        description: item.description,
+        status: 'Inactive'
+      };
+      await adminServiceService.updateService(item.id, updatedPayload);
+      await fetchServices();
+    } catch (err) {
+      console.error("Error deactivating service:", err);
+    }
+  };
+
   const handleSubmit = async (form) => {
     const payload = {
       serviceName: form.name,
@@ -48,6 +86,7 @@ const ServiceManagementPage = () => {
       price: Number(form.price),
       duration: Number(form.duration),
       description: form.description,
+      status: form.status || 'Active',
     };
 
     if (selectedService) {
@@ -76,101 +115,119 @@ const ServiceManagementPage = () => {
     await fetchServices();
   };
 
-  const thStyle = {
-  textAlign: "left",
-  padding: "14px 18px",
-  color: "#38bdf8",
-  borderBottom: "1px solid #334155",
-  fontWeight: 700,
-};
-
-const tdStyle = {
-  padding: "16px 18px",
-  color: "#e2e8f0",
-  borderBottom: "1px solid #1e293b",
-};
-
-const buttonStyle = {
-  background: "#0ea5e9",
-  border: "none",
-  color: "#fff",
-  padding: "8px 16px",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: 600,
-};
-
   return (
-  <div className="admin-page">
-    <div className="admin-page-header">
-      <h2>Service Management</h2>
-    </div>
+    <div className="service-page-container">
+      {/* Service Subtitle */}
+      <div className="service-page-subtitle"></div>
 
-    <div
-      style={{
-        background: "#07111f",
-        border: "1px solid #1e293b",
-        borderRadius: "12px",
-        padding: "20px",
-        marginTop: "20px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h3 style={{ color: "#fff", fontSize: "20px", margin: 0 }}>
-          Quản lý dịch vụ
-        </h3>
+      {/* Service Data Card */}
+      <div className="service-data-card">
+        {/* Card Header */}
+        <div className="service-card-header">
+          <div className="service-card-title">Quản lý dịch vụ</div>
 
-        <button onClick={handleCreate} style={buttonStyle}>
-          + Add Service
-        </button>
+          <button
+            onClick={handleCreate}
+            className="service-add-btn"
+          >
+            <span>+</span> Thêm dịch vụ
+          </button>
+        </div>
+
+        {/* Card Body / Table wrapper */}
+        <div className="service-table-wrapper">
+          <table className="service-table">
+            <thead>
+              <tr className="service-thead-row">
+                <th className="service-th name">Tên dịch vụ</th>
+                <th className="service-th category">Phân loại</th>
+                <th className="service-th price">Đơn giá</th>
+                <th className="service-th duration">Thời gian</th>
+                <th className="service-th description">Mô tả</th>
+                <th className="service-th status">Trạng thái</th>
+                <th className="service-th action">Tác vụ</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {services.map((item) => (
+                <tr
+                  key={item.id}
+                  className="service-tbody-row"
+                >
+                  <td className="service-td name">
+                    <span className="service-name-text">{item.name}</span>
+                  </td>
+
+                  <td className="service-td category">
+                    <span className="service-category-text">{item.category}</span>
+                  </td>
+
+                  <td className="service-td price">
+                    <span className="service-price-text">
+                      {Number(item.price).toLocaleString()} đ
+                    </span>
+                  </td>
+
+                  <td className="service-td duration">
+                    <span className="service-duration-text">{item.duration} Phút</span>
+                  </td>
+
+                  <td className="service-td description">
+                    <span className="service-description-text truncate" title={item.description}>
+                      {item.description || '-'}
+                    </span>
+                  </td>
+
+                  <td className="service-td status">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(item)}
+                      className={`service-status-capsule ${item.status === 'Active' ? 'active' : 'inactive'}`}
+                      title="Click để đổi trạng thái"
+                    >
+                      {item.status === 'Active' ? 'Đang hoạt động' : 'Ngưng hoạt động'}
+                    </button>
+                  </td>
+
+                  <td className="service-td action">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="service-action-btn edit"
+                      title="Sửa"
+                    >
+                      <svg className="w-[13.98px] h-[13.98px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(item)}
+                      className="service-action-btn delete"
+                      title="Ngưng hoạt động"
+                    >
+                      <svg className="w-[12.25px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Name</th>
-            <th style={thStyle}>Category</th>
-            <th style={thStyle}>Price</th>
-            <th style={thStyle}>Duration</th>
-            <th style={thStyle}>Description</th>
-            <th style={thStyle}>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {services.map((item) => (
-            <tr key={item.id}>
-              <td style={tdStyle}>{item.name}</td>
-              <td style={tdStyle}>{item.category}</td>
-              <td style={tdStyle}>{Number(item.price).toLocaleString()}đ</td>
-              <td style={tdStyle}>{item.duration} phút</td>
-              <td style={tdStyle}>{item.description}</td>
-              <td style={tdStyle}>
-                <button onClick={() => handleEdit(item)} style={buttonStyle}>
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ServiceModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onSubmit={handleSubmit}
+        initialData={selectedService}
+      />
     </div>
-
-    <ServiceModal
-      open={openModal}
-      onClose={() => setOpenModal(false)}
-      onSubmit={handleSubmit}
-      initialData={selectedService}
-    />
-  </div>
-);
+  );
 };
 
 export default ServiceManagementPage;

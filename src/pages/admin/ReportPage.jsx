@@ -12,6 +12,7 @@ import {
   getTierDistribution,
   getLoyaltyStats,
 } from "../../services/adminReportService";
+import "./ReportPage.css";
 
 export default function ReportPage() {
   const [overview, setOverview] = useState(null);
@@ -20,95 +21,130 @@ export default function ReportPage() {
   const [loyalty, setLoyalty] = useState(null);
 
   useEffect(() => {
-  const controller = new AbortController();
-  let isMounted = true;
+    const controller = new AbortController();
+    let isMounted = true;
 
-  const loadData = async () => {
-    try {
-      const [overviewData, rfmData, tierData, loyaltyData] = await Promise.all([
-        getOverviewReport({ signal: controller.signal }),
-        getRfmReport({ signal: controller.signal }),
-        getTierDistribution({ signal: controller.signal }),
-        getLoyaltyStats({ signal: controller.signal }),
-      ]);
+    const loadData = async () => {
+      try {
+        const [overviewData, rfmData, tierData, loyaltyData] = await Promise.all([
+          getOverviewReport({ signal: controller.signal }),
+          getRfmReport({ signal: controller.signal }),
+          getTierDistribution({ signal: controller.signal }),
+          getLoyaltyStats({ signal: controller.signal }),
+        ]);
 
-      if (!isMounted) return;
+        if (!isMounted) return;
 
-      setOverview(overviewData);
-      setRfm(rfmData);
-      setTiers(tierData);
-      setLoyalty(loyaltyData);
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.error(error);
+        setOverview(overviewData);
+        setRfm(rfmData);
+        setTiers(tierData);
+        setLoyalty(loyaltyData);
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error(error);
+        }
       }
-    }
-  };
+    };
 
-  loadData();
+    loadData();
 
-  return () => {
-    isMounted = false;
-    controller.abort();
-  };
-}, []);
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
+
+  const [activeTab, setActiveTab] = useState("overview");
 
   if (!overview || !loyalty) {
-    return <div>Loading...</div>;
+    return (
+      <div className="report-loading-wrapper">
+        <div className="report-spinner"></div>
+        <p className="report-loading-text">Đang tải báo cáo thống kê...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-white">
-        Reports Dashboard
-      </h1>
-
-      <div className="grid md:grid-cols-3 gap-5">
-        <SummaryCard
-          title="Revenue"
-          value={`${overview.summary.revenue.toLocaleString()} VNĐ`}
-        />
-
-        <SummaryCard
-          title="Bookings"
-          value={overview.summary.bookings}
-        />
-
-        <SummaryCard
-          title="Customers"
-          value={overview.summary.customers}
-        />
+    <div className="report-page-container">
+      {/* Title Header */}
+      <div>
+        <h2 className="report-page-title">Báo cáo & Phân tích</h2>
+        <p className="report-page-subtitle">
+          Theo dõi tổng quan vận hành, số liệu Loyalty và bảng dữ liệu khách hàng RFM
+        </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-  <OverviewChart
-    data={overview.revenue}
-  />
+      {/* Tabs Menu */}
+      <div className="report-tabs-bar">
+        {[
+          { id: "overview", label: "Overview", icon: "📊" },
+          { id: "rfm", label: "Phân tích RFM", icon: "🧠" },
+          { id: "tiers", label: "Tier Distribution", icon: "👑" },
+          { id: "loyalty", label: "Loyalty Stats", icon: "💎" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`report-tab-btn ${activeTab === tab.id ? "active" : ""}`}
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-  <BookingStatusPieChart
-    data={overview.bookingStatus}
-  />
-</div>
+      {/* Tab Contents */}
+      {activeTab === "overview" && (
+        <div className="space-y-6">
+          <div className="report-stats-grid">
+            <SummaryCard
+              title="Tổng doanh thu"
+              value={`${overview.summary.revenue.toLocaleString()} VNĐ`}
+            />
+            <SummaryCard
+              title="Tổng số Bookings"
+              value={overview.summary.bookings?.toLocaleString()}
+            />
+            <SummaryCard
+              title="Tổng số Customers"
+              value={overview.summary.customers?.toLocaleString()}
+            />
+          </div>
 
-      <RfmTable data={rfm} />
+          <div className="report-charts-grid">
+            <OverviewChart data={overview.revenue} />
+            <BookingStatusPieChart data={overview.bookingStatus} />
+          </div>
+        </div>
+      )}
 
-      <TierDistributionChart
-        data={tiers}
-      />
+      {activeTab === "rfm" && (
+        <div className="transition-all">
+          <RfmTable data={rfm} />
+        </div>
+      )}
 
-      <LoyaltyStatsPanel
-        stats={loyalty}
-      />
+      {activeTab === "tiers" && (
+        <div className="transition-all">
+          <TierDistributionChart data={tiers} />
+        </div>
+      )}
+
+      {activeTab === "loyalty" && (
+        <div className="transition-all">
+          <LoyaltyStatsPanel stats={loyalty} />
+        </div>
+      )}
     </div>
   );
 }
 
 function SummaryCard({ title, value }) {
   return (
-    <div className="bg-[#0c0f24] p-5 rounded-2xl border border-white/5">
-      <p className="text-slate-400">{title}</p>
-
-      <h3 className="text-white text-2xl font-bold mt-2">
+    <div className="report-stat-card">
+      <span className="report-stat-label">{title}</span>
+      <h3 className="report-stat-value">
         {value}
       </h3>
     </div>

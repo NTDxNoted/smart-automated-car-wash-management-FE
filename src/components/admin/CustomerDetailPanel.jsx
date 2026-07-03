@@ -1,33 +1,68 @@
 export default function CustomerDetailPanel({ customer }) {
+  const getTierBadge = (tier) => {
+    switch (tier?.toUpperCase()) {
+      case "PLATINUM":
+        return "cust-tier-badge platinum";
+      case "GOLD":
+        return "cust-tier-badge gold";
+      case "SILVER":
+        return "cust-tier-badge silver";
+      default:
+        return "cust-tier-badge member";
+    }
+  };
+
   return (
-    <div className="grid md:grid-cols-2 gap-4">
+    <div className="detail-grid">
       <Info title="Họ tên" value={customer.fullName} />
-      <Info title="SĐT" value={customer.phone} />
-      <Info title="Tier" value={customer.tier} />
-      <Info title="Điểm" value={customer.points} />
+      <Info title="Số điện thoại" value={customer.phone} />
+      
+      <div className="detail-item-box">
+        <p className="detail-item-label">Hạng thành viên (Tier)</p>
+        <div className="badge-container">
+          <span className={getTierBadge(customer.tier)}>
+            {customer.tier || 'Member'}
+          </span>
+        </div>
+      </div>
+
+      <Info title="Điểm tích lũy" value={`${(customer.points ?? 0).toLocaleString()} pts`} />
       <Info
         title="Tổng chi tiêu"
-        value={customer.totalSpending}
+        value={`${Number(customer.totalSpending || 0).toLocaleString()}đ`}
       />
       <Info
-        title="Ngày tạo"
-        value={customer.createdAt}
+        title="Ngày tạo tài khoản"
+        value={customer.createdAt ? new Date(customer.createdAt).toLocaleDateString('vi-VN') : '-'}
       />
 
-      <div className="bg-[#070913] p-4 rounded-lg">
-        <p className="text-slate-400 text-xs">Trạng thái</p>
-
-        <span
-          className={`inline-block mt-2 px-2 py-1 rounded text-xs ${
-            customer.isLocked || customer.status === 'LOCKED'
-              ? 'bg-red-500/20 text-red-400'
-              : 'bg-green-500/20 text-green-400'
-          }`}
-        >
-          {customer.isLocked || customer.status === 'LOCKED'
-            ? 'Bị khóa'
-            : 'Hoạt động'}
-        </span>
+      <div className="detail-item-box">
+        <p className="detail-item-label">Trạng thái tài khoản</p>
+        <div className="badge-container">
+          {(() => {
+            const isLocked = customer.isLocked || customer.status === 'LOCKED';
+            const isSuspended = customer.status === 'SUSPENDED';
+            if (isLocked) {
+              return (
+                <span className="cust-status-badge locked">
+                  Bị khóa
+                </span>
+              );
+            }
+            if (isSuspended) {
+              return (
+                <span className="cust-status-badge suspended">
+                  Tạm đình chỉ
+                </span>
+              );
+            }
+            return (
+              <span className="cust-status-badge active">
+                Hoạt động
+              </span>
+            );
+          })()}
+        </div>
       </div>
     </div>
   );
@@ -35,9 +70,9 @@ export default function CustomerDetailPanel({ customer }) {
 
 function Info({ title, value }) {
   return (
-    <div className="bg-[#070913] p-4 rounded-lg">
-      <p className="text-slate-400 text-xs">{title}</p>
-      <p className="font-medium mt-1">{value ?? '-'}</p>
+    <div className="detail-item-box">
+      <p className="detail-item-label">{title}</p>
+      <p className="detail-item-value">{value ?? '-'}</p>
     </div>
   );
 }
