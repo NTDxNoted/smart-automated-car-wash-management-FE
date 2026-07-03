@@ -178,7 +178,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       {/* Phone + Vehicle */}
       <div 
         className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-        style={{ marginBottom: '32px' }}
+        style={{ gap: '24px', marginBottom: '32px' }}
       >
         {user ? (
           <>
@@ -304,7 +304,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
             {t('loadingSlots')}
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-3 sm:grid-cols-7">
+          <div className="grid grid-cols-4 gap-3 sm:grid-cols-7" style={{ gap: '12px' }}>
             {availableDays.map(day => {
               const isSelected = selectedDate === day.dateStr;
               return (
