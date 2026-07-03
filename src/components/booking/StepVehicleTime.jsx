@@ -178,7 +178,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       {/* Phone + Vehicle */}
       <div 
         className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-        style={{ marginBottom: '32px' }}
+        style={{ gap: '24px', marginBottom: '32px' }}
       >
         {user ? (
           <>
@@ -304,7 +304,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
             {t('loadingSlots')}
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-3 sm:grid-cols-7">
+          <div className="grid grid-cols-4 gap-3 sm:grid-cols-7" style={{ gap: '12px' }}>
             {availableDays.map(day => {
               const isSelected = selectedDate === day.dateStr;
               return (
@@ -368,7 +368,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           type="button"
           onClick={onBack}
           className="rounded-full font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800 px-10 py-3.5 text-lg transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
-          style={{ padding: '14px 40px' }}
+          style={{ paddingLeft: '24px', paddingRight: '24px' }}
         >
           <span className="material-symbols-outlined text-lg">arrow_back</span>
           {t('btnBack')}
@@ -377,7 +377,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           type="button"
           onClick={handleNext}
           className="rounded-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 font-bold text-white shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 px-12 py-3.5 text-lg transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
-          style={{ padding: '14px 48px' }}
+          style={{ paddingLeft: '28px', paddingRight: '28px' }}
         >
           {t('btnContinue')}
           <span className="material-symbols-outlined text-lg">arrow_forward</span>

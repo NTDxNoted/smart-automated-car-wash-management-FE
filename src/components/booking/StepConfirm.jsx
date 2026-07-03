@@ -114,12 +114,15 @@ export default function StepConfirm({ bookingData, onBack, user }) {
             className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-4"
             style={{ marginBottom: '20px' }}
           >
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2">
+            <h3 
+              className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2"
+              style={{ marginBottom: '16px' }}
+            >
               <span className="material-symbols-outlined text-slate-500">info</span>
               {locale === 'en' ? 'Booking Details' : 'Thông tin chi tiết'}
             </h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" style={{ gap: '20px' }}>
               {/* Service block */}
               <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300 border border-slate-100/50">
                 <div className="w-11 h-11 rounded-xl bg-cyan-50 flex items-center justify-center text-cyan-600 shrink-0">
@@ -191,18 +194,24 @@ export default function StepConfirm({ bookingData, onBack, user }) {
             className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-5"
             style={{ marginBottom: '20px' }}
           >
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2">
+            <h3 
+              className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2"
+              style={{ marginBottom: '20px' }}
+            >
               <span className="material-symbols-outlined text-slate-500 text-lg">payments</span>
               {locale === 'en' ? 'Discounts & Offers' : 'Ưu đãi & Giảm giá'}
             </h3>
 
             {/* Promo code */}
-            <div>
+            <div style={{ marginBottom: '20px' }}>
               <PromoCodeInput onValidateSuccess={(promo) => setAppliedPromo(promo)} />
             </div>
 
             {/* Reward points */}
-            <div className="pt-4 border-t border-slate-100">
+            <div 
+              className="border-t border-slate-100"
+              style={{ paddingTop: '20px' }}
+            >
               {!user || user.points < 50 ? (
                 <div className="flex items-start gap-3 rounded-2xl bg-purple-50/30 border border-purple-100 p-4">
                   <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
@@ -291,7 +300,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
           onClick={onBack}
           disabled={loading}
           className="rounded-full font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800 px-10 py-3.5 text-lg transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-          style={{ padding: '14px 40px' }}
+          style={{ paddingLeft: '24px', paddingRight: '24px' }}
         >
           <span className="material-symbols-outlined text-lg">arrow_back</span>
           {t('btnBack')}
@@ -301,7 +310,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
           onClick={handleBookingConfirm}
           disabled={loading}
           className="rounded-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 px-12 py-3.5 text-lg transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
-          style={{ padding: '14px 48px' }}
+          style={{ paddingLeft: '28px', paddingRight: '28px' }}
         >
           {loading ? (
             <>
