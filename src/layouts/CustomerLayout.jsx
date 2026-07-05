@@ -346,8 +346,16 @@ export default function CustomerLayout() {
                   </Link>
                   <Link
                     to="/register"
-                    className="inline-flex items-center justify-center text-base font-extrabold text-white bg-cyan-600 hover:bg-cyan-500 py-3.5 rounded-full shadow-[0_4px_14px_0_rgba(6,182,212,0.39)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.23)] whitespace-nowrap transition-all hover:-translate-y-0.5 active:translate-y-0"
-                    style={{ paddingLeft: '32px', paddingRight: '32px' }}
+                    className="inline-flex items-center justify-center text-base font-extrabold text-white rounded-full whitespace-nowrap transition-all hover:-translate-y-0.5 active:translate-y-0"
+                    style={{
+                      paddingLeft: '32px',
+                      paddingRight: '32px',
+                      paddingTop: '14px',
+                      paddingBottom: '14px',
+                      background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+                      boxShadow: '0 8px 20px rgba(6, 182, 212, 0.25)',
+                      color: '#ffffff',
+                    }}
                   >
                     {t('navRegister')}
                   </Link>
