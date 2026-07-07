@@ -1,6 +1,6 @@
-﻿import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './AdminLayout.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -94,6 +94,15 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [reportsOpen, setReportsOpen] = useState(() =>
+    location.pathname.startsWith('/admin/reports')
+  );
+
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin/reports')) {
+      setReportsOpen(true);
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -107,8 +116,15 @@ export default function AdminLayout() {
     { label: 'Dịch vụ', path: '/admin/services', icon: ServicesIcon },
     { label: 'Khuyến mãi', path: '/admin/promotions', icon: PromotionsIcon },
     { label: 'Cấu hình hạng', path: '/admin/tiers', icon: TiersIcon },
-    { label: 'Báo cáo & RFM', path: '/admin/reports', icon: ReportsIcon },
   ];
+
+  const reportSubItems = [
+    { label: 'Tổng quan & RFM', path: '/admin/reports' },
+    { label: 'Dịch vụ phổ biến', path: '/admin/reports/services' },
+    { label: 'Khung giờ cao điểm', path: '/admin/reports/occupancy' },
+    { label: 'Hiệu quả khuyến mãi', path: '/admin/reports/promotions' },
+  ];
+
 
   return (
     <div className="h-screen bg-[#F0F3FF] text-[#111C2C] flex font-sans overflow-hidden">
@@ -121,15 +137,12 @@ export default function AdminLayout() {
 
         {/* Logo */}
         <div className="sidebar-logo-container gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
-            {/* Water droplet SVG */}
-            <svg className="w-4.5 h-4.5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-            </svg>
-          </div>
-          <span className="sidebar-logo-text">
-            AUTOWASH PRO
-          </span>
+          <Link to="/admin" className="flex items-center gap-3 no-underline">
+            <span className="text-cyan-400 text-xl">⟡</span>
+            <span className="sidebar-logo-text">
+              AUTOWASH PRO
+            </span>
+          </Link>
         </div>
 
         {/* User Profile - Top aligned */}
@@ -165,7 +178,50 @@ export default function AdminLayout() {
               </Link>
             );
           })}
+
+          {/* Reports Collapsible Dropdown */}
+          <div className="reports-dropdown-section">
+            <button
+              onClick={() => setReportsOpen(!reportsOpen)}
+              className={`sidebar-nav-item w-full text-left justify-between cursor-pointer ${
+                location.pathname.startsWith('/admin/reports') ? 'active' : ''
+              }`}
+            >
+              <div className="flex items-center gap-[14px]">
+                <ReportsIcon className="w-5 h-5 shrink-0" />
+                <span>Báo cáo & Phân tích</span>
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform duration-200 shrink-0 ${reportsOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {reportsOpen && (
+              <div className="sidebar-subnav-container space-y-1 mt-1">
+                {reportSubItems.map((subItem) => {
+                  const isSubActive = location.pathname === subItem.path;
+                  return (
+                    <Link
+                      key={subItem.path}
+                      to={subItem.path}
+                      onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+                      className={`sidebar-subnav-item ${isSubActive ? 'active' : ''}`}
+                    >
+                      {subItem.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </nav>
+
 
         {/* Bottom Section */}
         <div className="sidebar-bottom-container space-y-1 shrink-0">
@@ -212,7 +268,7 @@ export default function AdminLayout() {
                 : (navItems.find((item) =>
                   location.pathname === item.path ||
                   (item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path + '/'))
-                )?.label || 'Dashboard')}
+                )?.label || reportSubItems.find((subItem) => location.pathname === subItem.path)?.label || 'Dashboard')}
             </h1>
           </div>
 

@@ -34,6 +34,9 @@ const ServiceManagementPage = lazy(() => import('../pages/admin/ServiceManagemen
 const PromotionManagementPage = lazy(() => import('../pages/admin/PromotionManagementPage'));
 const TierConfigPage = lazy(() => import('../pages/admin/TierConfigPage'));
 const ReportPage = lazy(() => import('../pages/admin/ReportPage'));
+const PopularServicesReportPage = lazy(() => import('../pages/admin/PopularServicesReportPage'));
+const OccupancyReportPage = lazy(() => import('../pages/admin/OccupancyReportPage'));
+const PromotionsRoiReportPage = lazy(() => import('../pages/admin/PromotionsRoiReportPage'));
 
 export const router = createBrowserRouter([
   {
@@ -114,9 +117,13 @@ export const router = createBrowserRouter([
       { path: 'services', element: <ServiceManagementPage /> },
       { path: 'promotions', element: <PromotionManagementPage /> },
       { path: 'tiers', element: <TierConfigPage /> },
-      { path: 'reports', element: <ReportPage /> }
+      { path: 'reports', element: <ReportPage /> },
+      { path: 'reports/services', element: <PopularServicesReportPage /> },
+      { path: 'reports/occupancy', element: <OccupancyReportPage /> },
+      { path: 'reports/promotions', element: <PromotionsRoiReportPage /> }
     ]
   },
+
   {
     path: '*',
     element: <Navigate to="/" replace />
