@@ -5,6 +5,7 @@ import './AdminLayout.css';
 import adminBookingService from '../services/adminBookingService';
 import BookingDetailDrawer from '../components/admin/BookingDetailDrawer';
 import { toast } from 'react-hot-toast';
+import { getCustomers } from '../services/adminCustomerService';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎨 SVG NAVIGATION ICONS
@@ -126,6 +127,7 @@ export default function AdminLayout() {
   const [selectedBooking, setSelectedBooking] = useState(null);
 
   const prevBookingsRef = useRef({});
+  const prevCustomersRef = useRef({});
   const isFirstFetchRef = useRef(true);
   const dropdownRef = useRef(null);
 
@@ -180,6 +182,42 @@ export default function AdminLayout() {
 
       // Update refs
       prevBookingsRef.current = newBookingsMap;
+
+      // 2. Fetch customers to detect new registrations
+      try {
+        const customerRes = await getCustomers({ page: 1 });
+        const rawCustomers = customerRes.data || customerRes || [];
+        
+        const newCustomersMap = {};
+        rawCustomers.forEach(c => {
+          const cid = c.customerID ?? c.customerId ?? c.id;
+          const fullName = c.fullName ?? 'Khách hàng';
+          const phone = c.phone ?? '';
+          newCustomersMap[cid] = { fullName, phone };
+
+          if (!isFirstFetchRef.current) {
+            const prevCust = prevCustomersRef.current[cid];
+            if (!prevCust) {
+              // New customer registered!
+              const notif = {
+                id: `cust-${cid}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                customerId: cid,
+                title: "Khách hàng mới đăng ký! 👤",
+                description: `Khách hàng ${fullName} (${phone}) vừa tạo tài khoản thành viên mới.`,
+                time: new Date().toISOString(),
+                type: 'NEW_CUSTOMER',
+                read: false
+              };
+              newNotifications.push(notif);
+              toast.success(`Khách hàng mới đăng ký: ${fullName}!`, { icon: '👤', duration: 4000 });
+            }
+          }
+        });
+        prevCustomersRef.current = newCustomersMap;
+      } catch (custErr) {
+        console.error("Lỗi khi kiểm tra khách hàng mới:", custErr);
+      }
+
       if (isFirstFetchRef.current) {
         isFirstFetchRef.current = false;
       }
@@ -286,7 +324,11 @@ export default function AdminLayout() {
       localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
       return updated;
     });
-    setSelectedBooking({ id: notif.bookingId });
+    if (notif.type === 'NEW_CUSTOMER') {
+      navigate(`/admin/customers/${notif.customerId}`);
+    } else {
+      setSelectedBooking({ id: notif.bookingId });
+    }
     setIsBellOpen(false);
   };
 
@@ -543,6 +585,8 @@ export default function AdminLayout() {
                           <div className={`p-2 rounded-xl shrink-0 ${
                             notif.type === 'NEW_BOOKING' 
                               ? 'bg-emerald-50 text-emerald-600' 
+                              : notif.type === 'NEW_CUSTOMER'
+                              ? 'bg-amber-50 text-amber-600'
                               : notif.type === 'ADMIN_UPDATE'
                               ? 'bg-purple-50 text-purple-600'
                               : 'bg-blue-50 text-blue-600'
@@ -550,6 +594,10 @@ export default function AdminLayout() {
                             {notif.type === 'NEW_BOOKING' ? (
                               <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                              </svg>
+                            ) : notif.type === 'NEW_CUSTOMER' ? (
+                              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                               </svg>
                             ) : notif.type === 'ADMIN_UPDATE' ? (
                               <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
