@@ -284,7 +284,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    if (!token || user?.role !== "ADMIN") return;
+    if (!token || user?.role?.toUpperCase() !== "ADMIN") return;
 
     fetchBookingsAndCheckUpdates();
 
