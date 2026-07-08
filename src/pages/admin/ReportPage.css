@@ -251,12 +251,13 @@
   box-sizing: border-box;
 }
 
-.rfm-th.customer { width: 22%; flex: 0 0 22%; }
-.rfm-th.recency { width: 14%; flex: 0 0 14%; }
-.rfm-th.frequency { width: 14%; flex: 0 0 14%; }
-.rfm-th.monetary { width: 18%; flex: 0 0 18%; }
-.rfm-th.points { width: 16%; flex: 0 0 16%; }
-.rfm-th.tier { width: 16%; flex: 0 0 16%; }
+.rfm-th.customer { width: 18%; flex: 0 0 18%; }
+.rfm-th.recency { width: 12%; flex: 0 0 12%; }
+.rfm-th.frequency { width: 12%; flex: 0 0 12%; }
+.rfm-th.monetary { width: 16%; flex: 0 0 16%; }
+.rfm-th.points { width: 12%; flex: 0 0 12%; }
+.rfm-th.tier { width: 14%; flex: 0 0 14%; }
+.rfm-th.segment { width: 16%; flex: 0 0 16%; }
 
 .rfm-th-arrow {
   font-size: 10px;
@@ -299,12 +300,13 @@
   box-sizing: border-box;
 }
 
-.rfm-td.customer { width: 22%; flex: 0 0 22%; font-weight: 500; color: #1E293B; }
-.rfm-td.recency { width: 14%; flex: 0 0 14%; }
-.rfm-td.frequency { width: 14%; flex: 0 0 14%; }
-.rfm-td.monetary { width: 18%; flex: 0 0 18%; font-weight: 600; color: #111C2C; }
-.rfm-td.points { width: 16%; flex: 0 0 16%; }
-.rfm-td.tier { width: 16%; flex: 0 0 16%; }
+.rfm-td.customer { width: 18%; flex: 0 0 18%; font-weight: 500; color: #1E293B; }
+.rfm-td.recency { width: 12%; flex: 0 0 12%; }
+.rfm-td.frequency { width: 12%; flex: 0 0 12%; }
+.rfm-td.monetary { width: 16%; flex: 0 0 16%; font-weight: 600; color: #111C2C; }
+.rfm-td.points { width: 12%; flex: 0 0 12%; }
+.rfm-td.tier { width: 14%; flex: 0 0 14%; }
+.rfm-td.segment { width: 16%; flex: 0 0 16%; }
 
 /* Tier Badge styling in table */
 .rfm-tier-badge {
@@ -443,4 +445,68 @@
   font-weight: 500;
   font-size: 14px;
   color: #64748B;
+}
+
+/* Segment Badge styling in table */
+.rfm-segment-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+  border: 1px solid transparent;
+}
+
+.rfm-segment-badge.champions {
+  background: #DCFCE7;
+  border-color: #BBF7D0;
+  color: #15803D;
+}
+
+.rfm-segment-badge.loyal {
+  background: #E0F2FE;
+  border-color: #BAE6FD;
+  color: #0369A1;
+}
+
+.rfm-segment-badge.potential {
+  background: #FEF9C3;
+  border-color: #FEF08A;
+  color: #854D0E;
+}
+
+.rfm-segment-badge.new {
+  background: #F3E8FF;
+  border-color: #E9D5FF;
+  color: #6B21A8;
+}
+
+.rfm-segment-badge.at-risk {
+  background: #FFE4E6;
+  border-color: #FECDD3;
+  color: #E11D48;
+  animation: pulse-border 2s infinite;
+}
+
+.rfm-segment-badge.about-to-sleep {
+  background: #FFEDD5;
+  border-color: #FED7AA;
+  color: #EA580C;
+}
+
+.rfm-segment-badge.lost {
+  background: #F1F5F9;
+  border-color: #E2E8F0;
+  color: #475569;
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: #FECDD3; }
+  50% { border-color: #FB7185; }
 }

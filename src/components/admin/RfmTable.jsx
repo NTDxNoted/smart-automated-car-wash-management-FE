@@ -10,6 +10,33 @@ const HEADER_LABELS = {
   monetary: "Monetary (VNĐ)",
   points: "Points",
   tier: "Tier",
+  segment: "Phân khúc",
+};
+
+const getRfmSegment = (recency, frequency, monetary) => {
+  const r = Number(recency);
+  const f = Number(frequency);
+  const m = Number(monetary);
+
+  if (r <= 5 && f >= 15 && m >= 3000000) {
+    return { name: "Champions", className: "champions" };
+  }
+  if (r <= 15 && f >= 8 && m >= 1500000) {
+    return { name: "Loyal Customers", className: "loyal" };
+  }
+  if (r <= 10 && f >= 4 && m >= 500000) {
+    return { name: "Potential Loyalists", className: "potential" };
+  }
+  if (r <= 7 && f <= 2) {
+    return { name: "New Customers", className: "new" };
+  }
+  if (r > 15 && f >= 8) {
+    return { name: "At Risk", className: "at-risk" };
+  }
+  if (r > 30 && f <= 5) {
+    return { name: "About to Sleep", className: "about-to-sleep" };
+  }
+  return { name: "Lost Customers", className: "lost" };
 };
 
 export default function RfmTable({ data }) {
@@ -17,10 +44,21 @@ export default function RfmTable({ data }) {
   const [sortDir, setSortDir] = useState("desc");
   const [page, setPage] = useState(1);
 
+  const dataWithSegments = useMemo(() => {
+    return data.map((row) => {
+      const seg = getRfmSegment(row.recency, row.frequency, row.monetary);
+      return {
+        ...row,
+        segmentName: seg.name,
+        segmentClass: seg.className,
+      };
+    });
+  }, [data]);
+
   const sortedData = useMemo(() => {
-    return [...data].sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
+    return [...dataWithSegments].sort((a, b) => {
+      const aVal = sortKey === "segment" ? a.segmentName : a[sortKey];
+      const bVal = sortKey === "segment" ? b.segmentName : b[sortKey];
 
       if (typeof aVal === "number" && typeof bVal === "number") {
         return sortDir === "asc" ? aVal - bVal : bVal - aVal;
@@ -30,7 +68,7 @@ export default function RfmTable({ data }) {
         ? String(aVal).localeCompare(String(bVal))
         : String(bVal).localeCompare(String(aVal));
     });
-  }, [data, sortKey, sortDir]);
+  }, [dataWithSegments, sortKey, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(sortedData.length / PAGE_SIZE));
 
@@ -40,13 +78,14 @@ export default function RfmTable({ data }) {
   }, [sortedData, page]);
 
   const exportCSV = () => {
-    const exportData = data.map((row) => ({
+    const exportData = dataWithSegments.map((row) => ({
       customer: row.customer,
       recency: Number(row.recency),
       frequency: Number(row.frequency),
       monetary: Number(row.monetary),
       points: Number(row.points),
       tier: row.tier,
+      segment: row.segmentName,
     }));
 
     const csv = "\uFEFF" + Papa.unparse(exportData);
@@ -114,7 +153,7 @@ export default function RfmTable({ data }) {
         <table className="rfm-table">
           <thead>
             <tr className="rfm-thead-row">
-              {["customer", "recency", "frequency", "monetary", "points", "tier"].map(
+              {["customer", "recency", "frequency", "monetary", "points", "tier", "segment"].map(
                 (item) => (
                   <th
                     key={item}
@@ -143,6 +182,11 @@ export default function RfmTable({ data }) {
                 <td className="rfm-td points">{row.points?.toLocaleString()}</td>
                 <td className="rfm-td tier">
                   {getTierBadge(row.tier)}
+                </td>
+                <td className="rfm-td segment">
+                  <span className={`rfm-segment-badge ${row.segmentClass}`}>
+                    {row.segmentName}
+                  </span>
                 </td>
               </tr>
             ))}

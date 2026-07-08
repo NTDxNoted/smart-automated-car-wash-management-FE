@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import OverviewChart from "../../components/admin/OverviewChart";
 import RfmTable from "../../components/admin/RfmTable";
@@ -53,6 +53,28 @@ export default function ReportPage() {
       controller.abort();
     };
   }, []);
+
+  const rfmMetrics = useMemo(() => {
+    let championsCount = 0;
+    let atRiskCount = 0;
+    let newCount = 0;
+
+    (rfm || []).forEach(row => {
+      const r = Number(row.recency);
+      const f = Number(row.frequency);
+      const m = Number(row.monetary);
+
+      if (r <= 5 && f >= 15 && m >= 3000000) {
+        championsCount++;
+      } else if (r > 15 && f >= 8) {
+        atRiskCount++;
+      } else if (r <= 7 && f <= 2) {
+        newCount++;
+      }
+    });
+
+    return { championsCount, atRiskCount, newCount };
+  }, [rfm]);
 
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -115,6 +137,40 @@ export default function ReportPage() {
           <div className="report-charts-grid">
             <OverviewChart data={overview.revenue} />
             <BookingStatusPieChart data={overview.bookingStatus} />
+          </div>
+
+          {/* Loyalty & RFM Insights Panel */}
+          <div className="report-chart-card bg-slate-50 border-slate-200 mt-6" style={{ gridColumn: "span 2" }}>
+            <h3 className="report-chart-title flex items-center gap-2 text-[#00677F] mb-4">
+              <span>💡 Chỉ số chẩn đoán & Đề xuất tiếp thị (RFM Insights)</span>
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-white border border-[#E2E8F0] rounded-xl flex flex-col justify-between" style={{ minHeight: "140px" }}>
+                <div>
+                  <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Champions (Khách xuất sắc)</span>
+                  <p className="text-2xl font-bold text-slate-800 mt-1">{rfmMetrics.championsCount}</p>
+                </div>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">Khách hàng chi tiêu nhiều, ghé tiệm thường xuyên. Đề xuất: Tặng ưu đãi độc quyền để giữ chân VIP.</p>
+              </div>
+
+              <div className="p-4 bg-white border border-[#E2E8F0] rounded-xl flex flex-col justify-between" style={{ minHeight: "140px" }}>
+                <div>
+                  <span className="text-[11px] font-bold text-red-500 uppercase tracking-wider">At Risk (Nguy cơ rời bỏ)</span>
+                  <p className={`text-2xl font-bold mt-1 ${rfmMetrics.atRiskCount > 0 ? "text-red-600" : "text-slate-800"}`}>
+                    {rfmMetrics.atRiskCount}
+                  </p>
+                </div>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">Đã từng gắn bó nhưng lâu chưa ghé tiệm. Đề xuất: Khởi chạy chiến dịch khuyến mãi nhắm đối tượng để lôi kéo.</p>
+              </div>
+
+              <div className="p-4 bg-white border border-[#E2E8F0] rounded-xl flex flex-col justify-between" style={{ minHeight: "140px" }}>
+                <div>
+                  <span className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">New Registrations (Khách mới)</span>
+                  <p className="text-2xl font-bold text-slate-800 mt-1">{rfmMetrics.newCount}</p>
+                </div>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">Vừa đăng ký tài khoản thành viên. Đề xuất: Gửi hướng dẫn tích điểm Loyalty và ưu đãi rửa xe lần đầu.</p>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import adminBookingService from '../../services/adminBookingService';
+import { getTierDistribution, getLoyaltyStats } from '../../services/adminReportService';
+import { getCustomers } from '../../services/adminCustomerService';
 import {
   AreaChart,
   Area,
@@ -8,6 +10,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
 } from 'recharts';
 import './DashboardPage.css';
 
@@ -132,6 +138,18 @@ export default function DashboardPage() {
   const [pendingCount, setPendingCount] = useState(6);
   const [noShowCount, setNoShowCount] = useState(2);
   const [processingCount, setProcessingCount] = useState(14);
+  const [customerTierMap, setCustomerTierMap] = useState({});
+  const [tierData, setTierData] = useState([
+    { tier: "Member", total: 40 },
+    { tier: "Silver", total: 30 },
+    { tier: "Gold", total: 15 },
+    { tier: "Platinum", total: 5 },
+  ]);
+  const [loyaltyStats, setLoyaltyStats] = useState({
+    totalPoints: 120500,
+    expiringSoon: 3200,
+    expired: 800,
+  });
   const [chartData, setChartData] = useState([
     { day: 'T2', revenue: 3.2 },
     { day: 'T3', revenue: 9.8 },
@@ -175,6 +193,28 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        let localTierMap = {};
+        try {
+          const [tierRes, loyaltyRes, custRes] = await Promise.all([
+            getTierDistribution(),
+            getLoyaltyStats(),
+            getCustomers({ page: 1, pageSize: 1000 }),
+          ]);
+          if (tierRes) setTierData(tierRes);
+          if (loyaltyRes) setLoyaltyStats(loyaltyRes);
+          
+          const rawCusts = custRes.data || custRes || [];
+          rawCusts.forEach(c => {
+            const nameKey = c.fullName?.toLowerCase().trim();
+            const phoneKey = c.phone?.trim();
+            if (nameKey) localTierMap[nameKey] = c.tier || 'Member';
+            if (phoneKey) localTierMap[phoneKey] = c.tier || 'Member';
+          });
+          setCustomerTierMap(localTierMap);
+        } catch (loyaltyErr) {
+          console.error("Lỗi tải thông tin Loyalty trong Dashboard:", loyaltyErr);
+        }
+
         const res = await adminBookingService.getAll({ pageSize: 1000 });
         const list = res.data?.data || res.data || [];
         if (list.length > 0) {
@@ -254,13 +294,20 @@ export default function DashboardPage() {
 
           // Top 5 sorted bookings
           const sortedList = [...list].sort((a, b) => new Date(b.scheduledTime || b.createdAt) - new Date(a.scheduledTime || a.createdAt));
-          const top5 = sortedList.slice(0, 5).map(b => ({
-            id: b.bookingID ?? b.bookingId ?? b.id,
-            customer: b.customerName ?? b.phone ?? 'Khách hàng',
-            plate: b.licensePlate || '-',
-            service: b.serviceName || 'Rửa Xe',
-            status: b.status || 'Pending'
-          }));
+          const top5 = sortedList.slice(0, 5).map(b => {
+            const customerName = b.customerName ?? b.phone ?? 'Khách hàng';
+            const nameKey = customerName.toLowerCase().trim();
+            const phoneKey = b.phone?.trim();
+            const tier = b.tier || b.customerTier || localTierMap[nameKey] || (phoneKey ? localTierMap[phoneKey] : null) || 'Member';
+            return {
+              id: b.bookingID ?? b.bookingId ?? b.id,
+              customer: customerName,
+              plate: b.licensePlate || '-',
+              service: b.serviceName || 'Rửa Xe',
+              status: b.status || 'Pending',
+              tier: tier
+            };
+          });
           if (top5.length > 0) {
             setRecentBookings(top5);
           }
@@ -397,133 +444,149 @@ export default function DashboardPage() {
 
       {/* Main Charts & Side panel Section */}
       <div className="dashboard-grid">
-        {/* Weekly Revenue AreaChart */}
-        <div className="chart-section dashboard-card flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-[#111C2C] font-bold text-lg" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                Revenue This Week
-              </h3>
-              <p className="text-[#3D494D] text-sm">
-                7-day performance overview
-              </p>
+        {/* Weekly Revenue & Tier Distribution */}
+        <div className="chart-section dashboard-card flex flex-col justify-between" style={{ gridColumn: "span 2" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            {/* Weekly Revenue */}
+            <div className="flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-[#111C2C] font-bold text-base" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                    Revenue This Week
+                  </h3>
+                  <p className="text-[#3D494D] text-xs">
+                    7-day performance overview
+                  </p>
+                </div>
+              </div>
+
+              <div className="w-full h-52">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#00677F" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#00677F" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(188, 200, 206, 0.2)" vertical={false} />
+                    <XAxis
+                      dataKey="day"
+                      stroke="#6D797E"
+                      tick={{ fontSize: 10, fill: '#6D797E' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      stroke="#6D797E"
+                      tick={{ fontSize: 10, fill: '#6D797E' }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(val) => `${val}M`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#263142',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#EBF1FF',
+                        boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      }}
+                      itemStyle={{ color: '#00A9CE' }}
+                      labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
+                      formatter={(value) => [`${value}M`, 'Revenue']}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#00677F"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorRevenue)"
+                      dot={{ fill: '#F9F9FF', stroke: '#00677F', strokeWidth: 2, r: 3 }}
+                      activeDot={{ r: 5, strokeWidth: 0, fill: '#00677F' }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-2 text-[10px] text-slate-500">
+                Peak: <span className="font-bold text-[#00677F]">{maxRevenueItem.revenue}M</span> ({maxRevenueItem.day})
+              </div>
             </div>
-            <button className="chart-option-btn">
-              <span>This Week</span>
-              <svg className="w-3.5 h-3.5 ml-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-          </div>
 
-          <div className="w-full h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00677F" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#00677F" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(188, 200, 206, 0.2)" vertical={false} />
-                <XAxis
-                  dataKey="day"
-                  stroke="#6D797E"
-                  tick={{ fontSize: 11, fill: '#6D797E' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  stroke="#6D797E"
-                  tick={{ fontSize: 11, fill: '#6D797E' }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(val) => `${val}M`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#263142',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: '#EBF1FF',
-                    boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  }}
-                  itemStyle={{ color: '#00A9CE' }}
-                  labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
-                  formatter={(value) => [`${value}M`, 'Revenue']}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#00677F"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorRevenue)"
-                  dot={{ fill: '#F9F9FF', stroke: '#00677F', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, strokeWidth: 0, fill: '#00677F' }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="mt-4 p-3 bg-[#F0F3FF] border border-transparent rounded-xl text-xs text-[#3D494D] flex items-center justify-between">
-            <span>
-              Peak performance this week: <span className="font-bold text-[#00677F]">{maxRevenueItem.revenue}M</span> on {maxRevenueItem.day}
-            </span>
+            {/* Tier Distribution Pie Chart */}
+            <div className="flex flex-col justify-between border-l border-[#BCC8CE]/20 pl-4">
+              <div className="mb-4">
+                <h3 className="text-[#111C2C] font-bold text-base" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                  Tier Distribution
+                </h3>
+                <p className="text-[#3D494D] text-xs">
+                  Loyalty member ranking overview
+                </p>
+              </div>
+              <div className="w-full h-52">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={tierData.map(t => ({
+                        name: t.tier ?? t.tierName ?? t.name,
+                        value: t.total ?? t.count ?? 0
+                      }))}
+                      cx="50%"
+                      cy="45%"
+                      innerRadius={45}
+                      outerRadius={65}
+                      paddingAngle={4}
+                      dataKey="value"
+                    >
+                      {tierData.map((entry, index) => {
+                        const colors = ['#00677F', '#00A9CE', '#949D9E', '#C9DBFD'];
+                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                      })}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#263142',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#EBF1FF',
+                      }}
+                    />
+                    <Legend iconType="circle" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Quick Summary / Fast Status */}
+        {/* Priority Queue & Loyalty Health */}
         <div className="dashboard-card flex flex-col justify-between">
-          <div>
-            <h3 className="text-[#111C2C] font-bold text-lg mb-6" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-              Fast Status
-            </h3>
+          <div className="space-y-4">
+            {/* Buồng rửa tự động LPR Status */}
+            <div>
+              <h4 className="text-[#111C2C] font-bold text-sm mb-2" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                Buồng Rửa Tự Động (LPR Queue)
+              </h4>
+              <div className="p-3 bg-[#F0F3FF] border border-[#BCC8CE]/20 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase text-emerald-600">Đang rửa xe</span>
+                  <span className="text-[10px] text-slate-400">Còn lại: 2p 45s</span>
+                </div>
+                <div className="text-base font-extrabold text-[#111C2C] mt-1">30G-987.65</div>
+                <div className="text-[11px] text-slate-500 mt-0.5">Dịch vụ: Premium Wash + Wax</div>
 
-            <div className="space-y-4">
-              {/* Progress: Vehicles Processing */}
-              <div className="fast-status-item">
-                <div className="flex items-center justify-between w-full mb-1">
-                  <p className="text-[#3D494D] text-xs font-semibold uppercase tracking-wider">Vehicles Processing</p>
-                  <p className="text-3xl font-extrabold text-[#111C2C]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>{processingCount}</p>
-                </div>
-                <div className="w-full bg-[#BCC8CE]/30 rounded-full h-2 overflow-hidden relative">
-                  <div
-                    className="h-full bg-[#00677F] rounded-full transition-all"
-                    style={{ width: '70%' }}
-                  />
-                </div>
-              </div>
-
-              {/* Staff Online avatars */}
-              <div className="fast-status-item">
-                <div className="flex items-center justify-between w-full mb-2">
-                  <p className="text-[#3D494D] text-xs font-semibold uppercase tracking-wider">Staff Online</p>
-                  <p className="text-3xl font-extrabold text-[#111C2C]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>8</p>
-                </div>
-                <div className="flex items-center -space-x-2">
-                  <div className="w-7 h-7 rounded-full bg-[#00A9CE] border border-[#F9F9FF] flex items-center justify-center text-[10px] font-bold text-[#003846] shadow-sm shrink-0">
-                    J
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-[#C9DBFD] border border-[#F9F9FF] flex items-center justify-center text-[10px] font-bold text-[#4F607D] shadow-sm shrink-0">
-                    M
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-[#949D9E] border border-[#F9F9FF] flex items-center justify-center text-[10px] font-bold text-[#2C3536] shadow-sm shrink-0">
-                    S
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-[#D8E3FA] border border-[#F9F9FF] flex items-center justify-center text-[9px] font-bold text-[#3D494D] shadow-sm shrink-0">
-                    +5
-                  </div>
-                </div>
-              </div>
-
-              {/* Completion Rate */}
-              <div className="fast-status-item">
-                <div className="flex items-center justify-between w-full">
-                  <p className="text-[#3D494D] text-xs font-semibold uppercase tracking-wider">Completion Rate</p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-3xl font-extrabold text-[#111C2C]" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>92%</p>
-                    <CheckCircleIcon className="w-6 h-6 text-[#00677F]" />
+                <div className="mt-3 pt-2.5 border-t border-[#BCC8CE]/30">
+                  <span className="text-[9px] font-bold uppercase text-slate-400 block mb-1.5">Ưu tiên tiếp theo (LPR Queue)</span>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-slate-700">1. 29A-123.45</span>
+                      <span className="rfm-tier-badge gold" style={{ fontSize: '8px', padding: '1px 4px' }}>Gold</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-slate-700">2. 51F-555.22</span>
+                      <span className="rfm-tier-badge platinum" style={{ fontSize: '8px', padding: '1px 4px' }}>Platinum</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -565,9 +628,16 @@ export default function DashboardPage() {
                     {formatBookingId(booking.id)}
                   </td>
 
-                  <td className="bookings-td customer">
+                  <td className="bookings-td customer" style={{ display: 'flex', alignItems: 'center', height: '73px' }}>
                     {renderAvatar(booking.customer)}
-                    <span className="bookings-td customer-name">{booking.customer}</span>
+                    <div className="flex flex-col gap-1 items-start justify-center ml-2.5">
+                      <span className="bookings-td customer-name" style={{ padding: 0, fontSize: '13.5px', fontWeight: 600 }}>
+                        {booking.customer}
+                      </span>
+                      <span className={`rfm-tier-badge ${booking.tier?.toLowerCase()}`} style={{ fontSize: '9px', padding: '1px 5px', textTransform: 'uppercase' }}>
+                        {booking.tier}
+                      </span>
+                    </div>
                   </td>
 
                   <td className="bookings-td plate">
