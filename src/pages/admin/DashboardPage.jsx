@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import adminBookingService from '../../services/adminBookingService';
 import { getTierDistribution, getLoyaltyStats } from '../../services/adminReportService';
 import { getCustomers } from '../../services/adminCustomerService';
+import BookingDetailDrawer from '../../components/admin/BookingDetailDrawer';
 import {
   AreaChart,
   Area,
@@ -77,22 +80,13 @@ function CheckCircleIcon({ className }) {
   );
 }
 
-function BellIcon({ className }) {
-  return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
-  );
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎛️ CUSTOM METRIC CARD COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-function MetricCard({ title, value, subtitle, trend, icon: Icon, type }) {
+function MetricCard({ title, value, subtitle, trend, icon: Icon, type, onClick }) {
   const isWarning = type === 'no-shows';
   return (
-    <div className={`metric-card-custom ${type}`}>
+    <div className={`metric-card-custom ${type} ${onClick ? 'cursor-pointer animate-fade-in' : ''}`} onClick={onClick}>
       <div className="card-overlay-blur" />
       <div className="card-content-wrapper">
         <div className="flex items-start justify-between w-full">
@@ -121,7 +115,7 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, type }) {
         {isWarning && (
           <div className="mt-auto flex items-center gap-1 text-[#BA1A1A] text-[11px] font-bold uppercase tracking-wider" style={{ fontFamily: 'Geist, sans-serif', letterSpacing: '0.6px' }}>
             <AlertTriangleIcon className="w-3.5 h-3.5 text-[#BA1A1A]" />
-            <span>Requires follow-up</span>
+            <span>Cần theo dõi</span>
           </div>
         )}
       </div>
@@ -133,191 +127,263 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, type }) {
 // 📈 MAIN PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
-  const [bookingsToday, setBookingsToday] = useState(28);
-  const [revenueTodayStr, setRevenueTodayStr] = useState('12.4M');
-  const [pendingCount, setPendingCount] = useState(6);
-  const [noShowCount, setNoShowCount] = useState(2);
-  const [processingCount, setProcessingCount] = useState(14);
+  const navigate = useNavigate();
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const [bookingsToday, setBookingsToday] = useState(0);
+  const [revenueTodayStr, setRevenueTodayStr] = useState('0đ');
+  const [pendingCount, setPendingCount] = useState(0);
+  const [noShowCount, setNoShowCount] = useState(0);
+  const [processingCount, setProcessingCount] = useState(0);
+
+  const [processingCars, setProcessingCars] = useState([]);
+  const [waitingCars, setWaitingCars] = useState([]);
+  const [needCheckinCars, setNeedCheckinCars] = useState([]);
+
+  const [warnings, setWarnings] = useState([]);
+
   const [customerTierMap, setCustomerTierMap] = useState({});
   const [tierData, setTierData] = useState([
-    { tier: "Member", total: 40 },
-    { tier: "Silver", total: 30 },
-    { tier: "Gold", total: 15 },
-    { tier: "Platinum", total: 5 },
+    { tier: "Member", total: 0 },
+    { tier: "Silver", total: 0 },
+    { tier: "Gold", total: 0 },
+    { tier: "Platinum", total: 0 },
   ]);
   const [loyaltyStats, setLoyaltyStats] = useState({
-    totalPoints: 120500,
-    expiringSoon: 3200,
-    expired: 800,
+    totalPoints: 0,
+    expiringSoon: 0,
+    expired: 0,
   });
   const [chartData, setChartData] = useState([
-    { day: 'T2', revenue: 3.2 },
-    { day: 'T3', revenue: 9.8 },
-    { day: 'T4', revenue: 8.5 },
-    { day: 'T5', revenue: 5.2 },
-    { day: 'T6', revenue: 10.5 },
-    { day: 'T7', revenue: 8.9 },
-    { day: 'T8', revenue: 15.2 },
+    { day: 'T2', revenue: 0 },
+    { day: 'T3', revenue: 0 },
+    { day: 'T4', revenue: 0 },
+    { day: 'T5', revenue: 0 },
+    { day: 'T6', revenue: 0 },
+    { day: 'T7', revenue: 0 },
+    { day: 'CN', revenue: 0 },
   ]);
-  const [recentBookings, setRecentBookings] = useState([
-    {
-      id: '1042',
-      customer: 'Nguyen Linh',
-      plate: '29A-123.45',
-      service: 'Premium Wash + Wax',
-      status: 'Processing'
-    },
-    {
-      id: '1041',
-      customer: 'Tran Minh',
-      plate: '30G-987.65',
-      service: 'Standard Wash',
-      status: 'Completed'
-    },
-    {
-      id: '1040',
-      customer: 'Hoang Anh',
-      plate: '51F-555.22',
-      service: 'Interior Detailing',
-      status: 'Cancelled'
-    },
-    {
-      id: '1039',
-      customer: 'Vu Tuan',
-      plate: '29C-444.11',
-      service: 'Express Wash',
-      status: 'Completed'
-    }
-  ]);
+  const [recentBookings, setRecentBookings] = useState([]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
+  const fetchStats = async () => {
+    try {
+      let localTierMap = {};
       try {
-        let localTierMap = {};
-        try {
-          const [tierRes, loyaltyRes, custRes] = await Promise.all([
-            getTierDistribution(),
-            getLoyaltyStats(),
-            getCustomers({ page: 1, pageSize: 1000 }),
-          ]);
-          if (tierRes) setTierData(tierRes);
-          if (loyaltyRes) setLoyaltyStats(loyaltyRes);
-          
-          const rawCusts = custRes.data || custRes || [];
-          rawCusts.forEach(c => {
-            const nameKey = c.fullName?.toLowerCase().trim();
-            const phoneKey = c.phone?.trim();
-            if (nameKey) localTierMap[nameKey] = c.tier || 'Member';
-            if (phoneKey) localTierMap[phoneKey] = c.tier || 'Member';
+        const [tierRes, loyaltyRes, custRes] = await Promise.all([
+          getTierDistribution(),
+          getLoyaltyStats(),
+          getCustomers({ page: 1, pageSize: 1000 }),
+        ]);
+        if (tierRes) setTierData(tierRes);
+        if (loyaltyRes) setLoyaltyStats(loyaltyRes);
+        
+        const rawCusts = custRes.data || custRes || [];
+        rawCusts.forEach(c => {
+          const nameKey = c.fullName?.toLowerCase().trim();
+          const phoneKey = c.phone?.trim();
+          if (nameKey) localTierMap[nameKey] = c.tier || 'Member';
+          if (phoneKey) localTierMap[phoneKey] = c.tier || 'Member';
+        });
+        setCustomerTierMap(localTierMap);
+      } catch (loyaltyErr) {
+        console.error("Lỗi tải thông tin Loyalty trong Dashboard:", loyaltyErr);
+      }
+
+      const res = await adminBookingService.getAll({ pageSize: 1000 });
+      const list = res.data?.data || res.data || [];
+      if (list.length > 0) {
+        const todayDateStr = new Date().toLocaleDateString('en-CA');
+        const now = new Date();
+
+        let bToday = 0;
+        let rToday = 0;
+        let pCount = 0;
+        let nsCount = 0;
+        let prCount = 0;
+
+        // LPR Lists
+        const procList = [];
+        const waitList = [];
+        const nCheckinList = [];
+
+        // Operational warnings lists
+        const warningList = [];
+
+        // Aggregation for the past 7 calendar days
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const dateStr = d.toLocaleDateString('en-CA');
+          const dayLabel = d.toLocaleDateString('vi-VN', { weekday: 'short' });
+          last7Days.push({
+            dateStr,
+            day: dayLabel.replace('Th ', 'T').replace('Thứ ', 'T'),
+            revenue: 0,
           });
-          setCustomerTierMap(localTierMap);
-        } catch (loyaltyErr) {
-          console.error("Lỗi tải thông tin Loyalty trong Dashboard:", loyaltyErr);
         }
 
-        const res = await adminBookingService.getAll({ pageSize: 1000 });
-        const list = res.data?.data || res.data || [];
-        if (list.length > 0) {
-          const todayDateStr = new Date().toLocaleDateString('en-CA');
+        list.forEach(b => {
+          const bStatus = b.status?.toUpperCase();
+          const bDateStr = b.scheduledTime ? new Date(b.scheduledTime).toLocaleDateString('en-CA') : '';
+          const isBToday = bDateStr === todayDateStr;
+          const bTime = b.scheduledTime ? new Date(b.scheduledTime) : null;
 
-          let bToday = 0;
-          let rToday = 0;
-          let pCount = 0;
-          let nsCount = 0;
-          let prCount = 0;
+          const customerName = b.customerName ?? b.phone ?? 'Khách hàng';
+          const nameKey = customerName.toLowerCase().trim();
+          const phoneKey = b.phone?.trim();
+          const tier = b.tier || b.customerTier || localTierMap[nameKey] || (phoneKey ? localTierMap[phoneKey] : null) || 'Member';
 
-          // Aggregation for the past 7 calendar days
-          const last7Days = [];
-          for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            const dateStr = d.toLocaleDateString('en-CA');
-            const dayLabel = d.toLocaleDateString('vi-VN', { weekday: 'short' });
-            last7Days.push({
-              dateStr,
-              day: dayLabel.replace('Th ', 'T').replace('Thứ ', 'T'),
-              revenue: 0,
-            });
-          }
+          const mappedObj = {
+            id: b.bookingID ?? b.bookingId ?? b.id,
+            customer: customerName,
+            plate: b.licensePlate || '-',
+            service: b.serviceName || 'Rửa Xe',
+            status: b.status || 'Pending',
+            tier: tier,
+            scheduledTime: b.scheduledTime
+          };
 
-          list.forEach(b => {
-            const bStatus = b.status?.toUpperCase();
-            const bDate = b.scheduledTime ? new Date(b.scheduledTime).toLocaleDateString('en-CA') : '';
-            const isBToday = bDate === todayDateStr;
-
-            if (isBToday) {
-              bToday++;
-              if (bStatus === 'COMPLETED') {
-                rToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
-              }
-              if (bStatus === 'NOSHOW' || bStatus === 'NO-SHOW' || bStatus === 'NO_SHOW') {
-                nsCount++;
-              }
+          if (isBToday) {
+            bToday++;
+            
+            // 1. Doanh thu hôm nay: chỉ tính COMPLETED
+            if (bStatus === 'COMPLETED') {
+              rToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
             }
 
+            // 2. Trạng thái tức thời
             if (bStatus === 'PENDING') {
               pCount++;
+              const checkinTimeVal = b.checkInTime || b.checkinTime || b.CheckInTime;
+              if (checkinTimeVal) {
+                waitList.push(mappedObj);
+              } else {
+                nCheckinList.push(mappedObj);
+              }
             }
 
             if (bStatus === 'PROCESSING' || bStatus === 'IN-PROGRESS' || bStatus === 'IN_PROGRESS') {
               prCount++;
+              procList.push(mappedObj);
             }
 
-            // Aggregate weekly revenue
-            if (bStatus === 'COMPLETED') {
-              const dayBucket = last7Days.find(item => item.dateStr === bDate);
-              if (dayBucket) {
-                dayBucket.revenue += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
+            if (bStatus === 'NOSHOW' || bStatus === 'NO-SHOW' || bStatus === 'NO_SHOW') {
+              nsCount++;
+            }
+
+            // 3. Cảnh báo vận hành
+            // a. No-show
+            if (bStatus === 'NOSHOW' || bStatus === 'NO-SHOW' || bStatus === 'NO_SHOW') {
+              warningList.push({
+                type: 'NOSHOW',
+                message: `Khách hàng ${customerName} (${mappedObj.plate}) không đến hẹn (No-show)`,
+                detail: `Lịch hẹn lúc ${bTime ? bTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Hôm nay'}`,
+                booking: mappedObj
+              });
+            }
+            // b. Booking Pending quá lâu (> 30 phút so với giờ đặt)
+            if (bStatus === 'PENDING') {
+              if (bTime && (now - bTime) / 60000 > 30) {
+                warningList.push({
+                  type: 'PENDING_TOO_LONG',
+                  message: `Lịch hẹn của ${customerName} đang bị trễ quá 30 phút`,
+                  detail: `Lịch đặt: ${bTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} (Trễ ${Math.floor((now - bTime) / 60000)} phút)`,
+                  booking: mappedObj
+                });
               }
             }
-          });
-
-          // Set dynamic counters
-          setBookingsToday(bToday);
-          setPendingCount(pCount);
-          setNoShowCount(nsCount);
-          setProcessingCount(prCount > 0 ? prCount : Math.min(Math.ceil(bToday * 0.4), bToday) || 14);
-
-          let formattedRevenue = rToday >= 1000000
-            ? `${(rToday / 1000000).toFixed(1)}M`
-            : `${rToday.toLocaleString()}đ`;
-          setRevenueTodayStr(formattedRevenue);
-
-          // Update chart dataset
-          const totalWeeklyRevenue = last7Days.reduce((sum, item) => sum + item.revenue, 0);
-          if (totalWeeklyRevenue > 0) {
-            setChartData(last7Days.map(item => ({
-              day: item.day,
-              revenue: Number((item.revenue / 1000000).toFixed(2)),
-            })));
+            // c. Chưa có biển số xe
+            if ((bStatus === 'PENDING' || bStatus === 'PROCESSING') && (!b.licensePlate || b.licensePlate.trim() === '-' || b.licensePlate.toLowerCase().includes('chưa'))) {
+              warningList.push({
+                type: 'NO_PLATE',
+                message: `Xe của khách hàng ${customerName} chưa cập nhật biển số`,
+                detail: `Trạng thái: ${bStatus === 'PENDING' ? 'Đang chờ' : 'Đang xử lý'}`,
+                booking: mappedObj
+              });
+            }
+            // d. Booking failed/cancelled
+            if (['FAILED', 'CANCELLED', 'CANCEL', 'CANCEL_BY_ADMIN', 'CANCEL_BY_CUSTOMER'].includes(bStatus)) {
+              warningList.push({
+                type: 'FAILED_CANCEL',
+                message: `Lịch đặt của ${customerName} bị hủy hoặc thất bại`,
+                detail: `Lý do/Trạng thái: ${bStatus === 'FAILED' ? 'Thất bại' : 'Bị hủy'}`,
+                booking: mappedObj
+              });
+            }
           }
 
-          // Top 5 sorted bookings
-          const sortedList = [...list].sort((a, b) => new Date(b.scheduledTime || b.createdAt) - new Date(a.scheduledTime || a.createdAt));
-          const top5 = sortedList.slice(0, 5).map(b => {
-            const customerName = b.customerName ?? b.phone ?? 'Khách hàng';
-            const nameKey = customerName.toLowerCase().trim();
-            const phoneKey = b.phone?.trim();
-            const tier = b.tier || b.customerTier || localTierMap[nameKey] || (phoneKey ? localTierMap[phoneKey] : null) || 'Member';
-            return {
-              id: b.bookingID ?? b.bookingId ?? b.id,
-              customer: customerName,
-              plate: b.licensePlate || '-',
-              service: b.serviceName || 'Rửa Xe',
-              status: b.status || 'Pending',
-              tier: tier
-            };
-          });
-          if (top5.length > 0) {
-            setRecentBookings(top5);
+          // Aggregate weekly revenue
+          if (bStatus === 'COMPLETED') {
+            const dayBucket = last7Days.find(item => item.dateStr === bDateStr);
+            if (dayBucket) {
+              dayBucket.revenue += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
+            }
           }
+        });
+
+        // Set dynamic counters
+        setBookingsToday(bToday);
+        setPendingCount(pCount);
+        setNoShowCount(nsCount);
+        setProcessingCount(prCount);
+        
+        setProcessingCars(procList);
+        setWaitingCars(waitList);
+        setNeedCheckinCars(nCheckinList);
+        setWarnings(warningList);
+
+        let formattedRevenue = rToday >= 1000000
+          ? `${(rToday / 1000000).toFixed(1)}M`
+          : `${rToday.toLocaleString()}đ`;
+        setRevenueTodayStr(formattedRevenue);
+
+        // Update chart dataset
+        setChartData(last7Days.map(item => ({
+          day: item.day,
+          revenue: Number((item.revenue / 1000000).toFixed(2)),
+        })));
+
+        // Top 5 sorted bookings
+        const sortedList = [...list].sort((a, b) => new Date(b.scheduledTime || b.createdAt) - new Date(a.scheduledTime || a.createdAt));
+        const top5 = sortedList.slice(0, 5).map(b => {
+          const customerName = b.customerName ?? b.phone ?? 'Khách hàng';
+          const nameKey = customerName.toLowerCase().trim();
+          const phoneKey = b.phone?.trim();
+          const tier = b.tier || b.customerTier || localTierMap[nameKey] || (phoneKey ? localTierMap[phoneKey] : null) || 'Member';
+          return {
+            id: b.bookingID ?? b.bookingId ?? b.id,
+            customer: customerName,
+            plate: b.licensePlate || '-',
+            service: b.serviceName || 'Rửa Xe',
+            status: b.status || 'Pending',
+            tier: tier
+          };
+        });
+        if (top5.length > 0) {
+          setRecentBookings(top5);
         }
-      } catch (err) {
-        console.error('Error fetching dashboard stats:', err);
       }
-    };
+    } catch (err) {
+      console.error('Error fetching dashboard stats:', err);
+    }
+  };
+
+  useEffect(() => {
     fetchStats();
-  }, []);
+  }, [refreshTrigger]);
+
+  const handleLprCheckin = async (id) => {
+    try {
+      await adminBookingService.checkin(id);
+      toast.success("Check-in xe thành công!");
+      setRefreshTrigger(prev => prev + 1);
+    } catch (err) {
+      toast.error("Không thể ghi nhận check-in");
+      console.error(err);
+    }
+  };
 
   const getInitials = (name) => {
     if (!name) return 'KH';
@@ -327,18 +393,8 @@ export default function DashboardPage() {
   };
 
   const renderAvatar = (customer) => {
-    if (customer === 'Tran Minh') {
-      return (
-        <div className="w-8 h-8 rounded-full border border-[#BCC8CE] bg-white flex items-center justify-center text-[#BCC8CE] shrink-0">
-          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
-      );
-    }
-
     let bgClass = "bg-[#C9DBFD] text-[#4F607D]"; // default (e.g. NL, VT)
-    if (customer === 'Hoang Anh') {
+    if (customer === 'Hoang Anh' || customer === 'Tran Minh') {
       bgClass = "bg-[#00A9CE] text-white";
     }
 
@@ -365,7 +421,7 @@ export default function DashboardPage() {
         return (
           <span className="status-badge-figma completed">
             <span className="status-dot"></span>
-            <span className="status-text">Completed</span>
+            <span className="status-text">Đã xong</span>
           </span>
         );
       case 'PROCESSING':
@@ -374,7 +430,7 @@ export default function DashboardPage() {
         return (
           <span className="status-badge-figma processing">
             <span className="status-dot"></span>
-            <span className="status-text">Processing</span>
+            <span className="status-text">Đang rửa</span>
           </span>
         );
       case 'CANCELLED':
@@ -385,7 +441,7 @@ export default function DashboardPage() {
         return (
           <span className="status-badge-figma cancelled">
             <span className="status-dot"></span>
-            <span className="status-text">Canceled</span>
+            <span className="status-text">Đã hủy</span>
           </span>
         );
       case 'NOSHOW':
@@ -400,62 +456,69 @@ export default function DashboardPage() {
         return (
           <span className="status-badge-figma completed">
             <span className="status-dot bg-amber-500 animate-pulse"></span>
-            <span className="status-text text-amber-700">Pending</span>
+            <span className="status-text text-amber-700">Đang chờ</span>
           </span>
         );
     }
   };
 
-  const maxRevenueItem = chartData.reduce((prev, curr) => (curr.revenue > prev.revenue) ? curr : prev, chartData[0]) || { day: 'T8', revenue: 15.2 };
+  const maxRevenueItem = chartData.reduce((prev, curr) => (curr.revenue > prev.revenue) ? curr : prev, chartData[0]) || { day: 'CN', revenue: 0 };
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-page-subtitle"></div>
+      
       {/* Metric Cards Row */}
       <div className="metrics-grid">
         <MetricCard
-          title="Today's Revenue"
+          title="Doanh thu hôm nay"
           value={revenueTodayStr}
-          trend="+8.2% vs yesterday"
+          trend="+8.2% vs hôm qua"
           icon={BriefcaseIcon}
           type="revenue"
+          onClick={() => navigate('/admin/bookings')}
         />
         <MetricCard
-          title="Active Bookings"
+          title="Booking hôm nay"
           value={bookingsToday.toString()}
-          subtitle="14 currently processing"
+          subtitle={`${processingCount} xe đang rửa`}
           icon={CalendarIcon}
           type="bookings"
+          onClick={() => navigate(`/admin/bookings?date=${new Date().toLocaleDateString('en-CA')}`)}
         />
         <MetricCard
-          title="Pending Services"
+          title="Dịch vụ đang chờ"
           value={pendingCount.toString()}
-          subtitle="Avg wait time: 12m"
+          subtitle="Chờ check-in hoặc rửa"
           icon={ClockIcon}
           type="services"
+          onClick={() => navigate('/admin/bookings?status=PENDING')}
         />
         <MetricCard
-          title="No-shows"
+          title="Khách không đến (No-show)"
           value={noShowCount.toString()}
           icon={AlertTriangleIcon}
           type="no-shows"
+          onClick={() => navigate('/admin/bookings?status=NOSHOW')}
         />
       </div>
 
       {/* Main Charts & Side panel Section */}
       <div className="dashboard-grid">
+        
         {/* Weekly Revenue & Tier Distribution */}
         <div className="chart-section dashboard-card flex flex-col justify-between" style={{ gridColumn: "span 2" }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            
             {/* Weekly Revenue */}
             <div className="flex flex-col justify-between">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-[#111C2C] font-bold text-base" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                    Revenue This Week
+                    Doanh thu 7 ngày qua
                   </h3>
                   <p className="text-[#3D494D] text-xs">
-                    7-day performance overview
+                    Tổng quan hiệu suất vận hành 7 ngày gần nhất
                   </p>
                 </div>
               </div>
@@ -494,7 +557,7 @@ export default function DashboardPage() {
                       }}
                       itemStyle={{ color: '#00A9CE' }}
                       labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
-                      formatter={(value) => [`${value}M`, 'Revenue']}
+                      formatter={(value) => [`${value}M`, 'Doanh thu']}
                     />
                     <Area
                       type="monotone"
@@ -510,7 +573,7 @@ export default function DashboardPage() {
                 </ResponsiveContainer>
               </div>
               <div className="mt-2 text-[10px] text-slate-500">
-                Peak: <span className="font-bold text-[#00677F]">{maxRevenueItem.revenue}M</span> ({maxRevenueItem.day})
+                Cao nhất: <span className="font-bold text-[#00677F]">{maxRevenueItem.revenue}M</span> ({maxRevenueItem.day})
               </div>
             </div>
 
@@ -518,10 +581,10 @@ export default function DashboardPage() {
             <div className="flex flex-col justify-between border-l border-[#BCC8CE]/20 pl-4">
               <div className="mb-4">
                 <h3 className="text-[#111C2C] font-bold text-base" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                  Tier Distribution
+                  Phân bổ hạng thành viên
                 </h3>
                 <p className="text-[#3D494D] text-xs">
-                  Loyalty member ranking overview
+                  Cơ cấu hạng loyalty khách hàng
                 </p>
               </div>
               <div className="w-full h-52">
@@ -557,52 +620,142 @@ export default function DashboardPage() {
                 </ResponsiveContainer>
               </div>
             </div>
+
           </div>
         </div>
 
-        {/* Priority Queue & Loyalty Health */}
-        <div className="dashboard-card flex flex-col justify-between">
-          <div className="space-y-4">
-            {/* Buồng rửa tự động LPR Status */}
-            <div>
-              <h4 className="text-[#111C2C] font-bold text-sm mb-2" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                Buồng Rửa Tự Động (LPR Queue)
-              </h4>
-              <div className="p-3 bg-[#F0F3FF] border border-[#BCC8CE]/20 rounded-xl">
+        {/* Dynamic Queue Panels & Warnings */}
+        <div className="flex flex-col gap-6">
+          
+          {/* LPR Queue */}
+          <div className="dashboard-card space-y-4" style={{ minHeight: 'unset', padding: '20px' }}>
+            <h4 className="text-[#111C2C] font-bold text-sm" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+              Buồng Rửa Tự Động (LPR Queue)
+            </h4>
+            <div className="space-y-3">
+              {/* Đang xử lý */}
+              <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase text-emerald-600">Đang rửa xe</span>
-                  <span className="text-[10px] text-slate-400">Còn lại: 2p 45s</span>
+                  <span className="text-[10px] font-bold uppercase text-emerald-600">Đang xử lý</span>
+                  {processingCars.length > 0 && <span className="text-[10px] text-emerald-500 animate-pulse">● Đang chạy</span>}
                 </div>
-                <div className="text-base font-extrabold text-[#111C2C] mt-1">30G-987.65</div>
-                <div className="text-[11px] text-slate-500 mt-0.5">Dịch vụ: Premium Wash + Wax</div>
+                {processingCars.length === 0 ? (
+                  <div className="text-xs text-slate-400 mt-1 italic">Không có xe đang rửa</div>
+                ) : (
+                  processingCars.map(car => (
+                    <div key={car.id} className="mt-1 cursor-pointer" onClick={() => setSelectedBooking(car)}>
+                      <div className="text-base font-extrabold text-[#111C2C] flex items-center justify-between">
+                        <span>{car.plate}</span>
+                        <span className="text-xs font-normal text-slate-500">{car.customer}</span>
+                      </div>
+                      <div className="text-[10px] text-slate-500">Dịch vụ: {car.service}</div>
+                    </div>
+                  ))
+                )}
+              </div>
 
-                <div className="mt-3 pt-2.5 border-t border-[#BCC8CE]/30">
-                  <span className="text-[9px] font-bold uppercase text-slate-400 block mb-1.5">Ưu tiên tiếp theo (LPR Queue)</span>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-700">1. 29A-123.45</span>
-                      <span className="rfm-tier-badge gold" style={{ fontSize: '8px', padding: '1px 4px' }}>Gold</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-700">2. 51F-555.22</span>
-                      <span className="rfm-tier-badge platinum" style={{ fontSize: '8px', padding: '1px 4px' }}>Platinum</span>
-                    </div>
+              {/* Đang chờ */}
+              <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+                <span className="text-[9px] font-bold uppercase text-blue-600 block mb-1.5">Xe đang chờ rửa ({waitingCars.length})</span>
+                {waitingCars.length === 0 ? (
+                  <div className="text-xs text-slate-400 italic">Không có xe đang chờ</div>
+                ) : (
+                  <div className="space-y-1.5 max-h-24 overflow-y-auto">
+                    {waitingCars.map((car, idx) => (
+                      <div key={car.id} className="flex items-center justify-between text-xs cursor-pointer hover:bg-blue-100/30 p-1 rounded" onClick={() => setSelectedBooking(car)}>
+                        <span className="font-semibold text-slate-700">{idx + 1}. {car.plate}</span>
+                        <span className={`rfm-tier-badge ${car.tier?.toLowerCase()}`} style={{ fontSize: '8px', padding: '1px 4px' }}>{car.tier}</span>
+                      </div>
+                    ))}
                   </div>
-                </div>
+                )}
+              </div>
+
+              {/* Cần check-in */}
+              <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl">
+                <span className="text-[9px] font-bold uppercase text-amber-600 block mb-1.5">Chưa Check-in ({needCheckinCars.length})</span>
+                {needCheckinCars.length === 0 ? (
+                  <div className="text-xs text-slate-400 italic">Hôm nay không còn lịch chưa check-in</div>
+                ) : (
+                  <div className="space-y-1.5 max-h-24 overflow-y-auto">
+                    {needCheckinCars.map((car) => (
+                      <div key={car.id} className="flex items-center justify-between text-xs p-1 hover:bg-amber-100/30 rounded">
+                        <div className="flex flex-col cursor-pointer" onClick={() => setSelectedBooking(car)}>
+                          <span className="font-semibold text-slate-700">{car.plate !== '-' ? car.plate : 'Biển số: -'}</span>
+                          <span className="text-[9px] text-slate-500">{car.customer}</span>
+                        </div>
+                        <button 
+                          onClick={() => handleLprCheckin(car.id)}
+                          className="px-2 py-0.5 bg-[#00677F] hover:bg-[#005266] text-white rounded text-[9px] font-bold cursor-pointer transition-all"
+                        >
+                          Check-in
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Loyalty Health */}
+          <div className="dashboard-card space-y-4" style={{ minHeight: 'unset', padding: '20px' }}>
+            <h4 className="text-[#111C2C] font-bold text-sm" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+              Sức khỏe Loyalty (Loyalty Health)
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl flex justify-between items-center">
+                <span className="text-xs text-slate-600 font-medium">Tổng điểm lưu hành:</span>
+                <span className="text-xs font-bold text-[#00677F]">{loyaltyStats.totalPoints?.toLocaleString()} đ</span>
+              </div>
+              <div className="p-2.5 bg-[#FFFBEB] border border-[#FDE68A] rounded-xl flex justify-between items-center">
+                <span className="text-xs text-amber-700 font-medium">Sắp hết hạn (≤ 30 ngày):</span>
+                <span className="text-xs font-bold text-amber-700">{loyaltyStats.expiringSoon?.toLocaleString()} đ</span>
+              </div>
+              <div className="p-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-xl flex justify-between items-center">
+                <span className="text-xs text-red-700 font-medium">Đã hết hạn:</span>
+                <span className="text-xs font-bold text-red-700">{loyaltyStats.expired?.toLocaleString()} đ</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Cảnh báo cần xử lý */}
+          {warnings.length > 0 && (
+            <div className="dashboard-card border-[#BA1A1A] bg-[#FFF5F5] space-y-3" style={{ minHeight: 'unset', padding: '20px' }}>
+              <h4 className="text-[#BA1A1A] font-bold text-sm flex items-center gap-1.5" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+                <AlertTriangleIcon className="w-4 h-4 text-[#BA1A1A] shrink-0" />
+                <span>Cảnh báo cần xử lý ({warnings.length})</span>
+              </h4>
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {warnings.map((warn, idx) => (
+                  <div 
+                    key={`${warn.booking?.id || idx}`} 
+                    className="p-2.5 bg-white border border-[#FFDAD6] rounded-xl text-xs flex flex-col justify-between gap-1 cursor-pointer hover:border-amber-400 hover:shadow-sm transition-all"
+                    onClick={() => setSelectedBooking(warn.booking)}
+                  >
+                    <div className="font-semibold text-slate-800 leading-snug">{warn.message}</div>
+                    <div className="text-[10px] text-slate-500 flex justify-between items-center mt-1">
+                      <span>{warn.detail}</span>
+                      <span className="text-[#00677F] font-bold hover:underline">Xử lý ngay &rarr;</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
+
       </div>
 
       {/* Recent Bookings Table */}
       <div className="bookings-table-container">
         <div className="bookings-header-row">
           <h3 className="text-[#111C2C] text-lg font-bold" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-            Recent Bookings
+            Booking gần đây
           </h3>
-          <button className="bookings-view-all-btn">
-            View All
+          <button className="bookings-view-all-btn" onClick={() => navigate('/admin/bookings')}>
+            Xem tất cả
           </button>
         </div>
 
@@ -610,11 +763,11 @@ export default function DashboardPage() {
           <table className="bookings-table">
             <thead>
               <tr className="bookings-thead-row">
-                <th className="bookings-th code">CODE</th>
-                <th className="bookings-th customer">CUSTOMER</th>
-                <th className="bookings-th plate">LICENSE PLATE</th>
-                <th className="bookings-th service">SERVICE</th>
-                <th className="bookings-th status">STATUS</th>
+                <th className="bookings-th code">MÃ ĐƠN</th>
+                <th className="bookings-th customer">KHÁCH HÀNG</th>
+                <th className="bookings-th plate">BIỂN SỐ XE</th>
+                <th className="bookings-th service">DỊCH VỤ</th>
+                <th className="bookings-th status">TRẠNG THÁI</th>
               </tr>
             </thead>
 
@@ -622,7 +775,8 @@ export default function DashboardPage() {
               {recentBookings.map((booking) => (
                 <tr
                   key={booking.id}
-                  className="bookings-tbody-row"
+                  className="bookings-tbody-row cursor-pointer"
+                  onClick={() => setSelectedBooking(booking)}
                 >
                   <td className="bookings-td code">
                     {formatBookingId(booking.id)}
@@ -657,6 +811,18 @@ export default function DashboardPage() {
           </table>
         </div>
       </div>
+
+      {/* Booking Detail Drawer */}
+      <BookingDetailDrawer
+        booking={selectedBooking}
+        open={!!selectedBooking}
+        onClose={() => setSelectedBooking(null)}
+        onRefresh={() => {
+          setSelectedBooking(null);
+          setRefreshTrigger(prev => prev + 1);
+        }}
+      />
+
     </div>
   );
 }
