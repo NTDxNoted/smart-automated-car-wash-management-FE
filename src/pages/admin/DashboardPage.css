@@ -542,3 +542,522 @@
   border-color: #E9D5FF;
   color: #6B21A8;
 }
+
+/* ==========================================
+   Buồng Rửa Tự Động (LPR Queue) - Modernized
+   ========================================== */
+.modern-lpr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  background: #FFFFFF;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(188, 200, 206, 0.4);
+}
+
+.modern-lpr-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  height: 81px;
+  background: #E5E9EB;
+  border-bottom: 1px solid #C3C7CB;
+  align-self: stretch;
+}
+
+.modern-lpr-header-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 8px;
+  height: 48px;
+}
+
+.modern-lpr-header-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 18px;
+  height: 22px;
+}
+
+.modern-lpr-header-icon {
+  width: 18px;
+  height: 22px;
+  color: #071621;
+}
+
+.modern-lpr-header-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px 8.95px 0px 0px;
+  height: 48px;
+}
+
+.modern-lpr-header-title {
+  height: 48px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #071621;
+}
+
+.modern-lpr-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 12px;
+  align-self: stretch;
+}
+
+/* Items in LPR Queue */
+.modern-lpr-item-processing {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  gap: 8px;
+  background: #F0FDF4;
+  border: 1px solid #DCFCE7;
+  border-radius: 8px;
+  align-self: stretch;
+}
+
+.modern-lpr-item-processing-summary {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 20px;
+}
+
+.modern-lpr-item-processing-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 12px;
+  height: 20px;
+}
+
+.modern-lpr-item-processing-dot {
+  width: 8px;
+  height: 8px;
+  background: #22C55E;
+  border-radius: 9999px;
+}
+
+.modern-lpr-item-processing-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  color: #166534;
+}
+
+.modern-lpr-item-processing-right-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  color: #43474B;
+}
+
+/* Waiting item styling */
+.modern-lpr-item-waiting {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  gap: 8px;
+  background: #EFF6FF;
+  border: 1px solid #DBEAFE;
+  border-radius: 8px;
+  align-self: stretch;
+}
+
+.modern-lpr-item-waiting-summary {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 24px;
+}
+
+.modern-lpr-item-waiting-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 12px;
+  height: 20px;
+}
+
+.modern-lpr-item-waiting-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 13.33px;
+  height: 16.67px;
+}
+
+.modern-lpr-item-waiting-icon {
+  width: 13.33px;
+  height: 16.67px;
+  color: #3B82F6;
+}
+
+.modern-lpr-item-waiting-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  color: #1E40AF;
+}
+
+.modern-lpr-item-waiting-badge {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  background: #2563EB;
+  border-radius: 9999px;
+}
+
+.modern-lpr-item-waiting-badge-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+/* Checkin item styling */
+.modern-lpr-item-checkin {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  gap: 8px;
+  background: #FFF7ED;
+  border: 1px solid #FFEDD5;
+  border-radius: 8px;
+  align-self: stretch;
+}
+
+.modern-lpr-item-checkin-summary {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 24px;
+}
+
+.modern-lpr-item-checkin-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 12px;
+  height: 20px;
+}
+
+.modern-lpr-item-checkin-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 15px;
+  height: 16.67px;
+}
+
+.modern-lpr-item-checkin-icon {
+  width: 15px;
+  height: 16.67px;
+  color: #F97316;
+}
+
+.modern-lpr-item-checkin-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  color: #9A3412;
+}
+
+.modern-lpr-item-checkin-badge {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  background: #EA580C;
+  border-radius: 9999px;
+}
+
+.modern-lpr-item-checkin-badge-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+/* LPR Footer */
+.modern-lpr-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 24px;
+  background: #F1F4F6;
+  align-self: stretch;
+}
+
+.modern-lpr-footer-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 4px;
+  align-self: stretch;
+  height: 16px;
+}
+
+.modern-lpr-footer-icon {
+  width: 11.67px;
+  height: 11.67px;
+  color: #43474B;
+}
+
+.modern-lpr-footer-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  color: #43474B;
+}
+
+/* ==========================================
+   Sức khỏe Loyalty (Loyalty Health) - Modernized
+   ========================================== */
+.modern-loyalty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  background: #FFFFFF;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(188, 200, 206, 0.4);
+}
+
+.modern-loyalty-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 24px;
+  height: 57px;
+  background: #E5E9EB;
+  border-bottom: 1px solid #C3C7CB;
+  align-self: stretch;
+}
+
+.modern-loyalty-header-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 8px;
+  align-self: stretch;
+  height: 24px;
+}
+
+.modern-loyalty-header-icon {
+  width: 20px;
+  height: 20px;
+  color: #071621;
+}
+
+.modern-loyalty-header-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #071621;
+}
+
+.modern-loyalty-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 20px;
+  align-self: stretch;
+}
+
+.modern-loyalty-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.modern-loyalty-item-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px;
+  align-self: stretch;
+  height: 20px;
+}
+
+.modern-loyalty-item-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  color: #43474B;
+}
+
+.modern-loyalty-item-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.modern-loyalty-item-value.circulating {
+  color: #16A34A;
+}
+
+.modern-loyalty-item-value.expiring {
+  color: #EA580C;
+}
+
+.modern-loyalty-item-value.expired {
+  color: #BA1A1A;
+}
+
+.modern-loyalty-progress-bg {
+  width: 100%;
+  height: 8px;
+  background: #E5E9EB;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.modern-loyalty-progress-fill {
+  height: 8px;
+  border-radius: 9999px;
+  transition: width 0.3s ease-in-out;
+}
+
+.modern-loyalty-progress-fill.circulating {
+  background: #16A34A;
+}
+
+.modern-loyalty-progress-fill.expiring {
+  background: #EA580C;
+}
+
+.modern-loyalty-progress-fill.expired {
+  background: #BA1A1A;
+}
+
+.modern-loyalty-footer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0px;
+  border-top: 1px solid #C3C7CB;
+  align-self: stretch;
+  background: #FFFFFF;
+}
+
+.modern-loyalty-footer-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #006971;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.modern-loyalty-footer-btn:hover {
+  opacity: 0.8;
+}

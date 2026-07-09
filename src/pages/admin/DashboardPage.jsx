@@ -177,7 +177,7 @@ export default function DashboardPage() {
         ]);
         if (tierRes) setTierData(tierRes);
         if (loyaltyRes) setLoyaltyStats(loyaltyRes);
-        
+
         const rawCusts = custRes.data || custRes || [];
         rawCusts.forEach(c => {
           const nameKey = c.fullName?.toLowerCase().trim();
@@ -247,7 +247,7 @@ export default function DashboardPage() {
 
           if (isBToday) {
             bToday++;
-            
+
             // 1. Doanh thu hôm nay: chỉ tính COMPLETED
             if (bStatus === 'COMPLETED') {
               rToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
@@ -328,7 +328,7 @@ export default function DashboardPage() {
         setPendingCount(pCount);
         setNoShowCount(nsCount);
         setProcessingCount(prCount);
-        
+
         setProcessingCars(procList);
         setWaitingCars(waitList);
         setNeedCheckinCars(nCheckinList);
@@ -467,7 +467,7 @@ export default function DashboardPage() {
   return (
     <div className="dashboard-container">
       <div className="dashboard-page-subtitle"></div>
-      
+
       {/* Metric Cards Row */}
       <div className="metrics-grid">
         <MetricCard
@@ -505,11 +505,11 @@ export default function DashboardPage() {
 
       {/* Main Charts & Side panel Section */}
       <div className="dashboard-grid">
-        
+
         {/* Weekly Revenue & Tier Distribution */}
         <div className="chart-section dashboard-card flex flex-col justify-between" style={{ gridColumn: "span 2" }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            
+
             {/* Weekly Revenue */}
             <div className="flex flex-col justify-between">
               <div className="flex items-center justify-between mb-4">
@@ -626,45 +626,92 @@ export default function DashboardPage() {
 
         {/* Dynamic Queue Panels & Warnings */}
         <div className="flex flex-col gap-6">
-          
-          {/* LPR Queue */}
-          <div className="dashboard-card space-y-4" style={{ minHeight: 'unset', padding: '20px' }}>
-            <h4 className="text-[#111C2C] font-bold text-sm" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-              Buồng Rửa Tự Động (LPR Queue)
-            </h4>
-            <div className="space-y-3">
+
+          {/* LPR Queue - Modernized */}
+          <div className="modern-lpr-card">
+            <div className="modern-lpr-header">
+              <div className="modern-lpr-header-container">
+                <div className="modern-lpr-header-icon-container">
+                  <svg className="modern-lpr-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                </div>
+                <div className="modern-lpr-header-title-container">
+                  <h4 className="modern-lpr-header-title">
+                    Buồng Rửa Tự Động (LPR Queue)
+                  </h4>
+                </div>
+              </div>
+            </div>
+
+            <div className="modern-lpr-body">
               {/* Đang xử lý */}
-              <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase text-emerald-600">Đang xử lý</span>
-                  {processingCars.length > 0 && <span className="text-[10px] text-emerald-500 animate-pulse">● Đang chạy</span>}
+              <div className="modern-lpr-item-processing">
+                <div className="modern-lpr-item-processing-summary">
+                  <div className="modern-lpr-item-processing-left">
+                    <span className="modern-lpr-item-processing-dot"></span>
+                    <span className="modern-lpr-item-processing-title">ĐANG XỬ LÝ</span>
+                  </div>
+                  <span className="modern-lpr-item-processing-right-text">
+                    {processingCars.length > 0 ? (
+                      <span className="text-emerald-500 animate-pulse">● Đang chạy</span>
+                    ) : (
+                      "Không có xe"
+                    )}
+                  </span>
                 </div>
                 {processingCars.length === 0 ? (
-                  <div className="text-xs text-slate-400 mt-1 italic">Không có xe đang rửa</div>
+                  <div className="text-xs text-slate-400 mt-1 italic pl-5">Không có xe đang rửa</div>
                 ) : (
-                  processingCars.map(car => (
-                    <div key={car.id} className="mt-1 cursor-pointer" onClick={() => setSelectedBooking(car)}>
-                      <div className="text-base font-extrabold text-[#111C2C] flex items-center justify-between">
-                        <span>{car.plate}</span>
-                        <span className="text-xs font-normal text-slate-500">{car.customer}</span>
+                  <div className="w-full mt-1 space-y-2 border-t border-[#DCFCE7]/60 pt-2">
+                    {processingCars.map(car => (
+                      <div
+                        key={car.id}
+                        className="flex items-center justify-between cursor-pointer hover:bg-emerald-100/40 p-1.5 rounded transition-all"
+                        onClick={() => setSelectedBooking(car)}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-[#071621]">{car.plate}</span>
+                          <span className="text-[10px] text-slate-500">{car.customer}</span>
+                        </div>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-medium px-2 py-0.5 rounded-full">{car.service}</span>
                       </div>
-                      <div className="text-[10px] text-slate-500">Dịch vụ: {car.service}</div>
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </div>
 
               {/* Đang chờ */}
-              <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
-                <span className="text-[9px] font-bold uppercase text-blue-600 block mb-1.5">Xe đang chờ rửa ({waitingCars.length})</span>
+              <div className="modern-lpr-item-waiting">
+                <div className="modern-lpr-item-waiting-summary">
+                  <div className="modern-lpr-item-waiting-left">
+                    <div className="modern-lpr-item-waiting-icon-container">
+                      <svg className="modern-lpr-item-waiting-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                    </div>
+                    <span className="modern-lpr-item-waiting-title">ĐANG CHỜ RỬA</span>
+                  </div>
+                  <div className="modern-lpr-item-waiting-badge">
+                    <span className="modern-lpr-item-waiting-badge-text">{waitingCars.length}</span>
+                  </div>
+                </div>
                 {waitingCars.length === 0 ? (
-                  <div className="text-xs text-slate-400 italic">Không có xe đang chờ</div>
+                  <div className="text-xs text-slate-400 italic pl-6">Không có xe đang chờ</div>
                 ) : (
-                  <div className="space-y-1.5 max-h-24 overflow-y-auto">
+                  <div className="w-full mt-1 max-h-28 overflow-y-auto space-y-1.5 border-t border-[#DBEAFE]/60 pt-2 pr-1">
                     {waitingCars.map((car, idx) => (
-                      <div key={car.id} className="flex items-center justify-between text-xs cursor-pointer hover:bg-blue-100/30 p-1 rounded" onClick={() => setSelectedBooking(car)}>
-                        <span className="font-semibold text-slate-700">{idx + 1}. {car.plate}</span>
-                        <span className={`rfm-tier-badge ${car.tier?.toLowerCase()}`} style={{ fontSize: '8px', padding: '1px 4px' }}>{car.tier}</span>
+                      <div
+                        key={car.id}
+                        className="flex items-center justify-between text-xs cursor-pointer hover:bg-blue-100/50 p-1.5 rounded transition-all"
+                        onClick={() => setSelectedBooking(car)}
+                      >
+                        <span className="font-semibold text-[#1e40af]">{idx + 1}. {car.plate}</span>
+                        <span className={`rfm-tier-badge ${car.tier?.toLowerCase()}`} style={{ fontSize: '8px', padding: '1px 4px' }}>
+                          {car.tier}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -672,21 +719,38 @@ export default function DashboardPage() {
               </div>
 
               {/* Cần check-in */}
-              <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-xl">
-                <span className="text-[9px] font-bold uppercase text-amber-600 block mb-1.5">Chưa Check-in ({needCheckinCars.length})</span>
+              <div className="modern-lpr-item-checkin">
+                <div className="modern-lpr-item-checkin-summary">
+                  <div className="modern-lpr-item-checkin-left">
+                    <div className="modern-lpr-item-checkin-icon-container">
+                      <svg className="modern-lpr-item-checkin-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                        <polyline points="10 17 15 12 10 7" />
+                        <line x1="15" y1="12" x2="3" y2="12" />
+                      </svg>
+                    </div>
+                    <span className="modern-lpr-item-checkin-title">CHƯA CHECK-IN</span>
+                  </div>
+                  <div className="modern-lpr-item-checkin-badge">
+                    <span className="modern-lpr-item-checkin-badge-text">{needCheckinCars.length}</span>
+                  </div>
+                </div>
                 {needCheckinCars.length === 0 ? (
-                  <div className="text-xs text-slate-400 italic">Hôm nay không còn lịch chưa check-in</div>
+                  <div className="text-xs text-slate-400 italic pl-6">Không có lịch chưa check-in</div>
                 ) : (
-                  <div className="space-y-1.5 max-h-24 overflow-y-auto">
+                  <div className="w-full mt-1 max-h-28 overflow-y-auto space-y-2 border-t border-[#FFEDD5]/60 pt-2 pr-1">
                     {needCheckinCars.map((car) => (
-                      <div key={car.id} className="flex items-center justify-between text-xs p-1 hover:bg-amber-100/30 rounded">
+                      <div
+                        key={car.id}
+                        className="flex items-center justify-between text-xs p-1.5 hover:bg-amber-100/50 rounded transition-all"
+                      >
                         <div className="flex flex-col cursor-pointer" onClick={() => setSelectedBooking(car)}>
-                          <span className="font-semibold text-slate-700">{car.plate !== '-' ? car.plate : 'Biển số: -'}</span>
-                          <span className="text-[9px] text-slate-500">{car.customer}</span>
+                          <span className="font-bold text-[#9a3412]">{car.plate !== '-' ? car.plate : 'Biển số: -'}</span>
+                          <span className="text-[10px] text-slate-500">{car.customer}</span>
                         </div>
-                        <button 
+                        <button
                           onClick={() => handleLprCheckin(car.id)}
-                          className="px-2 py-0.5 bg-[#00677F] hover:bg-[#005266] text-white rounded text-[9px] font-bold cursor-pointer transition-all"
+                          className="px-2 py-1 bg-[#EA580C] hover:bg-[#d04e0a] text-white rounded text-[10px] font-bold cursor-pointer transition-all shadow-sm"
                         >
                           Check-in
                         </button>
@@ -696,28 +760,89 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Loyalty Health */}
-          <div className="dashboard-card space-y-4" style={{ minHeight: 'unset', padding: '20px' }}>
-            <h4 className="text-[#111C2C] font-bold text-sm" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-              Sức khỏe Loyalty (Loyalty Health)
-            </h4>
-            <div className="grid grid-cols-1 gap-2">
-              <div className="p-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl flex justify-between items-center">
-                <span className="text-xs text-slate-600 font-medium">Tổng điểm lưu hành:</span>
-                <span className="text-xs font-bold text-[#00677F]">{loyaltyStats.totalPoints?.toLocaleString()} đ</span>
-              </div>
-              <div className="p-2.5 bg-[#FFFBEB] border border-[#FDE68A] rounded-xl flex justify-between items-center">
-                <span className="text-xs text-amber-700 font-medium">Sắp hết hạn (≤ 30 ngày):</span>
-                <span className="text-xs font-bold text-amber-700">{loyaltyStats.expiringSoon?.toLocaleString()} đ</span>
-              </div>
-              <div className="p-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-xl flex justify-between items-center">
-                <span className="text-xs text-red-700 font-medium">Đã hết hạn:</span>
-                <span className="text-xs font-bold text-red-700">{loyaltyStats.expired?.toLocaleString()} đ</span>
+            <div className="modern-lpr-footer">
+              <div className="modern-lpr-footer-container">
+                <svg className="modern-lpr-footer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <span className="modern-lpr-footer-text">
+                  Nhận diện tự động
+                </span>
               </div>
             </div>
           </div>
+
+          {/* Loyalty Health - Modernized */}
+          {(() => {
+            const totalVal = loyaltyStats.totalPoints || 1;
+            const expiringPct = Math.min(100, Math.round((loyaltyStats.expiringSoon / totalVal) * 100)) || 0;
+            const expiredPct = Math.min(100, Math.round((loyaltyStats.expired / totalVal) * 100)) || 0;
+
+            return (
+              <div className="modern-loyalty-card">
+                <div className="modern-loyalty-header">
+                  <div className="modern-loyalty-header-container">
+                    <svg className="modern-loyalty-header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <h4 className="modern-loyalty-header-title">
+                      Sức khỏe Loyalty (Loyalty Health)
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="modern-loyalty-body">
+                  {/* Tổng điểm lưu hành */}
+                  <div className="modern-loyalty-item">
+                    <div className="modern-loyalty-item-info">
+                      <span className="modern-loyalty-item-label">TỔNG ĐIỂM LƯU HÀNH</span>
+                      <span className="modern-loyalty-item-value circulating">
+                        {loyaltyStats.totalPoints?.toLocaleString()} đ
+                      </span>
+                    </div>
+                    <div className="modern-loyalty-progress-bg">
+                      <div className="modern-loyalty-progress-fill circulating" style={{ width: '100%' }}></div>
+                    </div>
+                  </div>
+
+                  {/* Sắp hết hạn */}
+                  <div className="modern-loyalty-item">
+                    <div className="modern-loyalty-item-info">
+                      <span className="modern-loyalty-item-label">SẮP HẾT HẠN (≤ 30 NGÀY)</span>
+                      <span className="modern-loyalty-item-value expiring">
+                        {loyaltyStats.expiringSoon?.toLocaleString()} đ
+                      </span>
+                    </div>
+                    <div className="modern-loyalty-progress-bg">
+                      <div className="modern-loyalty-progress-fill expiring" style={{ width: `${expiringPct}%` }}></div>
+                    </div>
+                  </div>
+
+                  {/* Đã hết hạn */}
+                  <div className="modern-loyalty-item">
+                    <div className="modern-loyalty-item-info">
+                      <span className="modern-loyalty-item-label">ĐÃ HẾT HẠN</span>
+                      <span className="modern-loyalty-item-value expired">
+                        {loyaltyStats.expired?.toLocaleString()} đ
+                      </span>
+                    </div>
+                    <div className="modern-loyalty-progress-bg">
+                      <div className="modern-loyalty-progress-fill expired" style={{ width: `${expiredPct}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modern-loyalty-footer">
+                  <button className="modern-loyalty-footer-btn" onClick={() => navigate('/admin/tiers')}>
+                    CẤU HÌNH HẠNG
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Cảnh báo cần xử lý */}
           {warnings.length > 0 && (
@@ -728,8 +853,8 @@ export default function DashboardPage() {
               </h4>
               <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                 {warnings.map((warn, idx) => (
-                  <div 
-                    key={`${warn.booking?.id || idx}`} 
+                  <div
+                    key={`${warn.booking?.id || idx}`}
                     className="p-2.5 bg-white border border-[#FFDAD6] rounded-xl text-xs flex flex-col justify-between gap-1 cursor-pointer hover:border-amber-400 hover:shadow-sm transition-all"
                     onClick={() => setSelectedBooking(warn.booking)}
                   >
