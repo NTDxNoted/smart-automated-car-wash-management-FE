@@ -12,8 +12,17 @@ const COLORS = ["#00677F", "#0EA5E9", "#10B981", "#F59E0B", "#EF4444", "#64748B"
 export default function PopularServicesChart({ data }) {
   if (!data || data.length === 0) {
     return (
-      <div className="report-chart-card flex items-center justify-center min-h-[250px]">
-        <p className="text-sm text-slate-500 font-medium">Không có dữ liệu biểu đồ.</p>
+      <div className="report-chart-card">
+        <h3 className="report-chart-title">
+          Tỷ lệ lượt dịch vụ phổ biến
+        </h3>
+        <div className="flex flex-col items-center justify-center min-h-[200px] text-slate-400">
+          <svg className="w-10 h-10 mb-2 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+          </svg>
+          <p className="text-xs font-medium">Chưa có dữ liệu dịch vụ phổ biến</p>
+        </div>
       </div>
     );
   }

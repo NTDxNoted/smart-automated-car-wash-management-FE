@@ -463,6 +463,9 @@ export default function DashboardPage() {
   };
 
   const maxRevenueItem = chartData.reduce((prev, curr) => (curr.revenue > prev.revenue) ? curr : prev, chartData[0]) || { day: 'CN', revenue: 0 };
+  const totalCustomers = tierData.reduce((sum, item) => sum + (item.total ?? item.count ?? 0), 0);
+  const total7DaysRevenue = chartData.reduce((sum, item) => sum + item.revenue, 0);
+  const total7DaysRevenueStr = total7DaysRevenue.toFixed(1);
 
   return (
     <div className="dashboard-container">
@@ -506,122 +509,183 @@ export default function DashboardPage() {
       {/* Main Charts & Side panel Section */}
       <div className="dashboard-grid">
 
-        {/* Weekly Revenue & Tier Distribution */}
-        <div className="chart-section dashboard-card flex flex-col justify-between" style={{ gridColumn: "span 2" }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-
-            {/* Weekly Revenue */}
-            <div className="flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-[#111C2C] font-bold text-base" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                    Doanh thu 7 ngày qua
-                  </h3>
-                  <p className="text-[#3D494D] text-xs">
-                    Tổng quan hiệu suất vận hành 7 ngày gần nhất
-                  </p>
-                </div>
-              </div>
-
-              <div className="w-full h-52">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#00677F" stopOpacity={0.2} />
-                        <stop offset="95%" stopColor="#00677F" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(188, 200, 206, 0.2)" vertical={false} />
-                    <XAxis
-                      dataKey="day"
-                      stroke="#6D797E"
-                      tick={{ fontSize: 10, fill: '#6D797E' }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      stroke="#6D797E"
-                      tick={{ fontSize: 10, fill: '#6D797E' }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(val) => `${val}M`}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#263142',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#EBF1FF',
-                        boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      }}
-                      itemStyle={{ color: '#00A9CE' }}
-                      labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
-                      formatter={(value) => [`${value}M`, 'Doanh thu']}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="revenue"
-                      stroke="#00677F"
-                      strokeWidth={2}
-                      fillOpacity={1}
-                      fill="url(#colorRevenue)"
-                      dot={{ fill: '#F9F9FF', stroke: '#00677F', strokeWidth: 2, r: 3 }}
-                      activeDot={{ r: 5, strokeWidth: 0, fill: '#00677F' }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-2 text-[10px] text-slate-500">
-                Cao nhất: <span className="font-bold text-[#00677F]">{maxRevenueItem.revenue}M</span> ({maxRevenueItem.day})
-              </div>
-            </div>
-
-            {/* Tier Distribution Pie Chart */}
-            <div className="flex flex-col justify-between border-l border-[#BCC8CE]/20 pl-4">
-              <div className="mb-4">
-                <h3 className="text-[#111C2C] font-bold text-base" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-                  Phân bổ hạng thành viên
+        {/* Left Column: Revenue Chart & Member Distribution */}
+        <div className="chart-section-wrapper-modern chart-section" style={{ gridColumn: "span 2" }}>
+          
+          {/* Revenue Area Chart */}
+          <div className="chart-card-revenue-modern">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex flex-col gap-1">
+                <h3 className="font-semibold text-lg text-[#000F24]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                  Doanh thu 7 ngày qua
                 </h3>
-                <p className="text-[#3D494D] text-xs">
-                  Cơ cấu hạng loyalty khách hàng
+                <p className="text-sm text-[#44474D]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  Tổng quan hiệu suất vận hành 7 ngày gần nhất
                 </p>
               </div>
-              <div className="w-full h-52">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={tierData.map(t => ({
-                        name: t.tier ?? t.tierName ?? t.name,
-                        value: t.total ?? t.count ?? 0
-                      }))}
-                      cx="50%"
-                      cy="45%"
-                      innerRadius={45}
-                      outerRadius={65}
-                      paddingAngle={4}
-                      dataKey="value"
-                    >
-                      {tierData.map((entry, index) => {
-                        const colors = ['#00677F', '#00A9CE', '#949D9E', '#C9DBFD'];
-                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
-                      })}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#263142',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#EBF1FF',
-                      }}
-                    />
-                    <Legend iconType="circle" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px' }} />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="flex flex-col items-end">
+                <span className="text-[12px] font-bold text-[#44474D] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  Weekly Revenue
+                </span>
+                <div className="flex items-baseline justify-end text-[#006A61] mt-1">
+                  <span className="text-3xl font-bold tracking-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                    {total7DaysRevenueStr}
+                  </span>
+                  <span className="text-sm font-normal text-[#44474D] ml-0.5" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                    M
+                  </span>
+                </div>
               </div>
             </div>
 
+            <div className="w-full h-64 mt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorRevenueModern" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#006A61" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#006A61" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <XAxis
+                    dataKey="day"
+                    stroke="#44474D"
+                    tick={{ fontSize: 11, fill: '#44474D', fontFamily: "'Inter', sans-serif" }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    stroke="#44474D"
+                    tick={{ fontSize: 11, fill: '#44474D', fontFamily: "'Inter', sans-serif" }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(val) => `${val}M`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#263142',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: '#EBF1FF',
+                      boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    }}
+                    itemStyle={{ color: '#00A9CE' }}
+                    labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
+                    formatter={(value) => [`${value}M`, 'Doanh thu']}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#006A61"
+                    strokeWidth={2.6}
+                    fillOpacity={1}
+                    fill="url(#colorRevenueModern)"
+                    dot={{ fill: '#FFFFFF', stroke: '#006A61', strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, strokeWidth: 0, fill: '#006A61' }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
+
+          {/* Member Distribution Modern View */}
+          <div className="chart-card-member-modern">
+            <h3 className="font-semibold text-lg text-[#000F24] w-full" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              Phân bổ hạng thành viên
+            </h3>
+
+            <div className="flex flex-col md:flex-row items-center gap-12 w-full mt-2">
+              {/* Left Side: Donut Chart */}
+              <div className="relative w-48 h-48 flex-shrink-0 mx-auto md:mx-0">
+                {totalCustomers === 0 ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-full text-slate-400">
+                    <span className="text-2xl font-bold">0</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider">Thành viên</span>
+                  </div>
+                ) : (
+                  <>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={tierData.map(t => ({
+                            name: t.tier ?? t.tierName ?? t.name,
+                            value: t.total ?? t.count ?? 0
+                          }))}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={65}
+                          outerRadius={85}
+                          paddingAngle={3}
+                          dataKey="value"
+                        >
+                          {tierData.map((entry, index) => {
+                            const name = String(entry.tier ?? entry.tierName ?? entry.name).toUpperCase();
+                            let fill = '#00677F';
+                            if (name.includes('PLATINUM')) fill = '#FF00FF';
+                            else if (name.includes('GOLD')) fill = '#FFD700';
+                            else if (name.includes('SILVER')) fill = '#C0C0C0';
+                            else if (name.includes('MEMBER')) fill = '#4DC3D6';
+                            return <Cell key={`cell-${index}`} fill={fill} />;
+                          })}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-2xl font-bold text-[#000F24]" style={{ fontFamily: "'Inter', sans-serif" }}>{totalCustomers}</span>
+                      <span className="text-[10px] font-bold text-[#44474D] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Thành viên</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Right Side: Legend Bento Style */}
+              <div className="grid grid-cols-2 gap-4 flex-grow w-full">
+                {(() => {
+                  const bentoItems = [
+                    { key: 'PLATINUM', label: 'PLATINUM', color: '#FF00FF' },
+                    { key: 'GOLD', label: 'GOLD', color: '#FFD700' },
+                    { key: 'SILVER', label: 'SILVER', color: '#C0C0C0' },
+                    { key: 'MEMBER', label: 'MEMBER', color: '#4DC3D6' }
+                  ];
+
+                  return bentoItems.map((item) => {
+                    const dataItem = tierData.find(t => String(t.tier ?? t.tierName ?? t.name).toUpperCase().includes(item.key));
+                    const count = dataItem ? (dataItem.total ?? dataItem.count ?? 0) : 0;
+                    const percentage = totalCustomers > 0 ? Math.round((count / totalCustomers) * 100) : 0;
+
+                    return (
+                      <div 
+                        key={item.key} 
+                        className="bento-card-modern"
+                        style={{ borderLeft: `4px solid ${item.color}` }}
+                      >
+                        {/* Top Row: Label + Color Dot */}
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[11px] font-bold tracking-wider" style={{ color: item.color, fontFamily: "'Inter', sans-serif" }}>
+                            {item.label}
+                          </span>
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: item.color }} />
+                        </div>
+
+                        {/* Bottom Row: Count + Percentage */}
+                        <div className="flex items-baseline justify-between w-full mt-2">
+                          <span className="text-lg font-bold text-[#191C1E]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            {count}
+                          </span>
+                          <span className="text-xs font-medium text-[#44474D]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            {percentage}%
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          </div>
+
         </div>
 
         {/* Dynamic Queue Panels & Warnings */}

@@ -485,7 +485,7 @@ export default function AdminLayout() {
       {/* Main Content Side - Flex column layout */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Top Header */}
-        <header className="h-20 bg-white/85 backdrop-blur-md border-b border-[#BCC8CE] px-8 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-20 bg-white/85 backdrop-blur-md border-b border-[#BCC8CE] px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -498,7 +498,7 @@ export default function AdminLayout() {
             </button>
             <h1 className="text-2xl font-bold text-[#111C2C] tracking-tight">
               {location.pathname === '/admin/dashboard'
-                ? 'Overview'
+                ? 'Tổng quan'
                 : (navItems.find((item) =>
                   location.pathname === item.path ||
                   (item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path + '/'))
