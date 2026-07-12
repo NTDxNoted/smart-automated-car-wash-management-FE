@@ -75,7 +75,12 @@ export const getTierDistribution = async ({ signal } = {}) => {
   }
 
   const { data } = await adminAxiosInstance.get('/admin/reports/tier-distribution', { signal });
-  return data.data || data;
+  const rawList = data.data || data || [];
+  return rawList.map(item => ({
+    tier: item.tier ?? item.Tier ?? "Member",
+    total: item.customerCount ?? item.CustomerCount ?? 0,
+    percentage: item.percentage ?? item.Percentage ?? 0,
+  }));
 };
 
 export const getLoyaltyStats = async ({ signal } = {}) => {
@@ -88,7 +93,11 @@ export const getLoyaltyStats = async ({ signal } = {}) => {
   }
 
   const { data } = await adminAxiosInstance.get('/admin/reports/loyalty-stats', { signal });
-  return data;
+  return {
+    totalPoints: data.totalPointsInCirculation ?? data.TotalPointsInCirculation ?? 0,
+    expiringSoon: data.pointsExpiringSoon ?? data.PointsExpiringSoon ?? 0,
+    expired: data.expiredPoints ?? data.ExpiredPoints ?? 0,
+  };
 };
 
 // Cập nhật thêm các API báo cáo mới từ backend nếu cần dùng ở frontend
@@ -137,7 +146,30 @@ export const getPeakOccupancy = async (startDate, endDate, { signal } = {}) => {
     params: { startDate, endDate },
     signal
   });
-  return data.data || data;
+
+  const totalDays = data.totalDays ?? data.TotalDays ?? 1;
+  const maxParallelSlots = data.maxParallelSlots ?? data.MaxParallelSlots ?? 1;
+  const weeksCount = totalDays / 7 || 1;
+
+  const weeklyList = data.dayOfWeekStats ?? data.DayOfWeekStats ?? [];
+  const hourlyList = data.hourStats ?? data.HourStats ?? [];
+
+  return {
+    weekly: weeklyList.map(item => {
+      const count = item.bookingCount ?? item.BookingCount ?? 0;
+      const calculatedRate = Math.min(100, Math.round((count / weeksCount / maxParallelSlots) * 100));
+      return {
+        day: item.dayOfWeek ?? item.DayOfWeek,
+        count: count,
+        occupancyRate: calculatedRate,
+      };
+    }),
+    hourly: hourlyList.map(item => ({
+      time: item.timeSlot ?? item.TimeSlot,
+      count: item.bookingCount ?? item.BookingCount ?? 0,
+      occupancyRate: item.occupancyPercentage ?? item.OccupancyPercentage ?? 0,
+    })),
+  };
 };
 
 export const getPromotionsRoi = async (startDate, endDate, { signal } = {}) => {
@@ -159,5 +191,30 @@ export const getPromotionsRoi = async (startDate, endDate, { signal } = {}) => {
     params: { startDate, endDate },
     signal
   });
-  return data.data || data;
+
+  const items = data.items || data.Items || [];
+  let totalDiscount = 0;
+  let totalRevenue = 0;
+
+  const promotions = items.map(item => {
+    const discount = Number(item.totalDiscountGiven ?? item.TotalDiscountGiven ?? 0);
+    const revenue = Number(item.revenueGenerated ?? item.RevenueGenerated ?? 0);
+    totalDiscount += discount;
+    totalRevenue += revenue;
+
+    return {
+      promoCode: item.promoCode ?? item.PromoCode,
+      totalUsage: item.usageCount ?? item.UsageCount ?? 0,
+      totalDiscount: discount,
+      revenueGenerated: revenue,
+    };
+  });
+
+  return {
+    summary: {
+      totalDiscount,
+      totalRevenue,
+    },
+    promotions,
+  };
 };

@@ -30,7 +30,8 @@ export default function PaymentForm({
     try {
       setLoading(true);
       const res = await adminBookingService.payment(booking.id, {
-        method,
+        paymentMethod: method,
+        confirmed: true,
       });
 
       setPaid(true);

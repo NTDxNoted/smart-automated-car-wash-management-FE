@@ -69,12 +69,19 @@ const PromotionManagementPage = () => {
   };
 
   const handleSubmit = async (form) => {
+    const tierMap = {
+      'MEMBER': 1,
+      'SILVER': 2,
+      'GOLD': 3,
+      'PLATINUM': 4
+    };
+    const mappedTierId = form.minTier ? (tierMap[form.minTier.toUpperCase()] || null) : null;
+
     const payload = {
       title: form.title,
       promoCode: form.promoCode,
-      minTier: form.minTier,
-      minTierId: form.minTier ? Number(form.minTier) : null,
-      minTierID: form.minTier ? Number(form.minTier) : null,
+      minTierId: mappedTierId,
+      minTierID: mappedTierId,
       discountValue: Number(form.value),
       value: Number(form.value),
       maxUsage: Number(form.maxUsage),
@@ -82,6 +89,8 @@ const PromotionManagementPage = () => {
       endDate: form.endDate,
       isActive: form.isActive !== undefined ? form.isActive : true,
       IsActive: form.isActive !== undefined ? form.isActive : true,
+      minOrderValue: 0,
+      MinOrderValue: 0,
     };
 
     if (form.discountType === 'PERCENT' || form.discountType === 'Percentage') {
