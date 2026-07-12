@@ -217,10 +217,13 @@ export default function DashboardPage() {
           d.setDate(d.getDate() - i);
           const dateStr = d.toLocaleDateString('en-CA');
           const dayLabel = d.toLocaleDateString('vi-VN', { weekday: 'short' });
+          let dayIndex = d.getDay(); // 0 is Sunday, 1 is Monday, etc.
+          if (dayIndex === 0) dayIndex = 7; // Map Sunday to 7
           last7Days.push({
             dateStr,
             day: dayLabel.replace('Th ', 'T').replace('Thứ ', 'T'),
             revenue: 0,
+            dayIndex,
           });
         }
 
@@ -339,8 +342,11 @@ export default function DashboardPage() {
           : `${rToday.toLocaleString()}đ`;
         setRevenueTodayStr(formattedRevenue);
 
+        // Sort last7Days by dayIndex so T2 (Monday, dayIndex=1) is first and CN (Sunday, dayIndex=7) is last
+        const sorted7Days = [...last7Days].sort((a, b) => a.dayIndex - b.dayIndex);
+
         // Update chart dataset
-        setChartData(last7Days.map(item => ({
+        setChartData(sorted7Days.map(item => ({
           day: item.day,
           revenue: Number((item.revenue / 1000000).toFixed(2)),
         })));
@@ -511,81 +517,87 @@ export default function DashboardPage() {
 
         {/* Left Column: Revenue Chart & Member Distribution */}
         <div className="chart-section-wrapper-modern chart-section" style={{ gridColumn: "span 2" }}>
-          
+
           {/* Revenue Area Chart */}
           <div className="chart-card-revenue-modern">
-            <div className="flex items-center justify-between w-full">
-              <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-lg text-[#000F24]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            <div className="revenue-chart-header">
+              <div className="revenue-chart-titles">
+                <h4 className="revenue-chart-title">
                   Doanh thu 7 ngày qua
-                </h3>
-                <p className="text-sm text-[#44474D]" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  Tổng quan hiệu suất vận hành 7 ngày gần nhất
-                </p>
+                </h4>
+                <div className="revenue-chart-subtitle-container">
+                  <span className="revenue-chart-subtitle">
+                    Tổng quan hiệu suất vận hành 7 ngày gần nhất
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col items-end">
-                <span className="text-[12px] font-bold text-[#44474D] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  Weekly Revenue
-                </span>
-                <div className="flex items-baseline justify-end text-[#006A61] mt-1">
-                  <span className="text-3xl font-bold tracking-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              <div className="revenue-chart-metrics">
+                <div className="revenue-chart-metric-label-container">
+                  <span className="revenue-chart-metric-label">
+                    Weekly Revenue
+                  </span>
+                </div>
+                <div className="revenue-chart-metric-paragraph">
+                  <span className="revenue-chart-metric-value">
                     {total7DaysRevenueStr}
                   </span>
-                  <span className="text-sm font-normal text-[#44474D] ml-0.5" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                  <span className="revenue-chart-metric-unit">
                     M
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="w-full h-64 mt-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorRevenueModern" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#006A61" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#006A61" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-                  <XAxis
-                    dataKey="day"
-                    stroke="#44474D"
-                    tick={{ fontSize: 11, fill: '#44474D', fontFamily: "'Inter', sans-serif" }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    stroke="#44474D"
-                    tick={{ fontSize: 11, fill: '#44474D', fontFamily: "'Inter', sans-serif" }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(val) => `${val}M`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#263142',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: '#EBF1FF',
-                      boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    }}
-                    itemStyle={{ color: '#00A9CE' }}
-                    labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
-                    formatter={(value) => [`${value}M`, 'Doanh thu']}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#006A61"
-                    strokeWidth={2.6}
-                    fillOpacity={1}
-                    fill="url(#colorRevenueModern)"
-                    dot={{ fill: '#FFFFFF', stroke: '#006A61', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, strokeWidth: 0, fill: '#006A61' }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="revenue-chart-body">
+              <div className="revenue-chart-svg-container">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorRevenueModern" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#006A61" stopOpacity={0.2} />
+                        <stop offset="100%" stopColor="#006A61" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid stroke="#F1F5F9" vertical={false} />
+                    <XAxis
+                      dataKey="day"
+                      stroke="#44474D"
+                      tick={{ fontSize: 12, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      stroke="#44474D"
+                      tick={{ fontSize: 10, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(val) => `${val}M`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#263142',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#EBF1FF',
+                        boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      }}
+                      itemStyle={{ color: '#00A9CE' }}
+                      labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
+                      formatter={(value) => [`${value}M`, 'Doanh thu']}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#006A61"
+                      strokeWidth={2.65624}
+                      fillOpacity={1}
+                      fill="url(#colorRevenueModern)"
+                      dot={{ fill: '#FFFFFF', stroke: '#006A61', strokeWidth: 1.77083, r: 4 }}
+                      activeDot={{ r: 6, strokeWidth: 0, fill: '#006A61' }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
@@ -656,8 +668,8 @@ export default function DashboardPage() {
                     const percentage = totalCustomers > 0 ? Math.round((count / totalCustomers) * 100) : 0;
 
                     return (
-                      <div 
-                        key={item.key} 
+                      <div
+                        key={item.key}
                         className="bento-card-modern"
                         style={{ borderLeft: `4px solid ${item.color}` }}
                       >
@@ -1011,7 +1023,6 @@ export default function DashboardPage() {
           setRefreshTrigger(prev => prev + 1);
         }}
       />
-
     </div>
   );
 }
