@@ -330,115 +330,122 @@ export default function ReportPage() {
 
   return (
     <div className="report-page-container">
-      {/* Title Header & Date Filter Bar */}
-      <div className="flex flex-col gap-4">
-        <div>
-          <h2 className="report-page-title">Báo cáo & Phân tích quản trị</h2>
-          <p className="report-page-subtitle">
-            Hỗ trợ ra quyết định kinh doanh, tiếp thị và theo dõi hiệu suất loyalty khách hàng
-          </p>
+      {/* Title Header */}
+      <div className="report-page-header">
+        <h2 className="report-page-title">Báo cáo & Phân tích quản trị</h2>
+        <p className="report-page-subtitle">
+          Hỗ trợ ra quyết định kinh doanh, tiếp thị và theo dõi hiệu suất loyalty khách hàng
+        </p>
+      </div>
+
+      {/* Tab Navigation & Filters */}
+      <div className="report-nav-filter-bar">
+        {/* Tabs Menu */}
+        <div className="report-tabs-bar">
+          {[
+            { id: "overview_rfm", label: "TỔNG QUAN & RFM", icon: "📊" },
+            { id: "tiers", label: "PHÂN BỔ HẠNG THÀNH VIÊN", icon: "👑" },
+            { id: "loyalty", label: "THỐNG KÊ LOYALTY", icon: "💎" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`report-tab-btn cursor-pointer ${activeTab === tab.id ? "active" : ""}`}
+            >
+              <div className="tab-icon-container">
+                <span className="tab-icon">{tab.icon}</span>
+              </div>
+              <span className="tab-text">{tab.label}</span>
+            </button>
+          ))}
         </div>
 
-        {/* Date Filter Panel */}
-        <div className="report-filter-bar bg-white border border-[#BCC8CE] rounded-2xl p-4 flex flex-wrap gap-4 items-center justify-between shadow-sm">
-          <div className="flex gap-2">
-            {[
-              { id: 'today', label: 'Hôm nay' },
-              { id: '7days', label: '7 ngày qua' },
-              { id: 'month', label: 'Tháng này' },
-              { id: 'custom', label: 'Tùy chỉnh' }
-            ].map((range) => (
-              <button
-                key={range.id}
-                onClick={() => setDateRangeType(range.id)}
-                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                  dateRangeType === range.id
-                    ? 'bg-[#00677F] text-white shadow-sm'
-                    : 'bg-slate-100 text-[#4E5F7C] hover:bg-slate-200'
-                }`}
-              >
-                {range.label}
-              </button>
-            ))}
+        {/* Date Filter Dropdown */}
+        <div className="report-date-filter-wrapper">
+          <div className="report-date-dropdown-container">
+            <span className="report-date-dropdown-icon">📅</span>
+            <select
+              value={dateRangeType}
+              onChange={(e) => setDateRangeType(e.target.value)}
+              className="report-date-dropdown-select"
+            >
+              <option value="today">Hôm nay</option>
+              <option value="7days">7 ngày qua</option>
+              <option value="month">Tháng này</option>
+              <option value="custom">Tùy chỉnh</option>
+            </select>
           </div>
-          
+
           {dateRangeType === 'custom' && (
-            <div className="flex items-center gap-2">
+            <div className="report-custom-date-inputs">
               <input
                 type="date"
                 value={customStartDate}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="px-3 py-1.5 border border-[#BCC8CE] rounded-xl text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#00677F]"
+                className="report-custom-date-input"
               />
-              <span className="text-xs text-slate-400">đến</span>
+              <span className="report-custom-date-divider">đến</span>
               <input
                 type="date"
                 value={customEndDate}
                 onChange={(e) => setCustomEndDate(e.target.value)}
-                className="px-3 py-1.5 border border-[#BCC8CE] rounded-xl text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#00677F]"
+                className="report-custom-date-input"
               />
             </div>
           )}
         </div>
       </div>
 
-      {/* Tabs Menu */}
-      <div className="report-tabs-bar">
-        {[
-          { id: "overview_rfm", label: "Tổng quan & RFM", icon: "📊" },
-          { id: "tiers", label: "Phân bổ hạng thành viên", icon: "👑" },
-          { id: "loyalty", label: "Thống kê Loyalty", icon: "💎" },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`report-tab-btn cursor-pointer ${activeTab === tab.id ? "active" : ""}`}
-          >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
-          </button>
-        ))}
-      </div>
-
       {/* Tab Contents */}
       {activeTab === "overview_rfm" && (
         <div className="space-y-6">
-          {/* 7 KPI Cards Grid */}
-          <div className="report-stats-grid">
+          {/* Row 1 KPI Cards (4 cards) */}
+          <div className="report-stats-grid-row1">
             <SummaryCard
               title="Tổng doanh thu"
               value={`${kpis.revenue.toLocaleString()}đ`}
               subtitle="Doanh thu thực nhận"
+              cardClass="row1"
             />
             <SummaryCard
               title="Tổng bookings"
               value={kpis.bookings.toLocaleString()}
               subtitle="Lượt đặt dịch vụ"
+              cardClass="row1"
             />
             <SummaryCard
               title="Tổng khách hàng"
               value={kpis.customers.toLocaleString()}
               subtitle="Khách hàng duy nhất"
+              cardClass="row1"
             />
             <SummaryCard
               title="Tỷ lệ hoàn thành"
               value={`${kpis.completedRate.toFixed(1)}%`}
               subtitle="Rửa xe thành công"
+              cardClass="row1"
             />
+          </div>
+
+          {/* Row 2 KPI Cards (3 cards) */}
+          <div className="report-stats-grid-row2">
             <SummaryCard
               title="Tỷ lệ hủy / no-show"
               value={`${kpis.cancelRate.toFixed(1)}%`}
               subtitle="Hủy hoặc bỏ lỡ lịch"
+              cardClass="row2"
             />
             <SummaryCard
               title="Đơn giá trung bình (AOV)"
               value={`${Math.round(kpis.aov).toLocaleString()}đ`}
               subtitle="Doanh thu / lượt completed"
+              cardClass="row2"
             />
             <SummaryCard
               title="Tỷ lệ khách quay lại"
               value={`${kpis.repeatRate.toFixed(1)}%`}
               subtitle="Rửa xe từ 2 lần trở lên"
+              cardClass="row2"
             />
           </div>
 
@@ -448,55 +455,72 @@ export default function ReportPage() {
             <BookingStatusPieChart data={bookingStatusPieData} />
           </div>
 
-          <div className="w-full">
+          <div className="report-large-visualization-container">
             <PopularServicesChart data={popularServicesData} />
           </div>
 
           {/* Loyalty & RFM Insights Panel */}
-          <div className="report-chart-card bg-slate-50 border-slate-200 mt-6" style={{ gridColumn: "span 2" }}>
-            <h3 className="report-chart-title flex items-center gap-2 text-[#00677F] mb-4">
-              <span>💡 Đề xuất tiếp thị theo phân khúc (RFM Insights)</span>
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="rfm-insights-section">
+            <div className="rfm-insights-header">
+              <span className="rfm-insights-header-text">💡 Đề xuất tiếp thị theo phân khúc (RFM Insights)</span>
+            </div>
+
+            <div className="rfm-insights-cards-container">
+              {/* Champions (Khách VIP) */}
               <div 
-                className="p-4 bg-white border border-[#E2E8F0] rounded-xl flex flex-col justify-between cursor-pointer hover:border-[#00677F] hover:shadow-md transition-all" 
-                style={{ minHeight: "155px" }}
+                className="rfm-insight-card champions-card cursor-pointer hover:shadow-md transition-all" 
                 onClick={() => handleSegmentClick("Champions")}
               >
-                <div>
-                  <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Champions (Khách VIP)</span>
-                  <p className="text-2xl font-bold text-slate-800 mt-1">{rfmMetrics.championsCount}</p>
+                <div className="rfm-insight-card-header">
+                  <span className="rfm-insight-card-label-champions">Champions (Khách VIP)</span>
+                  <span className="rfm-insight-card-count">{rfmMetrics.championsCount}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-2 leading-relaxed">Chi tiêu nhiều, ghé tiệm thường xuyên. Đề xuất: Tặng voucher VIP độc quyền.</p>
-                <span className="text-[10px] text-cyan-600 font-bold mt-2">Xem danh sách &rarr;</span>
+                <div className="rfm-insight-card-content">
+                  <span className="rfm-insight-card-desc">Chi tiêu nhiều, ghé tiệm thường xuyên.</span>
+                  <span className="rfm-insight-card-proposal">Đề xuất: Tặng voucher VIP độc quyền.</span>
+                </div>
+                <div className="rfm-insight-card-action-champions">
+                  <span>Xem danh sách</span>
+                  <span>&rarr;</span>
+                </div>
               </div>
 
+              {/* At Risk (Nguy cơ rời bỏ) */}
               <div 
-                className="p-4 bg-white border border-[#E2E8F0] rounded-xl flex flex-col justify-between cursor-pointer hover:border-[#00677F] hover:shadow-md transition-all" 
-                style={{ minHeight: "155px" }}
+                className="rfm-insight-card at-risk-card cursor-pointer hover:shadow-md transition-all" 
                 onClick={() => handleSegmentClick("At Risk")}
               >
-                <div>
-                  <span className="text-[11px] font-bold text-red-500 uppercase tracking-wider">At Risk (Nguy cơ rời bỏ)</span>
-                  <p className={`text-2xl font-bold mt-1 ${rfmMetrics.atRiskCount > 0 ? "text-red-600" : "text-slate-800"}`}>
-                    {rfmMetrics.atRiskCount}
-                  </p>
+                <div className="rfm-insight-card-header">
+                  <span className="rfm-insight-card-label-at-risk">At Risk (Nguy cơ rời bỏ)</span>
+                  <span className="rfm-insight-card-count">{rfmMetrics.atRiskCount}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-2 leading-relaxed">Đã từng gắn bó nhưng lâu chưa ghé tiệm. Đề xuất: Gửi mã giảm giá kéo khách.</p>
-                <span className="text-[10px] text-cyan-600 font-bold mt-2">Xem danh sách &rarr;</span>
+                <div className="rfm-insight-card-content">
+                  <span className="rfm-insight-card-desc">Đã từng gắn bó nhưng lâu chưa ghé.</span>
+                  <span className="rfm-insight-card-proposal">Đề xuất: Gửi mã giảm giá kéo khách.</span>
+                </div>
+                <div className="rfm-insight-card-action-at-risk">
+                  <span>Xem danh sách</span>
+                  <span>&rarr;</span>
+                </div>
               </div>
 
+              {/* New Customers (Khách mới) */}
               <div 
-                className="p-4 bg-white border border-[#E2E8F0] rounded-xl flex flex-col justify-between cursor-pointer hover:border-[#00677F] hover:shadow-md transition-all" 
-                style={{ minHeight: "155px" }}
+                className="rfm-insight-card new-customers-card cursor-pointer hover:shadow-md transition-all" 
                 onClick={() => handleSegmentClick("New Customers")}
               >
-                <div>
-                  <span className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">New Customers (Khách mới)</span>
-                  <p className="text-2xl font-bold text-slate-800 mt-1">{rfmMetrics.newCount}</p>
+                <div className="rfm-insight-card-header">
+                  <span className="rfm-insight-card-label-new-customers">New Customers (Khách mới)</span>
+                  <span className="rfm-insight-card-count">{rfmMetrics.newCount}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-2 leading-relaxed">Đăng ký thành viên và ghé tiệm lần đầu. Đề xuất: Khuyến mãi lượt rửa thứ 2.</p>
-                <span className="text-[10px] text-cyan-600 font-bold mt-2">Xem danh sách &rarr;</span>
+                <div className="rfm-insight-card-content">
+                  <span className="rfm-insight-card-desc">Đăng ký thành viên & ghé tiệm lần đầu.</span>
+                  <span className="rfm-insight-card-proposal">Đề xuất: Khuyến mãi lượt rửa thứ 2.</span>
+                </div>
+                <div className="rfm-insight-card-action-new-customers">
+                  <span>Xem danh sách</span>
+                  <span>&rarr;</span>
+                </div>
               </div>
             </div>
           </div>
@@ -523,7 +547,47 @@ export default function ReportPage() {
   );
 }
 
-function SummaryCard({ title, value, subtitle }) {
+function SummaryCard({ title, value, subtitle, cardClass }) {
+  if (cardClass === "row1") {
+    let emoji = "📊";
+    if (title.toLowerCase().includes("thu")) emoji = "💰";
+    else if (title.toLowerCase().includes("book")) emoji = "📅";
+    else if (title.toLowerCase().includes("hàng")) emoji = "👥";
+    else if (title.toLowerCase().includes("thành")) emoji = "✅";
+
+    return (
+      <div className="report-stat-card-row1">
+        <div className="report-stat-card-header">
+          <span className="report-stat-card-label">{title}</span>
+          <div className="report-stat-card-icon-overlay">
+            <span className="report-stat-card-icon">{emoji}</span>
+          </div>
+        </div>
+        <div className="report-stat-card-value-container">
+          <h3 className="report-stat-card-value">{value}</h3>
+        </div>
+        {subtitle && (
+          <div className="report-stat-card-subtitle-container">
+            <span className="report-stat-card-subtitle">{subtitle}</span>
+          </div>
+        )}
+      </div>
+    );
+  } else if (cardClass === "row2") {
+    return (
+      <div className="report-stat-card-row2">
+        <span className="report-stat-card-row2-label">{title}</span>
+        <div className="report-stat-card-row2-value-container">
+          <h3 className="report-stat-card-row2-value">{value}</h3>
+        </div>
+        {subtitle && (
+          <span className="report-stat-card-row2-subtitle">{subtitle}</span>
+        )}
+      </div>
+    );
+  }
+
+  // Fallback default card
   return (
     <div className="report-stat-card">
       <span className="report-stat-label">{title}</span>

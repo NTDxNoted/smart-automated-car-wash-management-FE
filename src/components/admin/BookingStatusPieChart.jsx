@@ -24,7 +24,7 @@ export default function BookingStatusPieChart({ data }) {
         <h3 className="report-chart-title">
           Trạng thái đặt lịch
         </h3>
-        <div className="flex flex-col items-center justify-center h-48 text-slate-400">
+        <div className="flex flex-col items-center justify-center flex-1 min-h-[192px] text-slate-400">
           <svg className="w-10 h-10 mb-2 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
