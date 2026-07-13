@@ -444,3 +444,155 @@
   font-size: 14px;
   color: #64748B;
 }
+
+/* Date Filter Bar */
+.report-filter-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 16px 24px;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.report-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-filter-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #334155;
+}
+
+.report-filter-select, .report-filter-date {
+  padding: 8px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #1E293B;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.report-filter-select:focus, .report-filter-date:focus {
+  border-color: #00677F;
+}
+
+.report-filter-btn {
+  padding: 8px 24px;
+  background: #00677F;
+  border: none;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease;
+}
+
+.report-filter-btn:hover {
+  background: #005266;
+}
+
+/* Popular Services Tab styling */
+.popular-services-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .popular-services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.popular-table-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  width: 100%;
+}
+
+.popular-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.popular-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #64748B;
+  border-bottom: 1px solid #E2E8F0;
+  letter-spacing: 0.5px;
+}
+
+.popular-table td {
+  padding: 14px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #334155;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.popular-table tr:last-child td {
+  border-bottom: none;
+}
+
+.popular-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.popular-rank-badge.rank-1 {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.popular-rank-badge.rank-2 {
+  background: #E2E8F0;
+  color: #475569;
+}
+
+.popular-rank-badge.rank-3 {
+  background: #FFEDD5;
+  color: #EA580C;
+}
+
+.popular-rank-badge.rank-other {
+  background: #F1F5F9;
+  color: #64748B;
+}
+

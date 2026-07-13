@@ -2,7 +2,7 @@ import adminAxiosInstance from '../api/adminAxiosInstance';
 
 const USE_MOCK_DATA = false; // Gạt thành false để kết nối với API thật của backend
 
-export const getOverviewReport = async ({ signal } = {}) => {
+export const getOverviewReport = async ({ filterType, startDate, endDate, signal } = {}) => {
   if (USE_MOCK_DATA) {
     return {
       revenue: [
@@ -26,7 +26,25 @@ export const getOverviewReport = async ({ signal } = {}) => {
     };
   }
 
-  const { data } = await adminAxiosInstance.get('/admin/reports/overview', { signal });
+  const { data } = await adminAxiosInstance.get('/admin/reports/overview', {
+    params: { filterType, startDate, endDate },
+    signal
+  });
+  return data;
+};
+
+export const getPopularServicesReport = async ({ startDate, endDate, signal } = {}) => {
+  if (USE_MOCK_DATA) {
+    return [
+      { serviceId: 1, serviceName: "Rửa xe máy siêu sạch", usageCount: 45, totalRevenue: 1350000, percentage: 30 },
+      { serviceId: 2, serviceName: "Rửa ô tô tiêu chuẩn", usageCount: 65, totalRevenue: 9750000, percentage: 43.3 },
+      { serviceId: 3, serviceName: "Vệ sinh khoang máy", usageCount: 40, totalRevenue: 20000000, percentage: 26.7 },
+    ];
+  }
+  const { data } = await adminAxiosInstance.get('/admin/reports/popular-services', {
+    params: { startDate, endDate },
+    signal
+  });
   return data;
 };
 

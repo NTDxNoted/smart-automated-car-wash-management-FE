@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import adminBookingService from "../../services/adminBookingService";
 
 export default function EmergencyStopButton({
   bookingId,
@@ -20,9 +21,9 @@ export default function EmergencyStopButton({
       try {
         setLoading(true);
 
-        // await emergencyService.stop(
-        //   bookingId
-        // );
+        await adminBookingService.emergencyStop(
+          bookingId
+        );
 
         toast.error(
           "Đã kích hoạt dừng khẩn cấp"
@@ -30,9 +31,8 @@ export default function EmergencyStopButton({
 
         await onRefresh?.();
       } catch (error) {
-        toast.error(
-          "Không thể dừng khẩn cấp"
-        );
+        const errorMsg = error.response?.data?.message || "Không thể dừng khẩn cấp";
+        toast.error(errorMsg);
       } finally {
         setLoading(false);
       }

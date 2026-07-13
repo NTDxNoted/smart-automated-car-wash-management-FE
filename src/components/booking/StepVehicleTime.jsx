@@ -154,9 +154,33 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
   const validate = () => {
     const errs = {};
-    if (!bookingData.phone.trim())       errs.phone = t('phoneRequired');
-    if (!bookingData.licensePlate.trim()) errs.licensePlate = t('licensePlateRequired');
-    if (!selectedDate || !selectedTime)   errs.scheduledTime = t('selectSlotRequired');
+    
+    // Validate Phone
+    const phoneTrim = (bookingData.phone || '').trim();
+    if (!phoneTrim) {
+      errs.phone = t('phoneRequired');
+    } else {
+      const phoneRegex = /^(0|84)(3|5|7|8|9)[0-9]{8}$/;
+      if (!phoneRegex.test(phoneTrim)) {
+        errs.phone = t('phoneInvalid') || 'Số điện thoại không hợp lệ (phải gồm 10 chữ số)';
+      }
+    }
+    
+    // Validate License Plate
+    const plateTrim = (bookingData.licensePlate || '').trim();
+    if (!plateTrim) {
+      errs.licensePlate = t('licensePlateRequired');
+    } else {
+      const plateRegex = /^[0-9]{2}[-A-Z0-9]{1,4}[-.\s]?[0-9]{3,5}([.-]?[0-9]{2})?$/i;
+      if (!plateRegex.test(plateTrim)) {
+        errs.licensePlate = t('licensePlateInvalid') || 'Biển số xe không hợp lệ (ví dụ: 29A-123.45)';
+      }
+    }
+
+    if (!selectedDate || !selectedTime) {
+      errs.scheduledTime = t('selectSlotRequired');
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -235,6 +259,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                   </a>
                 </div>
               )}
+              {errors.licensePlate && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.licensePlate}</p>}
             </label>
           </>
         ) : (
