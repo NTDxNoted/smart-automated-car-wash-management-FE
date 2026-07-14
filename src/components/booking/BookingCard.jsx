@@ -29,7 +29,7 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
 
   return (
     <article
-      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-cyan-300 hover:shadow-md cursor-pointer"
+      className="booking-history-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-cyan-300 hover:shadow-md cursor-pointer"
       onClick={() => onOpenDetail(booking)}
     >
       {/* Top row: service info + status */}

@@ -36,7 +36,7 @@ export default function BookingHistoryPage() {
         pageSize: 5
       });
 
-      console.log("✅ API lấy lịch sử thành công, dữ liệu nhận được:", response);
+      console.log(" API lấy lịch sử thành công, dữ liệu nhận được:", response);
       setBookings(response?.data || []);
       setPagi({
         page: response?.pagination?.page || pageNum,
@@ -110,9 +110,15 @@ export default function BookingHistoryPage() {
           color: #0f172a !important;
           box-sizing: border-box !important;
         }
+        .booking-history-card {
+          padding: 20px 24px !important;
+        }
         @media (max-width: 640px) {
           .booking-history-container {
             padding: 24px 16px 80px 16px !important;
+          }
+          .booking-history-card {
+            padding: 16px 20px !important;
           }
         }
       `}</style>
