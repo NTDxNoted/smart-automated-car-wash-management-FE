@@ -48,7 +48,15 @@ export const loyaltyService = {
       return new Promise(resolve => setTimeout(() => resolve(mockRewards), 800));
     }
     const response = await axiosInstance.get('/rewards');
-    return response.data.data || response.data;
+    const raw = response.data.data || response.data;
+    return (raw || []).map(r => ({
+      id: r.rewardId || r.id,
+      name: r.rewardName || r.name,
+      description: r.description,
+      pointsRequired: r.pointsRequired,
+      discountValue: r.discountAmount !== undefined ? r.discountAmount : r.discountValue,
+      isActive: r.isActive
+    }));
   },
 
   simulateRedeem: async ({ rewardId, baseAmount }) => {
