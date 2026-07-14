@@ -41,26 +41,28 @@ export default function StatusUpdateDropdown({
   };
 
   return (
-    <select
-      disabled={disabled || loading}
-      onChange={handleChange}
-      className="w-full border rounded px-3 py-2"
-    >
-      <option value="">
-        Update status
-      </option>
+    <div className="booking-drawer-select-wrapper">
+      <select
+        disabled={disabled || loading}
+        onChange={handleChange}
+        className="booking-drawer-select"
+      >
+        <option value="">
+          Cập nhật trạng thái...
+        </option>
 
-      <option value="COMPLETED">
-        Completed
-      </option>
+        <option value="COMPLETED">
+          Completed
+        </option>
 
-      <option value="FAILED">
-        Failed
-      </option>
+        <option value="FAILED">
+          Failed
+        </option>
 
-      <option value="CANCELLED">
-        Cancelled
-      </option>
-    </select>
+        <option value="CANCELLED">
+          Cancelled
+        </option>
+      </select>
+    </div>
   );
 }

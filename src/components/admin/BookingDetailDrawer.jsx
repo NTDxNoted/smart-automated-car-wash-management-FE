@@ -4,6 +4,8 @@ import adminBookingService from "../../services/adminBookingService";
 import PaymentForm from "./PaymentForm";
 import StatusUpdateDropdown from "./StatusUpdateDropdown";
 import EmergencyStopButton from "./EmergencyStopButton";
+import "./BookingDetailDrawer.css";
+
 
 export default function BookingDetailDrawer({
   booking,
@@ -72,8 +74,9 @@ export default function BookingDetailDrawer({
       onRefresh?.(booking.id, "CHECKIN");
       fetchDetail();
     } catch (err) {
-      toast.error("Không thể ghi nhận check-in");
-      console.error(err);
+      console.error("Lỗi check-in:", err);
+      const serverMsg = err.response?.data?.message || err.response?.data?.error;
+      toast.error(serverMsg || "Không thể ghi nhận check-in");
     } finally {
       setCheckingIn(false);
     }
@@ -81,119 +84,131 @@ export default function BookingDetailDrawer({
 
   // Determine checkin status
   const checkInTimeVal = currentDetails.checkInTime || currentDetails.checkinTime || currentDetails.CheckInTime;
-
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      {/* overlay */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
-
-      {/* drawer content */}
-      <div className="relative w-full max-w-md h-full bg-[#0c0f24] border-l border-white/10 shadow-2xl text-slate-100 p-6 overflow-y-auto flex flex-col justify-between z-10">
+    <div className="booking-drawer-overlay">
+      <div className="booking-drawer-container">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex justify-between items-center border-b border-white/5 pb-4">
-            <div>
-              <h2 className="text-xl font-bold text-white">Chi tiết Đặt lịch</h2>
-              <p className="text-xs text-slate-400 mt-1">Mã booking: {booking.id}</p>
+          <div className="booking-drawer-header">
+            <div className="booking-drawer-title-wrapper">
+              <h2 className="booking-drawer-title">Chi tiết Đặt lịch</h2>
+              <p className="booking-drawer-subtitle">Mã booking: {booking.id}</p>
             </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition cursor-pointer"
-            >
+            <button onClick={onClose} className="booking-drawer-close-btn">
               ✕
             </button>
           </div>
 
           {loading && !details ? (
             <div className="py-12 text-center text-slate-400">
-              <div className="inline-block w-6 h-6 border-2 border-slate-700 border-t-cyan-500 rounded-full animate-spin mb-2"></div>
+              <div className="booking-drawer-spinner mb-2"></div>
               <p className="text-xs">Đang tải chi tiết...</p>
             </div>
           ) : (
             <div className="space-y-5">
               {/* Customer Info */}
-              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-3">
-                <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Thông tin Khách hàng</h3>
-                <div className="grid grid-cols-3 text-sm">
-                  <span className="text-slate-400">Tên khách:</span>
-                  <span className="col-span-2 text-slate-200 font-semibold">{currentDetails.customerName || "Vãng lai"}</span>
-                </div>
-                <div className="grid grid-cols-3 text-sm">
-                  <span className="text-slate-400">Số ĐT:</span>
-                  <span className="col-span-2 text-slate-200">{currentDetails.phone || "-"}</span>
-                </div>
-                <div className="grid grid-cols-3 text-sm items-center">
-                  <span className="text-slate-400">Biển số:</span>
-                  <div className="col-span-2 flex gap-2">
-                    <input
-                      value={plate}
-                      onChange={(e) => setPlate(e.target.value)}
-                      className="bg-[#070913] border border-white/10 text-white rounded-lg px-2 py-1 text-xs w-full focus:border-cyan-500 outline-none font-mono"
-                    />
-                    <button
-                      onClick={handleSavePlate}
-                      disabled={updatingPlate}
-                      className="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white rounded-lg text-xs font-semibold cursor-pointer transition shrink-0"
-                    >
-                      Lưu
-                    </button>
+              <div className="booking-drawer-section">
+                <h3 className="booking-drawer-section-title">Thông tin Khách hàng</h3>
+                <div className="booking-drawer-grid">
+                  <div className="booking-drawer-row">
+                    <span className="booking-drawer-label">Tên khách:</span>
+                    <span className="booking-drawer-value highlight">
+                      {currentDetails.customerName || "Vãng lai"}
+                    </span>
+                  </div>
+                  <div className="booking-drawer-row">
+                    <span className="booking-drawer-label">Số ĐT:</span>
+                    <span className="booking-drawer-value">
+                      {currentDetails.phone || "-"}
+                    </span>
+                  </div>
+                  <div className="booking-drawer-row" style={{ alignItems: 'center' }}>
+                    <span className="booking-drawer-label">Biển số:</span>
+                    <div className="booking-drawer-plate-wrapper">
+                      <input
+                        value={plate}
+                        onChange={(e) => setPlate(e.target.value)}
+                        className="booking-drawer-plate-input"
+                      />
+                      <button
+                        onClick={handleSavePlate}
+                        disabled={updatingPlate}
+                        className="booking-drawer-save-btn"
+                      >
+                        {updatingPlate ? <span className="booking-drawer-spinner"></span> : "Lưu"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Invoice Summary */}
-              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-3">
-                <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Hóa đơn thanh toán</h3>
-                <div className="grid grid-cols-3 text-sm">
-                  <span className="text-slate-400">Giá cơ bản:</span>
-                  <span className="col-span-2 text-right text-slate-300">
-                    {(currentDetails.baseAmount ?? 0).toLocaleString()}đ
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 text-sm">
-                  <span className="text-slate-400">Giảm giá:</span>
-                  <span className="col-span-2 text-right text-red-400">
-                    -{(currentDetails.discountApplied ?? 0).toLocaleString()}đ
-                  </span>
-                </div>
-                {currentDetails.pointsEarned > 0 && (
-                  <div className="grid grid-cols-3 text-sm">
-                    <span className="text-slate-400">Điểm tích lũy:</span>
-                    <span className="col-span-2 text-right text-emerald-400">+{currentDetails.pointsEarned} pts</span>
+              <div className="booking-drawer-section">
+                <h3 className="booking-drawer-section-title">Hóa đơn thanh toán</h3>
+                <div className="booking-drawer-grid">
+                  <div className="booking-drawer-row">
+                    <span className="booking-drawer-label">Giá cơ bản:</span>
+                    <span className="booking-drawer-value">
+                      {(currentDetails.baseAmount ?? 0).toLocaleString()}đ
+                    </span>
                   </div>
-                )}
-                <div className="h-[1px] bg-white/5 my-2" />
-                <div className="grid grid-cols-3 text-sm font-semibold">
-                  <span className="text-slate-200">Tổng thanh toán:</span>
-                  <span className="col-span-2 text-right text-white text-base">
-                    {(currentDetails.finalAmount ?? currentDetails.totalAmount ?? 0).toLocaleString()}đ
-                  </span>
+                  <div className="booking-drawer-row">
+                    <span className="booking-drawer-label">Giảm giá:</span>
+                    <span className="booking-drawer-value" style={{ color: '#f87171' }}>
+                      -{(currentDetails.discountApplied ?? 0).toLocaleString()}đ
+                    </span>
+                  </div>
+                  {currentDetails.pointsEarned > 0 && (
+                    <div className="booking-drawer-row">
+                      <span className="booking-drawer-label">Điểm tích lũy:</span>
+                      <span className="booking-drawer-value" style={{ color: '#34d399' }}>
+                        +{currentDetails.pointsEarned} pts
+                      </span>
+                    </div>
+                  )}
+                  <div className="booking-drawer-divider" />
+                  <div className="booking-drawer-total-row">
+                    <span className="booking-drawer-total-label">Tổng thanh toán:</span>
+                    <span className="booking-drawer-total-value">
+                      {(currentDetails.finalAmount ?? currentDetails.totalAmount ?? currentDetails.totalPrice ?? 0).toLocaleString()}đ
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Check-in Block */}
               <div>
                 {checkInTimeVal ? (
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-xl p-3 text-center">
-                    ✓ Xe đã check-in lúc {new Date(checkInTimeVal).toLocaleString("vi-VN")}
+                  <div className="booking-drawer-checkin-banner">
+                    <span>✓ Xe đã check-in lúc {new Date(checkInTimeVal).toLocaleString("vi-VN")}</span>
                   </div>
                 ) : (
                   <button
                     onClick={handleCheckIn}
-                    disabled={checkingIn}
-                    className="w-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-bold py-2.5 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-1.5"
+                    disabled={checkingIn || currentDetails.status?.toUpperCase() !== "PENDING"}
+                    className="booking-drawer-checkin-btn"
+                    style={{
+                      background: currentDetails.status?.toUpperCase() !== "PENDING" ? 'rgba(255, 255, 255, 0.05)' : undefined,
+                      border: currentDetails.status?.toUpperCase() !== "PENDING" ? '1px solid rgba(255, 255, 255, 0.05)' : undefined,
+                      color: currentDetails.status?.toUpperCase() !== "PENDING" ? '#64748b' : undefined,
+                      cursor: currentDetails.status?.toUpperCase() !== "PENDING" ? 'not-allowed' : undefined,
+                      boxShadow: currentDetails.status?.toUpperCase() !== "PENDING" ? 'none' : undefined
+                    }}
                   >
-                    Ghi nhận xe đến (Check-in)
+                    {checkingIn ? (
+                      <span className="booking-drawer-spinner"></span>
+                    ) : currentDetails.status?.toUpperCase() !== "PENDING" ? (
+                      `Không thể check-in đơn ${currentDetails.status}`
+                    ) : (
+                      "Ghi nhận xe đến (Check-in)"
+                    )}
                   </button>
                 )}
               </div>
 
               {/* Status Update Block */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cập nhật trạng thái</label>
+                <label className="booking-drawer-form-label">Cập nhật trạng thái</label>
                 <StatusUpdateDropdown
                   booking={currentDetails}
                   onSuccess={(status) => {

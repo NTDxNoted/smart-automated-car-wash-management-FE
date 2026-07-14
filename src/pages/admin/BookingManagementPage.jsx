@@ -39,7 +39,7 @@ export default function BookingManagementPage() {
         phone: b.phone,
         licensePlate: b.licensePlate,
         status: b.status,
-        totalAmount: b.finalAmount ?? b.baseAmount ?? b.totalAmount,
+        totalAmount: b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice,
         scheduledTime: b.scheduledTime,
         services: b.services || b.serviceNames || b.serviceName || b.service || [],
       }));

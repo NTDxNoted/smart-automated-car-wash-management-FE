@@ -43,7 +43,7 @@ export default function EmergencyStopButton({
     <button
       disabled={loading}
       onClick={handleEmergencyStop}
-      className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold disabled:bg-gray-400"
+      className="booking-drawer-emergency-btn"
     >
       {loading
         ? "Đang xử lý..."
