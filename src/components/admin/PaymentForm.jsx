@@ -63,57 +63,63 @@ export default function PaymentForm({
   return (
     <fieldset
       disabled={paid || loading}
-      className="border border-white/10 rounded-2xl p-4 bg-white/[0.01] space-y-4"
+      className="booking-drawer-payment-fieldset"
     >
-      <legend className="text-xs font-bold text-cyan-400 uppercase tracking-wider px-2">
+      <legend className="booking-drawer-payment-legend">
         Thanh toán tại quầy
       </legend>
 
-      <div className="flex gap-6 mt-1">
-        <label className="flex items-center gap-2 text-sm text-slate-350 cursor-pointer">
+      <div className="booking-drawer-radio-group">
+        <div
+          className={`booking-drawer-radio-card ${method === "CASH" ? "active" : ""}`}
+          onClick={() => !paid && handleMethodChange("CASH")}
+        >
           <input
             type="radio"
             checked={method === "CASH"}
-            onChange={() => handleMethodChange("CASH")}
+            readOnly
             disabled={paid}
-            className="accent-cyan-500"
+            className="booking-drawer-radio-input"
           />
-          Tiền mặt (Cash)
-        </label>
+          <span className="booking-drawer-radio-text">Tiền mặt (Cash)</span>
+        </div>
 
-        <label className="flex items-center gap-2 text-sm text-slate-350 cursor-pointer">
+        <div
+          className={`booking-drawer-radio-card ${method === "TRANSFER" ? "active" : ""}`}
+          onClick={() => !paid && handleMethodChange("TRANSFER")}
+        >
           <input
             type="radio"
             checked={method === "TRANSFER"}
-            onChange={() => handleMethodChange("TRANSFER")}
+            readOnly
             disabled={paid}
-            className="accent-cyan-500"
+            className="booking-drawer-radio-input"
           />
-          Chuyển khoản (Transfer)
-        </label>
+          <span className="booking-drawer-radio-text">Chuyển khoản (Transfer)</span>
+        </div>
       </div>
 
       {method === "CASH" && (
-        <label className="flex items-start gap-2.5 text-xs text-slate-400 cursor-pointer bg-white/[0.02] border border-white/5 p-3 rounded-xl">
+        <label className="booking-drawer-checkbox-card">
           <input
             type="checkbox"
             checked={confirmed}
             disabled={paid}
             onChange={(e) => setConfirmed(e.target.checked)}
-            className="accent-cyan-500 mt-0.5 shrink-0"
+            className="booking-drawer-checkbox-input"
           />
-          <span>Tôi xác nhận đã thu đủ tiền mặt từ khách hàng</span>
+          <span className="booking-drawer-checkbox-text">Tôi xác nhận đã thu đủ tiền mặt từ khách hàng</span>
         </label>
       )}
 
       <button
         disabled={paid || (method === "CASH" && !confirmed) || loading}
         onClick={handleConfirm}
-        className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold py-2.5 rounded-xl text-sm transition cursor-pointer flex items-center justify-center gap-1.5"
+        className="booking-drawer-pay-btn"
       >
         {loading ? (
           <>
-            <span className="inline-block w-4 h-4 border-2 border-slate-600 border-t-white rounded-full animate-spin"></span>
+            <span className="booking-drawer-spinner"></span>
             <span>Đang ghi nhận...</span>
           </>
         ) : paid ? (
