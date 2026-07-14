@@ -22,14 +22,13 @@ export default function MembershipTiers() {
       ],
       cta: isVi ? 'Bắt đầu ngay' : 'Get Started',
       ctaLink: '/register',
-      // Visual identity — slate/neutral feel
       iconBg: 'bg-slate-100',
-      iconColor: 'text-slate-500',
+      iconColor: 'text-slate-400',
       cardBorder: 'border-slate-200',
       cardHover: 'hover:border-slate-300 hover:shadow-lg',
-      checkColor: 'text-cyan-500',
+      checkColor: 'text-slate-400',
       requireBg: 'bg-slate-50 text-slate-500 border-slate-200',
-      btnClass: 'border border-slate-300 text-slate-600 hover:bg-slate-50 hover:border-cyan-400 hover:text-cyan-600',
+      btnClass: 'border border-slate-300 text-slate-600 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-700',
     },
     {
       id: 2,
@@ -45,14 +44,13 @@ export default function MembershipTiers() {
       ],
       cta: isVi ? 'Nâng lên Silver' : 'Go Silver',
       ctaLink: '/register',
-      // Visual identity — cool silver gradient
       iconBg: 'bg-gradient-to-br from-slate-200 to-slate-300',
-      iconColor: 'text-slate-600',
+      iconColor: 'text-slate-500',
       cardBorder: 'border-slate-300',
       cardHover: 'hover:border-slate-400 hover:shadow-lg',
-      checkColor: 'text-cyan-500',
-      requireBg: 'bg-slate-100 text-slate-500 border-slate-200',
-      btnClass: 'border border-slate-300 text-slate-600 hover:bg-slate-100 hover:border-cyan-400 hover:text-cyan-600',
+      checkColor: 'text-slate-500',
+      requireBg: 'bg-slate-100 text-slate-600 border-slate-200',
+      btnClass: 'border-2 border-slate-300 text-slate-600 hover:bg-slate-100 hover:border-slate-400 hover:text-slate-700',
     },
     {
       id: 3,
@@ -69,7 +67,6 @@ export default function MembershipTiers() {
       ],
       cta: isVi ? 'Nâng lên Gold' : 'Go Gold',
       ctaLink: '/register',
-      // Visual identity — golden luxury
       iconBg: 'bg-gradient-to-br from-amber-100 to-yellow-200',
       iconColor: 'text-amber-600',
       cardBorder: 'border-amber-300',
@@ -83,6 +80,7 @@ export default function MembershipTiers() {
       name: 'Platinum',
       subtitle: isVi ? 'Đẳng cấp tối thượng' : 'Ultimate Status',
       icon: 'diamond',
+      premium: true,
       requireLabel: isVi ? 'Chi tiêu ≥ 3.000.000đ hoặc ≥ 40 lần rửa' : 'Spend ≥ 3M VND or ≥ 40 washes',
       features: [
         { icon: 'percent', label: isVi ? 'Giảm 15% mọi dịch vụ' : '15% off all services' },
@@ -92,14 +90,13 @@ export default function MembershipTiers() {
       ],
       cta: isVi ? 'Liên hệ nâng cấp' : 'Contact Us',
       ctaLink: '/register',
-      // Visual identity — cyan diamond luxury
-      iconBg: 'bg-gradient-to-br from-cyan-100 to-sky-200',
-      iconColor: 'text-cyan-600',
-      cardBorder: 'border-cyan-300',
-      cardHover: 'hover:border-cyan-400 hover:shadow-[0_8px_30px_rgba(6,182,212,0.15)]',
-      checkColor: 'text-cyan-500',
-      requireBg: 'bg-cyan-50 text-cyan-700 border-cyan-200',
-      btnClass: 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-bold hover:brightness-105 shadow-md hover:shadow-lg',
+      iconBg: 'bg-gradient-to-br from-violet-100 to-purple-200',
+      iconColor: 'text-violet-600',
+      cardBorder: 'border-violet-300',
+      cardHover: 'hover:border-violet-400 hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)]',
+      checkColor: 'text-violet-500',
+      requireBg: 'bg-violet-50 text-violet-700 border-violet-200',
+      btnClass: 'bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold hover:brightness-105 shadow-md hover:shadow-lg',
     },
   ];
 
@@ -125,12 +122,16 @@ export default function MembershipTiers() {
             key={tier.id}
             className={`membership-tier-card relative flex flex-col items-center text-center rounded-2xl border bg-white px-6 pt-8 pb-6 transition-all duration-300 hover:-translate-y-2
                  ${tier.cardBorder} ${tier.cardHover}
-                 ${tier.popular ? 'z-10 shadow-[0_10px_35px_rgba(245,158,11,0.18)] border-amber-400 ring-2 ring-amber-400/40' : 'shadow-sm'}`}
+                 ${tier.popular ? 'z-10 shadow-[0_10px_35px_rgba(245,158,11,0.18)] border-amber-400 ring-2 ring-amber-400/40' :
+                   tier.premium ? 'shadow-[0_10px_35px_rgba(139,92,246,0.18)] border-violet-400 ring-2 ring-violet-400/40' :
+                   'shadow-sm'}`}
           >
             {/* Popular badge */}
             {tier.popular && (
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md whitespace-nowrap">
-                ⭐ {isVi ? 'PHỔ BIẾN NHẤT' : 'MOST POPULAR'}
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-xs font-bold tracking-wide px-5 py-1.5 rounded-full shadow-lg shadow-amber-300/50">
+                  🏆 {isVi ? 'Phổ biến nhất' : 'Most Popular'}
+                </span>
               </div>
             )}
 

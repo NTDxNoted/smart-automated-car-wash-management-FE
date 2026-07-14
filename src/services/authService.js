@@ -2,8 +2,8 @@ import axios from "axios";
 
 const USE_MOCK_DATA = false; // Gạt thành false khi backend deploy API thật
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:59153";
-const baseURL = import.meta.env.VITE_API_BASE_URL ? `${API_BASE}/auth` : `${API_BASE}/api/auth`;
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:59153/api";
+const baseURL = `${API_BASE}/auth`;
 
 const authApi = axios.create({
   baseURL: baseURL,
