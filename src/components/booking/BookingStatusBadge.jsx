@@ -7,6 +7,7 @@ const STATUS_MAP = {
   Cancelled: { key: 'statusCancelled', className: 'bg-slate-200 text-slate-500' },
   Failed:    { key: 'statusFailed',    className: 'bg-red-100 text-red-700' },
   'No-show': { key: 'statusNoShow',    className: 'bg-orange-100 text-orange-700' },
+  NoShow:    { key: 'statusNoShow',    className: 'bg-orange-100 text-orange-700' },
 };
 
 export default function BookingStatusBadge({ status = 'Pending', size = 'md' }) {

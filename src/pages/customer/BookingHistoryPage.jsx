@@ -100,7 +100,7 @@ export default function BookingHistoryPage() {
   };
 
   return (
-    <div style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto", background: "#f8fafc", minHeight: "100vh", color: "#0f172a" }}>
+    <div style={{ padding: "40px 24px 80px 24px", maxWidth: "900px", margin: "0 auto", minHeight: "100vh", color: "#0f172a", boxSizing: "border-box" }}>
 
       {/* 💡 HỘP ĐỆM TÀNG HÌNH: Chỉ chiếm diện tích lúc đầu để đẩy chữ xuống, khi cuộn trang nó sẽ trượt lên và biến mất */}
       <div className="h-16 w-full block" aria-hidden="true"></div>

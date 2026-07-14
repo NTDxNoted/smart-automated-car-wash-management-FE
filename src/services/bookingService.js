@@ -263,8 +263,8 @@ export const bookingService = {
 
         // 🚀 LUỒNG 2: CHẠY API THẬT KẾT NỐI DATABASE (Cam kết không lỗi)
         // Khi gạt USE_MOCK_DATA = false, Axios sẽ bắn request lên Backend.
-        // Backend (SQL/Supabase) sẽ tự dùng câu lệnh "WHERE CustomerID = ..." để lọc dưới DB và trả về.
-        const response = await axiosInstance.get('/bookings', { params: { status: status === 'all' ? undefined : status, page, pageSize } });
+        const apiStatus = (status === 'all' || status === 'Tất cả') ? undefined : (status === 'No-show' ? 'NoShow' : status);
+        const response = await axiosInstance.get('/bookings', { params: { status: apiStatus, page, pageSize } });
         // Backend trả về { page, total, data, pageSize } — normalize về { data, pagination }
         const raw = response.data;
         const totalPages = raw.pageSize > 0 ? Math.ceil(raw.total / raw.pageSize) : 1;
