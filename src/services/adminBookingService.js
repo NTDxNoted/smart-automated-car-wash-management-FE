@@ -20,7 +20,7 @@ const adminBookingService = {
   },
 
   updateStatus(id, status) {
-    return adminAxiosInstance.patch(`/admin/bookings/${id}/status`, { status });
+    return adminAxiosInstance.patch(`/admin/bookings/${id}/status`, { newStatus: status });
   },
 
   payment(id, payload) {
