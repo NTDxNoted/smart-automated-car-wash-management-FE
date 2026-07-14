@@ -54,7 +54,7 @@ export default function BookingDetailDrawer({
       setUpdatingPlate(true);
       await adminBookingService.updatePlate(booking.id, plate.trim());
       toast.success("Cập nhật biển số thành công");
-      onRefresh?.();
+      onRefresh?.(booking.id, "UPDATE_PLATE", plate.trim());
       fetchDetail();
     } catch (err) {
       toast.error("Không thể cập nhật biển số xe");
@@ -69,7 +69,7 @@ export default function BookingDetailDrawer({
       setCheckingIn(true);
       await adminBookingService.checkin(booking.id);
       toast.success("Đã ghi nhận check-in thành công");
-      onRefresh?.();
+      onRefresh?.(booking.id, "CHECKIN");
       fetchDetail();
     } catch (err) {
       toast.error("Không thể ghi nhận check-in");
@@ -196,8 +196,8 @@ export default function BookingDetailDrawer({
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cập nhật trạng thái</label>
                 <StatusUpdateDropdown
                   booking={currentDetails}
-                  onSuccess={() => {
-                    onRefresh?.();
+                  onSuccess={(status) => {
+                    onRefresh?.(booking.id, "UPDATE_STATUS", status);
                     fetchDetail();
                   }}
                 />
@@ -207,8 +207,8 @@ export default function BookingDetailDrawer({
               <div className="pt-2">
                 <PaymentForm
                   booking={currentDetails}
-                  onSuccess={() => {
-                    onRefresh?.();
+                  onSuccess={(method) => {
+                    onRefresh?.(booking.id, "PAYMENT", method);
                     fetchDetail();
                   }}
                 />
@@ -222,7 +222,7 @@ export default function BookingDetailDrawer({
           <EmergencyStopButton
             bookingId={booking.id}
             onRefresh={() => {
-              onRefresh?.();
+              onRefresh?.(booking.id, "EMERGENCY_STOP");
               fetchDetail();
             }}
           />

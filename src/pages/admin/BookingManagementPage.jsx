@@ -1,20 +1,31 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import BookingTable from "../../components/admin/BookingTable";
 import BookingDetailDrawer from "../../components/admin/BookingDetailDrawer";
 import adminBookingService from "../../services/adminBookingService";
 import "./BookingManagementPage.css";
 
 export default function BookingManagementPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [filters, setFilters] = useState({
-    status: "",
-    date: "",
-    keyword: "",
+    status: searchParams.get("status") || "",
+    date: searchParams.get("date") || "",
+    keyword: searchParams.get("keyword") || "",
     page: 1,
   });
+
+  useEffect(() => {
+    setFilters({
+      status: searchParams.get("status") || "",
+      date: searchParams.get("date") || "",
+      keyword: searchParams.get("keyword") || "",
+      page: 1,
+    });
+  }, [searchParams]);
 
   const fetchBookings = async () => {
     try {

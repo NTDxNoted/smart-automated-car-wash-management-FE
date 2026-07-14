@@ -29,7 +29,7 @@ export default function StatusUpdateDropdown({
         "Cập nhật trạng thái thành công"
       );
 
-      onSuccess?.();
+      onSuccess?.(status);
     } catch (error) {
       toast.error(
         error.response?.data?.message ||

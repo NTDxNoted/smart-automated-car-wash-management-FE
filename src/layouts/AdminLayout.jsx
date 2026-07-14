@@ -1,7 +1,11 @@
-﻿import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './AdminLayout.css';
+import adminBookingService from '../services/adminBookingService';
+import BookingDetailDrawer from '../components/admin/BookingDetailDrawer';
+import { toast } from 'react-hot-toast';
+import { getCustomers } from '../services/adminCustomerService';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎨 SVG NAVIGATION ICONS
@@ -87,6 +91,19 @@ function BellIcon({ className }) {
     </svg>
   );
 }
+function formatTimeAgo(timeString) {
+  const date = new Date(timeString);
+  const now = new Date();
+  const diffMs = now - date;
+  if (diffMs < 0) return "Vừa xong";
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "Vừa xong";
+  if (diffMins < 60) return `${diffMins} phút trước`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours} giờ trước`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays} ngày trước`;
+}
 
 export default function AdminLayout() {
   const { auth, logout } = useAuth();
@@ -94,6 +111,232 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [reportsOpen, setReportsOpen] = useState(() =>
+    location.pathname.startsWith('/admin/reports')
+  );
+
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem('autowash_admin_notifications');
+      return saved ? JSON.parse(saved) : [];
+    } catch (_) {
+      return [];
+    }
+  });
+  const [isBellOpen, setIsBellOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+
+  const prevBookingsRef = useRef({});
+  const prevCustomersRef = useRef({});
+  const isFirstFetchRef = useRef(true);
+  const dropdownRef = useRef(null);
+
+  const fetchBookingsAndCheckUpdates = async () => {
+    try {
+      const res = await adminBookingService.getAll({ pageSize: 1000 });
+      const rawList = res.data?.data || res.data || [];
+      
+      const newBookingsMap = {};
+      const newNotifications = [];
+
+      rawList.forEach(b => {
+        const id = b.bookingID ?? b.bookingId ?? b.id;
+        const status = b.status ?? 'Pending';
+        const customerName = b.customerName ?? b.phone ?? 'Khách';
+        const licensePlate = b.licensePlate ?? 'Chưa cập nhật';
+        const serviceName = b.serviceName ?? 'Dịch vụ';
+        
+        newBookingsMap[id] = { status, customerName, licensePlate, serviceName };
+
+        if (!isFirstFetchRef.current) {
+          const prev = prevBookingsRef.current[id];
+          if (!prev) {
+            // New booking
+            const notif = {
+              id: `new-${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              bookingId: id,
+              title: "Lịch đặt mới! 📅",
+              description: `Khách hàng ${customerName} (${licensePlate}) đã đặt lịch mới cho dịch vụ ${serviceName}.`,
+              time: new Date().toISOString(),
+              type: 'NEW_BOOKING',
+              read: false
+            };
+            newNotifications.push(notif);
+            toast.success(`Lịch đặt mới từ ${customerName}!`, { icon: '📅', duration: 4000 });
+          } else if (prev.status !== status) {
+            // Status changed
+            const notif = {
+              id: `status-${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              bookingId: id,
+              title: "Cập nhật trạng thái lịch đặt 🔄",
+              description: `Đơn đặt lịch của ${customerName} (${licensePlate}) đã chuyển trạng thái từ "${prev.status}" sang "${status}".`,
+              time: new Date().toISOString(),
+              type: 'STATUS_UPDATE',
+              read: false
+            };
+            newNotifications.push(notif);
+            toast.info(`Đơn đặt lịch đổi trạng thái sang: ${status}`, { icon: '🔄', duration: 4000 });
+          }
+        }
+      });
+
+      // Update refs
+      prevBookingsRef.current = newBookingsMap;
+
+      // 2. Fetch customers to detect new registrations
+      try {
+        const customerRes = await getCustomers({ page: 1 });
+        const rawCustomers = customerRes.data || customerRes || [];
+        
+        const newCustomersMap = {};
+        rawCustomers.forEach(c => {
+          const cid = c.customerID ?? c.customerId ?? c.id;
+          const fullName = c.fullName ?? 'Khách hàng';
+          const phone = c.phone ?? '';
+          newCustomersMap[cid] = { fullName, phone };
+
+          if (!isFirstFetchRef.current) {
+            const prevCust = prevCustomersRef.current[cid];
+            if (!prevCust) {
+              // New customer registered!
+              const notif = {
+                id: `cust-${cid}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                customerId: cid,
+                title: "Khách hàng mới đăng ký! 👤",
+                description: `Khách hàng ${fullName} (${phone}) vừa tạo tài khoản thành viên mới.`,
+                time: new Date().toISOString(),
+                type: 'NEW_CUSTOMER',
+                read: false
+              };
+              newNotifications.push(notif);
+              toast.success(`Khách hàng mới đăng ký: ${fullName}!`, { icon: '👤', duration: 4000 });
+            }
+          }
+        });
+        prevCustomersRef.current = newCustomersMap;
+      } catch (custErr) {
+        console.error("Lỗi khi kiểm tra khách hàng mới:", custErr);
+      }
+
+      if (isFirstFetchRef.current) {
+        isFirstFetchRef.current = false;
+      }
+
+      if (newNotifications.length > 0) {
+        setNotifications(prev => {
+          const updated = [ ...newNotifications, ...prev ].slice(0, 100);
+          localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
+          return updated;
+        });
+      }
+    } catch (err) {
+      console.error("Lỗi khi kiểm tra lịch đặt:", err);
+    }
+  };
+
+  const handleAdminActionSuccess = (bookingId, actionType, details) => {
+    let actionTitle = "Thao tác thành công";
+    let actionDesc = `Thao tác thành công trên đơn đặt lịch #${bookingId}`;
+
+    switch (actionType) {
+      case "UPDATE_PLATE":
+        actionTitle = "Cập nhật biển số thành công 🚗";
+        actionDesc = `Đã cập nhật biển số xe mới thành "${details}" cho đơn đặt lịch #${bookingId}`;
+        break;
+      case "CHECKIN":
+        actionTitle = "Ghi nhận xe đến (Check-in) thành công ✓";
+        actionDesc = `Giao nhận xe đã được ghi nhận check-in thành công cho đơn đặt lịch #${bookingId}`;
+        break;
+      case "UPDATE_STATUS":
+        actionTitle = "Cập nhật trạng thái thành công 🔄";
+        actionDesc = `Trạng thái đơn đặt lịch #${bookingId} đã được cập nhật thành "${details}"`;
+        break;
+      case "PAYMENT":
+        actionTitle = "Ghi nhận thanh toán thành công 💳";
+        actionDesc = `Hóa đơn đơn đặt lịch #${bookingId} đã được thanh toán bằng "${details === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản'}"`;
+        break;
+      case "EMERGENCY_STOP":
+        actionTitle = "Đã kích hoạt dừng khẩn cấp 🚨";
+        actionDesc = `Đã kích hoạt dừng khẩn cấp máy rửa xe cho đơn đặt lịch #${bookingId}`;
+        break;
+      default:
+        break;
+    }
+
+    const notif = {
+      id: `admin-${bookingId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      bookingId,
+      title: actionTitle,
+      description: actionDesc,
+      time: new Date().toISOString(),
+      type: 'ADMIN_UPDATE',
+      read: true
+    };
+
+    setNotifications(prev => {
+      const updated = [ notif, ...prev ].slice(0, 100);
+      localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
+      return updated;
+    });
+
+    fetchBookingsAndCheckUpdates();
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    if (!token || user?.role?.toUpperCase() !== "ADMIN") return;
+
+    fetchBookingsAndCheckUpdates();
+
+    const interval = setInterval(() => {
+      fetchBookingsAndCheckUpdates();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [user]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsBellOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const markAllAsRead = () => {
+    setNotifications(prev => {
+      const updated = prev.map(n => ({ ...n, read: true }));
+      localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+    localStorage.removeItem('autowash_admin_notifications');
+  };
+
+  const handleNotificationClick = (notif) => {
+    setNotifications(prev => {
+      const updated = prev.map(n => n.id === notif.id ? { ...n, read: true } : n);
+      localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
+      return updated;
+    });
+    if (notif.type === 'NEW_CUSTOMER') {
+      navigate(`/admin/customers/${notif.customerId}`);
+    } else {
+      setSelectedBooking({ id: notif.bookingId });
+    }
+    setIsBellOpen(false);
+  };
+
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin/reports')) {
+      setReportsOpen(true);
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -107,8 +350,15 @@ export default function AdminLayout() {
     { label: 'Dịch vụ', path: '/admin/services', icon: ServicesIcon },
     { label: 'Khuyến mãi', path: '/admin/promotions', icon: PromotionsIcon },
     { label: 'Cấu hình hạng', path: '/admin/tiers', icon: TiersIcon },
-    { label: 'Báo cáo & RFM', path: '/admin/reports', icon: ReportsIcon },
   ];
+
+  const reportSubItems = [
+    { label: 'Tổng quan & RFM', path: '/admin/reports' },
+    { label: 'Dịch vụ phổ biến', path: '/admin/reports/services' },
+    { label: 'Khung giờ cao điểm', path: '/admin/reports/occupancy' },
+    { label: 'Hiệu quả khuyến mãi', path: '/admin/reports/promotions' },
+  ];
+
 
   return (
     <div className="h-screen bg-[#F0F3FF] text-[#111C2C] flex font-sans overflow-hidden">
@@ -121,15 +371,12 @@ export default function AdminLayout() {
 
         {/* Logo */}
         <div className="sidebar-logo-container gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-lg shadow-cyan-500/10">
-            {/* Water droplet SVG */}
-            <svg className="w-4.5 h-4.5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-            </svg>
-          </div>
-          <span className="sidebar-logo-text">
-            AUTOWASH PRO
-          </span>
+          <Link to="/admin" className="flex items-center gap-3 no-underline">
+            <span className="text-cyan-400 text-xl">⟡</span>
+            <span className="sidebar-logo-text">
+              AUTOWASH PRO
+            </span>
+          </Link>
         </div>
 
         {/* User Profile - Top aligned */}
@@ -165,7 +412,50 @@ export default function AdminLayout() {
               </Link>
             );
           })}
+
+          {/* Reports Collapsible Dropdown */}
+          <div className="reports-dropdown-section">
+            <button
+              onClick={() => setReportsOpen(!reportsOpen)}
+              className={`sidebar-nav-item w-full text-left justify-between cursor-pointer ${
+                location.pathname.startsWith('/admin/reports') ? 'active' : ''
+              }`}
+            >
+              <div className="flex items-center gap-[14px]">
+                <ReportsIcon className="w-5 h-5 shrink-0" />
+                <span>Báo cáo & Phân tích</span>
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform duration-200 shrink-0 ${reportsOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {reportsOpen && (
+              <div className="sidebar-subnav-container space-y-1 mt-1">
+                {reportSubItems.map((subItem) => {
+                  const isSubActive = location.pathname === subItem.path;
+                  return (
+                    <Link
+                      key={subItem.path}
+                      to={subItem.path}
+                      onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+                      className={`sidebar-subnav-item ${isSubActive ? 'active' : ''}`}
+                    >
+                      {subItem.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </nav>
+
 
         {/* Bottom Section */}
         <div className="sidebar-bottom-container space-y-1 shrink-0">
@@ -195,7 +485,7 @@ export default function AdminLayout() {
       {/* Main Content Side - Flex column layout */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Top Header */}
-        <header className="h-20 bg-white/85 backdrop-blur-md border-b border-[#BCC8CE] px-8 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-20 bg-white/85 backdrop-blur-md border-b border-[#BCC8CE] px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -208,11 +498,11 @@ export default function AdminLayout() {
             </button>
             <h1 className="text-2xl font-bold text-[#111C2C] tracking-tight">
               {location.pathname === '/admin/dashboard'
-                ? 'Overview'
+                ? 'Tổng quan'
                 : (navItems.find((item) =>
                   location.pathname === item.path ||
                   (item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path + '/'))
-                )?.label || 'Dashboard')}
+                )?.label || reportSubItems.find((subItem) => location.pathname === subItem.path)?.label || 'Dashboard')}
             </h1>
           </div>
 
@@ -220,9 +510,121 @@ export default function AdminLayout() {
             <div className="flex items-center gap-2 text-sm text-[#3D494D] font-medium">
               <span>Server: <span className="text-[#34C759] font-bold">• Online</span></span>
             </div>
-            <button className="w-10 h-10 bg-[#E7EEFF] hover:bg-[#d8e3fa] text-[#3D494D] hover:text-[#111c2c] rounded-full flex items-center justify-center transition-all relative cursor-pointer shadow-sm">
-              <BellIcon className="w-5 h-5" />
-            </button>
+            {/* Bell Icon with Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsBellOpen(!isBellOpen)}
+                className="w-10 h-10 bg-[#E7EEFF] hover:bg-[#d8e3fa] text-[#3D494D] hover:text-[#111c2c] rounded-full flex items-center justify-center transition-all relative cursor-pointer shadow-sm"
+              >
+                <BellIcon className="w-5 h-5" />
+                {notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#FF3B30] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white animate-pulse">
+                    {notifications.filter(n => !n.read).length}
+                  </span>
+                )}
+              </button>
+
+              {isBellOpen && (
+                <div 
+                  className="bg-white border border-[#BCC8CE] rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden text-sm"
+                  style={{ position: 'absolute', right: 0, left: 'auto', top: '100%', marginTop: '12px', width: '320px', zIndex: 9999 }}
+                >
+                  {/* Dropdown Header */}
+                  <div className="p-4 border-b border-[#E2E8F0] flex items-center justify-between bg-slate-50">
+                    <span className="font-bold text-[#111C2C] flex items-center gap-1.5">
+                      <span>Thông báo</span>
+                      {notifications.filter(n => !n.read).length > 0 && (
+                        <span className="px-1.5 py-0.5 bg-[#E7EEFF] text-cyan-600 text-[10px] font-bold rounded-md">
+                          {notifications.filter(n => !n.read).length} mới
+                        </span>
+                      )}
+                    </span>
+                    {notifications.length > 0 && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={markAllAsRead}
+                          className="text-xs text-cyan-600 hover:text-cyan-800 font-semibold cursor-pointer"
+                        >
+                          Đọc hết
+                        </button>
+                        <span className="text-slate-350">|</span>
+                        <button
+                          onClick={clearAllNotifications}
+                          className="text-xs text-red-500 hover:text-red-700 font-semibold cursor-pointer"
+                        >
+                          Xóa tất cả
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Dropdown List */}
+                  <div className="max-h-84 overflow-y-auto divide-y divide-slate-100">
+                    {notifications.length === 0 ? (
+                      <div className="p-10 text-center text-slate-400 flex flex-col items-center gap-2">
+                        <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-300">
+                          <BellIcon className="w-6 h-6" />
+                        </div>
+                        <span className="text-xs font-medium">Không có thông báo nào</span>
+                      </div>
+                    ) : (
+                      notifications.map((notif) => (
+                        <div
+                          key={notif.id}
+                          onClick={() => handleNotificationClick(notif)}
+                          className={`p-3.5 hover:bg-slate-50 transition cursor-pointer flex gap-3.5 items-start relative ${
+                            !notif.read ? 'bg-cyan-50/20' : ''
+                          }`}
+                        >
+                          {/* Unread indicator */}
+                          {!notif.read && (
+                            <span className="absolute top-4.5 left-2 w-2 h-2 bg-cyan-500 rounded-full" />
+                          )}
+                          
+                          {/* Icon wrapper */}
+                          <div className={`p-2 rounded-xl shrink-0 ${
+                            notif.type === 'NEW_BOOKING' 
+                              ? 'bg-emerald-50 text-emerald-600' 
+                              : notif.type === 'NEW_CUSTOMER'
+                              ? 'bg-amber-50 text-amber-600'
+                              : notif.type === 'ADMIN_UPDATE'
+                              ? 'bg-purple-50 text-purple-600'
+                              : 'bg-blue-50 text-blue-600'
+                          }`}>
+                            {notif.type === 'NEW_BOOKING' ? (
+                              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                              </svg>
+                            ) : notif.type === 'NEW_CUSTOMER' ? (
+                              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            ) : notif.type === 'ADMIN_UPDATE' ? (
+                              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.2 8H18.7" />
+                              </svg>
+                            )}
+                          </div>
+
+                          {/* Text info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-slate-800 text-xs truncate leading-snug">{notif.title}</p>
+                            <p className="text-slate-500 text-[11px] mt-0.5 leading-relaxed">{notif.description}</p>
+                            <span className="text-[9px] text-slate-400 mt-1 block">
+                              {formatTimeAgo(notif.time)}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -231,6 +633,14 @@ export default function AdminLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Global Booking Detail Drawer */}
+      <BookingDetailDrawer
+        booking={selectedBooking}
+        open={!!selectedBooking}
+        onClose={() => setSelectedBooking(null)}
+        onRefresh={(id, act, det) => handleAdminActionSuccess(id, act, det)}
+      />
 
       {/* Sidebar Backdrop on Mobile */}
       {sidebarOpen && (

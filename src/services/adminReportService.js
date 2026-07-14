@@ -75,7 +75,12 @@ export const getTierDistribution = async ({ signal } = {}) => {
   }
 
   const { data } = await adminAxiosInstance.get('/admin/reports/tier-distribution', { signal });
-  return data.data || data;
+  const rawList = data.data || data || [];
+  return rawList.map(item => ({
+    tier: item.tier ?? item.Tier ?? "Member",
+    total: item.customerCount ?? item.CustomerCount ?? 0,
+    percentage: item.percentage ?? item.Percentage ?? 0,
+  }));
 };
 
 export const getLoyaltyStats = async ({ signal } = {}) => {
@@ -88,22 +93,128 @@ export const getLoyaltyStats = async ({ signal } = {}) => {
   }
 
   const { data } = await adminAxiosInstance.get('/admin/reports/loyalty-stats', { signal });
-  return data;
+  return {
+    totalPoints: data.totalPointsInCirculation ?? data.TotalPointsInCirculation ?? 0,
+    expiringSoon: data.pointsExpiringSoon ?? data.PointsExpiringSoon ?? 0,
+    expired: data.expiredPoints ?? data.ExpiredPoints ?? 0,
+  };
 };
 
 // Cập nhật thêm các API báo cáo mới từ backend nếu cần dùng ở frontend
+export const getPopularServices = async (startDate, endDate, { signal } = {}) => {
+  if (USE_MOCK_DATA) {
+    return [
+      { serviceName: "Rửa xe bọt tuyết", ranking: 1, totalWashes: 120, revenue: 18000000, revenueContribution: 45.5 },
+      { serviceName: "Phủ nano bóng sơn", ranking: 2, totalWashes: 60, revenue: 15000000, revenueContribution: 37.97 },
+      { serviceName: "Vệ sinh nội thất", ranking: 3, totalWashes: 40, revenue: 6000000, revenueContribution: 15.19 },
+      { serviceName: "Tẩy ố kính", ranking: 4, totalWashes: 10, revenue: 500000, revenueContribution: 1.34 }
+    ];
+  }
+
+  const { data } = await adminAxiosInstance.get('/admin/reports/popular-services', {
+    params: { startDate, endDate },
+    signal
+  });
+  return data.data || data;
+};
+
 export const getPeakOccupancy = async (startDate, endDate, { signal } = {}) => {
+  if (USE_MOCK_DATA) {
+    return {
+      weekly: [
+        { day: "Monday", count: 42, occupancyRate: 65 },
+        { day: "Tuesday", count: 35, occupancyRate: 54 },
+        { day: "Wednesday", count: 38, occupancyRate: 58 },
+        { day: "Thursday", count: 48, occupancyRate: 74 },
+        { day: "Friday", count: 62, occupancyRate: 85 }, // Over 80% highlight!
+        { day: "Saturday", count: 75, occupancyRate: 92 }, // Over 80% highlight!
+        { day: "Sunday", count: 68, occupancyRate: 88 } // Over 80% highlight!
+      ],
+      hourly: [
+        { time: "07:30", count: 12, occupancyRate: 40 },
+        { time: "09:00", count: 28, occupancyRate: 85 }, // Over 80%
+        { time: "10:30", count: 32, occupancyRate: 95 }, // Over 80%
+        { time: "12:00", count: 15, occupancyRate: 45 },
+        { time: "13:30", count: 22, occupancyRate: 68 },
+        { time: "15:00", count: 30, occupancyRate: 90 }, // Over 80%
+        { time: "16:30", count: 18, occupancyRate: 55 }
+      ]
+    };
+  }
+
   const { data } = await adminAxiosInstance.get('/admin/reports/peak-occupancy', {
     params: { startDate, endDate },
     signal
   });
-  return data;
+
+  const totalDays = data.totalDays ?? data.TotalDays ?? 1;
+  const maxParallelSlots = data.maxParallelSlots ?? data.MaxParallelSlots ?? 1;
+  const weeksCount = totalDays / 7 || 1;
+
+  const weeklyList = data.dayOfWeekStats ?? data.DayOfWeekStats ?? [];
+  const hourlyList = data.hourStats ?? data.HourStats ?? [];
+
+  return {
+    weekly: weeklyList.map(item => {
+      const count = item.bookingCount ?? item.BookingCount ?? 0;
+      const calculatedRate = Math.min(100, Math.round((count / weeksCount / maxParallelSlots) * 100));
+      return {
+        day: item.dayOfWeek ?? item.DayOfWeek,
+        count: count,
+        occupancyRate: calculatedRate,
+      };
+    }),
+    hourly: hourlyList.map(item => ({
+      time: item.timeSlot ?? item.TimeSlot,
+      count: item.bookingCount ?? item.BookingCount ?? 0,
+      occupancyRate: item.occupancyPercentage ?? item.OccupancyPercentage ?? 0,
+    })),
+  };
 };
 
 export const getPromotionsRoi = async (startDate, endDate, { signal } = {}) => {
+  if (USE_MOCK_DATA) {
+    return {
+      summary: {
+        totalDiscount: 8500000,
+        totalRevenue: 45000000
+      },
+      promotions: [
+        { promoCode: "HELLOSUMMER", totalUsage: 150, totalDiscount: 3000000, revenueGenerated: 18000000 },
+        { promoCode: "VIPCARWASH", totalUsage: 80, totalDiscount: 4000000, revenueGenerated: 20000000 },
+        { promoCode: "CLEAN10", totalUsage: 50, totalDiscount: 1500000, revenueGenerated: 7000000 }
+      ]
+    };
+  }
+
   const { data } = await adminAxiosInstance.get('/admin/reports/promotions-roi', {
     params: { startDate, endDate },
     signal
   });
-  return data;
+
+  const items = data.items || data.Items || [];
+  let totalDiscount = 0;
+  let totalRevenue = 0;
+
+  const promotions = items.map(item => {
+    const discount = Number(item.totalDiscountGiven ?? item.TotalDiscountGiven ?? 0);
+    const revenue = Number(item.revenueGenerated ?? item.RevenueGenerated ?? 0);
+    totalDiscount += discount;
+    totalRevenue += revenue;
+
+    return {
+      promoCode: item.promoCode ?? item.PromoCode,
+      totalUsage: item.usageCount ?? item.UsageCount ?? 0,
+      totalDiscount: discount,
+      revenueGenerated: revenue,
+    };
+  });
+
+  return {
+    summary: {
+      totalDiscount,
+      totalRevenue,
+    },
+    promotions,
+  };
 };

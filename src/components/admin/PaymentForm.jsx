@@ -30,13 +30,14 @@ export default function PaymentForm({
     try {
       setLoading(true);
       const res = await adminBookingService.payment(booking.id, {
-        method,
+        paymentMethod: method,
+        confirmed: true,
       });
 
       setPaid(true);
       setPaymentAt(res.data?.paymentAt || res.data?.updatedAt || new Date().toISOString());
       toast.success("Ghi nhận thanh toán thành công!");
-      onSuccess?.();
+      onSuccess?.(method);
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Không thể ghi nhận thanh toán"
