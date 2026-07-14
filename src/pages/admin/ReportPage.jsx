@@ -64,7 +64,7 @@ export default function ReportPage() {
           phone: b.phone,
           licensePlate: b.licensePlate,
           status: b.status,
-          totalAmount: Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0),
+          totalAmount: Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice ?? 0),
           scheduledTime: b.scheduledTime,
           serviceName: b.serviceName ?? 'Rửa Xe'
         }));

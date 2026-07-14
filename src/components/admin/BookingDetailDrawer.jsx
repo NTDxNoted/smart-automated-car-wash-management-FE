@@ -169,7 +169,7 @@ export default function BookingDetailDrawer({
                 <div className="grid grid-cols-3 text-sm font-semibold">
                   <span className="text-slate-200">Tổng thanh toán:</span>
                   <span className="col-span-2 text-right text-white text-base">
-                    {(currentDetails.finalAmount ?? currentDetails.totalAmount ?? 0).toLocaleString()}đ
+                    {(currentDetails.finalAmount ?? currentDetails.totalAmount ?? currentDetails.totalPrice ?? 0).toLocaleString()}đ
                   </span>
                 </div>
               </div>

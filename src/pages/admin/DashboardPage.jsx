@@ -171,21 +171,32 @@ export default function DashboardPage() {
       let localTierMap = {};
       try {
         const [tierRes, loyaltyRes, custRes] = await Promise.all([
-          getTierDistribution(),
-          getLoyaltyStats(),
-          getCustomers({ page: 1, pageSize: 1000 }),
+          getTierDistribution().catch(err => {
+            console.error("Lỗi tải phân bổ hạng thành viên:", err);
+            return null;
+          }),
+          getLoyaltyStats().catch(err => {
+            console.error("Lỗi tải thống kê Loyalty:", err);
+            return null;
+          }),
+          getCustomers({ page: 1, pageSize: 1000 }).catch(err => {
+            console.error("Lỗi tải danh sách khách hàng:", err);
+            return null;
+          }),
         ]);
         if (tierRes) setTierData(tierRes);
         if (loyaltyRes) setLoyaltyStats(loyaltyRes);
 
-        const rawCusts = custRes.data || custRes || [];
-        rawCusts.forEach(c => {
-          const nameKey = c.fullName?.toLowerCase().trim();
-          const phoneKey = c.phone?.trim();
-          if (nameKey) localTierMap[nameKey] = c.tier || 'Member';
-          if (phoneKey) localTierMap[phoneKey] = c.tier || 'Member';
-        });
-        setCustomerTierMap(localTierMap);
+        if (custRes) {
+          const rawCusts = custRes.data || custRes || [];
+          rawCusts.forEach(c => {
+            const nameKey = c.fullName?.toLowerCase().trim();
+            const phoneKey = c.phone?.trim();
+            if (nameKey) localTierMap[nameKey] = c.tier || 'Member';
+            if (phoneKey) localTierMap[phoneKey] = c.tier || 'Member';
+          });
+          setCustomerTierMap(localTierMap);
+        }
       } catch (loyaltyErr) {
         console.error("Lỗi tải thông tin Loyalty trong Dashboard:", loyaltyErr);
       }
@@ -193,8 +204,23 @@ export default function DashboardPage() {
       const res = await adminBookingService.getAll({ pageSize: 1000 });
       const list = res.data?.data || res.data || [];
       if (list.length > 0) {
-        const todayDateStr = new Date().toLocaleDateString('en-CA');
-        const now = new Date();
+        const today = new Date();
+        const hasBookingsToday = list.some(b => b.scheduledTime && new Date(b.scheduledTime).toLocaleDateString('en-CA') === today.toLocaleDateString('en-CA'));
+        
+        let targetTodayDate = today;
+        if (!hasBookingsToday && list.length > 0) {
+          // Fallback to the latest scheduled booking date in database for demo purposes
+          const latestTime = list.reduce((max, b) => {
+            if (!b.scheduledTime) return max;
+            const t = new Date(b.scheduledTime).getTime();
+            return t > max ? t : max;
+          }, 0);
+          if (latestTime > 0) {
+            targetTodayDate = new Date(latestTime);
+          }
+        }
+        const todayDateStr = targetTodayDate.toLocaleDateString('en-CA');
+        const now = targetTodayDate;
 
         let bToday = 0;
         let rToday = 0;
@@ -210,10 +236,10 @@ export default function DashboardPage() {
         // Operational warnings lists
         const warningList = [];
 
-        // Aggregation for the past 7 calendar days
+        // Aggregation for the past 7 days ending today
         const last7Days = [];
         for (let i = 6; i >= 0; i--) {
-          const d = new Date();
+          const d = new Date(targetTodayDate);
           d.setDate(d.getDate() - i);
           const dateStr = d.toLocaleDateString('en-CA');
           const dayLabel = d.toLocaleDateString('vi-VN', { weekday: 'short' });
@@ -253,7 +279,7 @@ export default function DashboardPage() {
 
             // 1. Doanh thu hôm nay: chỉ tính COMPLETED
             if (bStatus === 'COMPLETED') {
-              rToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
+              rToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice ?? 0);
             }
 
             // 2. Trạng thái tức thời
@@ -321,7 +347,7 @@ export default function DashboardPage() {
           if (bStatus === 'COMPLETED') {
             const dayBucket = last7Days.find(item => item.dateStr === bDateStr);
             if (dayBucket) {
-              dayBucket.revenue += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? 0);
+              dayBucket.revenue += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice ?? 0);
             }
           }
         });
