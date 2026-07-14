@@ -74,8 +74,9 @@ export default function BookingDetailDrawer({
       onRefresh?.(booking.id, "CHECKIN");
       fetchDetail();
     } catch (err) {
-      toast.error("Không thể ghi nhận check-in");
-      console.error(err);
+      console.error("Lỗi check-in:", err);
+      const serverMsg = err.response?.data?.message || err.response?.data?.error;
+      toast.error(serverMsg || "Không thể ghi nhận check-in");
     } finally {
       setCheckingIn(false);
     }
@@ -184,10 +185,23 @@ export default function BookingDetailDrawer({
                 ) : (
                   <button
                     onClick={handleCheckIn}
-                    disabled={checkingIn}
+                    disabled={checkingIn || currentDetails.status?.toUpperCase() !== "PENDING"}
                     className="booking-drawer-checkin-btn"
+                    style={{
+                      background: currentDetails.status?.toUpperCase() !== "PENDING" ? 'rgba(255, 255, 255, 0.05)' : undefined,
+                      border: currentDetails.status?.toUpperCase() !== "PENDING" ? '1px solid rgba(255, 255, 255, 0.05)' : undefined,
+                      color: currentDetails.status?.toUpperCase() !== "PENDING" ? '#64748b' : undefined,
+                      cursor: currentDetails.status?.toUpperCase() !== "PENDING" ? 'not-allowed' : undefined,
+                      boxShadow: currentDetails.status?.toUpperCase() !== "PENDING" ? 'none' : undefined
+                    }}
                   >
-                    {checkingIn ? <span className="booking-drawer-spinner"></span> : "Ghi nhận xe đến (Check-in)"}
+                    {checkingIn ? (
+                      <span className="booking-drawer-spinner"></span>
+                    ) : currentDetails.status?.toUpperCase() !== "PENDING" ? (
+                      `Không thể check-in đơn ${currentDetails.status}`
+                    ) : (
+                      "Ghi nhận xe đến (Check-in)"
+                    )}
                   </button>
                 )}
               </div>
