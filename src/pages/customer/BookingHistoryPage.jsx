@@ -100,7 +100,22 @@ export default function BookingHistoryPage() {
   };
 
   return (
-    <div style={{ padding: "40px 24px 80px 24px", maxWidth: "900px", margin: "0 auto", minHeight: "100vh", color: "#0f172a", boxSizing: "border-box" }}>
+    <div className="booking-history-container">
+      <style>{`
+        .booking-history-container {
+          padding: 40px 24px 80px 24px !important;
+          max-width: 900px !important;
+          margin: 0 auto !important;
+          min-height: 100vh !important;
+          color: #0f172a !important;
+          box-sizing: border-box !important;
+        }
+        @media (max-width: 640px) {
+          .booking-history-container {
+            padding: 24px 16px 80px 16px !important;
+          }
+        }
+      `}</style>
 
       {/* 💡 HỘP ĐỆM TÀNG HÌNH: Chỉ chiếm diện tích lúc đầu để đẩy chữ xuống, khi cuộn trang nó sẽ trượt lên và biến mất */}
       <div className="h-16 w-full block" aria-hidden="true"></div>
