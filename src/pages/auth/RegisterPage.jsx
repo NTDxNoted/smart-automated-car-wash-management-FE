@@ -38,19 +38,19 @@ function validate({ fullName, phone, password, confirmPassword }) {
 function InputRow({ label, name, type = "text", value, onChange, placeholder, error, icon, autoComplete, disabled, rightSlot }) {
   return (
     <div style={{ marginBottom: "24px" }}>
-      <label 
-        htmlFor={name} 
+      <label
+        htmlFor={name}
         className="block text-[12px] font-bold text-slate-400 uppercase tracking-wider px-1"
         style={{ marginBottom: "10px", display: "block" }}
       >
         {label}
       </label>
-      
-      <div 
+
+      <div
         className={[
           "group flex items-center gap-3 rounded-2xl border-2 bg-slate-50 px-4 py-3.5 transition-all duration-300",
-          error 
-            ? "border-red-200 bg-red-50/30 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-100" 
+          error
+            ? "border-red-200 bg-red-50/30 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-100"
             : "border-slate-200/80 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-sm"
         ].join(" ")}
         style={{ padding: "14px 16px" }}
@@ -212,24 +212,24 @@ export default function RegisterPage() {
 
         {/* ── Card ── */}
         <main className="relative z-20 w-full max-w-md my-8">
-          <div 
+          <div
             className="rounded-3xl border border-white/40 shadow-xl shadow-slate-900/15 flex flex-col relative overflow-hidden"
-            style={{ 
+            style={{
               padding: "40px",
               background: "rgba(255, 255, 255, 0.88)",
               backdropFilter: "blur(18px)",
               WebkitBackdropFilter: "blur(18px)"
             }}
           >
-            
+
             {/* Ambient Glow Dot */}
             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-36 h-36 rounded-full bg-cyan-500/5 blur-2xl pointer-events-none" />
 
             {/* ── Brand ── */}
             <div className="flex flex-col items-center gap-2 mb-8 text-center w-full">
               <div className="w-16 h-16 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-cyan-600 shadow-sm shadow-cyan-100/30 mb-4">
-                <span 
-                  className="material-symbols-outlined text-[32px]" 
+                <span
+                  className="material-symbols-outlined text-[32px]"
                   style={{ fontVariationSettings: "'FILL' 1" }}
                 >
                   diamond
@@ -238,9 +238,6 @@ export default function RegisterPage() {
               <h1 className="text-2xl font-black tracking-tight text-slate-800 uppercase flex items-center gap-2">
                 AutoWash <span className="text-cyan-600">Pro</span>
               </h1>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                Xác lập tiêu chuẩn vệ sinh xe cao cấp
-              </p>
             </div>
 
             {/* ── Form ── */}

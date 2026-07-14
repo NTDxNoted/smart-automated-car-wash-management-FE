@@ -302,3 +302,19 @@
     padding: 3rem !important; /* md:p-12 */
   }
 }
+
+/* Custom Thin Scrollbar for Service Picker */
+.custom-booking-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-booking-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9; /* slate-100 */
+  border-radius: 9999px;
+}
+.custom-booking-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 9999px;
+}
+.custom-booking-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0891b2; /* cyan-600 */
+}
