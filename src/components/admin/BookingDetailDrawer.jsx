@@ -32,6 +32,9 @@ export default function BookingDetailDrawer({
       setLoading(true);
       const res = await adminBookingService.getDetail(booking.id);
       const data = res.data?.data || res.data || booking;
+      if (data) {
+        data.id = data.bookingID ?? data.bookingId ?? data.id ?? booking.id;
+      }
       setDetails(data);
       setPlate(data.licensePlate || "");
     } catch (err) {

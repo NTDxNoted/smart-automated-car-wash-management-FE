@@ -975,7 +975,7 @@ export default function DashboardPage() {
                   <td className="bookings-td customer" style={{ display: 'flex', alignItems: 'center', height: '73px' }}>
                     {renderAvatar(booking.customer)}
                     <div className="flex flex-col gap-1 items-start justify-center ml-2.5">
-                      <span className="bookings-td customer-name" style={{ padding: 0, fontSize: '13.5px', fontWeight: 600 }}>
+                      <span className="bookings-customer-name" style={{ padding: 0, fontSize: '13.5px', fontWeight: 600 }}>
                         {booking.customer}
                       </span>
                       <span className={`rfm-tier-badge ${booking.tier?.toLowerCase()}`} style={{ fontSize: '9px', padding: '1px 5px', textTransform: 'uppercase' }}>

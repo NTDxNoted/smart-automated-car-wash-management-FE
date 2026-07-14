@@ -278,9 +278,10 @@
 .booking-td.customer {
   width: 24%;
   flex: 0 0 24%;
-  padding-left: 24px;
+  padding: 0 12px 0 24px;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
 }
 
@@ -290,7 +291,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 7.5px 0px 8.5px;
+  padding: 0;
   width: 32px;
   height: 32px;
   background: rgba(0, 103, 127, 0.1);
