@@ -39,8 +39,10 @@ export default function PaymentForm({
       toast.success("Ghi nhận thanh toán thành công!");
       onSuccess?.(method);
     } catch (error) {
+      console.error("Lỗi ghi nhận thanh toán:", error);
+      const serverMsg = error.response?.data?.message || error.response?.data?.error;
       toast.error(
-        error.response?.data?.message || "Không thể ghi nhận thanh toán"
+        serverMsg || "Không thể ghi nhận thanh toán"
       );
     } finally {
       setLoading(false);
@@ -60,9 +62,11 @@ export default function PaymentForm({
       })
     : "";
 
+  const isPending = booking.status?.toUpperCase() === "PENDING";
+
   return (
     <fieldset
-      disabled={paid || loading}
+      disabled={paid || loading || !isPending}
       className="booking-drawer-payment-fieldset"
     >
       <legend className="booking-drawer-payment-legend">
@@ -71,28 +75,28 @@ export default function PaymentForm({
 
       <div className="booking-drawer-radio-group">
         <div
-          className={`booking-drawer-radio-card ${method === "CASH" ? "active" : ""}`}
-          onClick={() => !paid && handleMethodChange("CASH")}
+          className={`booking-drawer-radio-card ${method === "CASH" ? "active" : ""} ${!isPending && !paid ? "opacity-50" : ""}`}
+          onClick={() => !paid && isPending && handleMethodChange("CASH")}
         >
           <input
             type="radio"
             checked={method === "CASH"}
             readOnly
-            disabled={paid}
+            disabled={paid || !isPending}
             className="booking-drawer-radio-input"
           />
           <span className="booking-drawer-radio-text">Tiền mặt (Cash)</span>
         </div>
 
         <div
-          className={`booking-drawer-radio-card ${method === "TRANSFER" ? "active" : ""}`}
-          onClick={() => !paid && handleMethodChange("TRANSFER")}
+          className={`booking-drawer-radio-card ${method === "TRANSFER" ? "active" : ""} ${!isPending && !paid ? "opacity-50" : ""}`}
+          onClick={() => !paid && isPending && handleMethodChange("TRANSFER")}
         >
           <input
             type="radio"
             checked={method === "TRANSFER"}
             readOnly
-            disabled={paid}
+            disabled={paid || !isPending}
             className="booking-drawer-radio-input"
           />
           <span className="booking-drawer-radio-text">Chuyển khoản (Transfer)</span>
@@ -104,7 +108,7 @@ export default function PaymentForm({
           <input
             type="checkbox"
             checked={confirmed}
-            disabled={paid}
+            disabled={paid || !isPending}
             onChange={(e) => setConfirmed(e.target.checked)}
             className="booking-drawer-checkbox-input"
           />
@@ -113,9 +117,15 @@ export default function PaymentForm({
       )}
 
       <button
-        disabled={paid || (method === "CASH" && !confirmed) || loading}
+        disabled={paid || !isPending || (method === "CASH" && !confirmed) || loading}
         onClick={handleConfirm}
         className="booking-drawer-pay-btn"
+        style={{
+          background: !isPending && !paid ? 'rgba(255, 255, 255, 0.05)' : undefined,
+          border: !isPending && !paid ? '1px solid rgba(255, 255, 255, 0.05)' : undefined,
+          color: !isPending && !paid ? '#64748b' : undefined,
+          cursor: !isPending && !paid ? 'not-allowed' : undefined
+        }}
       >
         {loading ? (
           <>
@@ -124,6 +134,8 @@ export default function PaymentForm({
           </>
         ) : paid ? (
           "Đã thanh toán (Paid)"
+        ) : !isPending ? (
+          "Chỉ đơn ở trạng thái Pending mới được thanh toán"
         ) : (
           "Xác nhận thanh toán"
         )}
