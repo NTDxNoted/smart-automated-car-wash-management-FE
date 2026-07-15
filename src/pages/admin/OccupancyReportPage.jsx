@@ -35,7 +35,7 @@ export default function OccupancyReportPage() {
         const res = await getPeakOccupancy(startDate, endDate, { signal: controller.signal });
         setData(res || { weekly: [], hourly: [] });
       } catch (err) {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
           console.error(err);
           setError("Không thể tải báo cáo tần suất hoạt động. Vui lòng kiểm tra kết nối API.");
         }

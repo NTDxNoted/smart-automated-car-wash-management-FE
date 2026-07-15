@@ -35,7 +35,7 @@ export default function PromotionsRoiReportPage() {
         const res = await getPromotionsRoi(startDate, endDate, { signal: controller.signal });
         setData(res || { summary: {}, promotions: [] });
       } catch (err) {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
           console.error(err);
           setError("Không thể tải báo cáo hiệu quả khuyến mãi. Vui lòng kiểm tra kết nối API.");
         }

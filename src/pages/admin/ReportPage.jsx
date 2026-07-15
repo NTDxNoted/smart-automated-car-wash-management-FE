@@ -70,7 +70,7 @@ export default function ReportPage() {
         }));
         setAllBookings(mappedBookings);
       } catch (error) {
-        if (error.name !== "AbortError") {
+        if (error.name !== "AbortError" && error.name !== "CanceledError") {
           console.error(error);
         }
       } finally {
