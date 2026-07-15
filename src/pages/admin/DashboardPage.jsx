@@ -12,12 +12,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
   Legend,
 } from 'recharts';
+import SafeChartContainer from '../../components/common/SafeChartContainer';
 import './DashboardPage.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -563,53 +563,55 @@ export default function DashboardPage() {
 
             <div className="revenue-chart-body">
               <div className="revenue-chart-svg-container">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorRevenueModern" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#006A61" stopOpacity={0.2} />
-                        <stop offset="100%" stopColor="#006A61" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid stroke="#F1F5F9" vertical={false} />
-                    <XAxis
-                      dataKey="day"
-                      stroke="#44474D"
-                      tick={{ fontSize: 12, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      stroke="#44474D"
-                      tick={{ fontSize: 10, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(val) => `${val}M`}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#263142',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#EBF1FF',
-                        boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      }}
-                      itemStyle={{ color: '#00A9CE' }}
-                      labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
-                      formatter={(value) => [`${value}M`, 'Doanh thu']}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="revenue"
-                      stroke="#006A61"
-                      strokeWidth={2.65624}
-                      fillOpacity={1}
-                      fill="url(#colorRevenueModern)"
-                      dot={{ fill: '#FFFFFF', stroke: '#006A61', strokeWidth: 1.77083, r: 4 }}
-                      activeDot={{ r: 6, strokeWidth: 0, fill: '#006A61' }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <SafeChartContainer height={256}>
+                  {(width, height) => (
+                    <AreaChart width={width} height={height} data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorRevenueModern" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#006A61" stopOpacity={0.2} />
+                          <stop offset="100%" stopColor="#006A61" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="#F1F5F9" vertical={false} />
+                      <XAxis
+                        dataKey="day"
+                        stroke="#44474D"
+                        tick={{ fontSize: 12, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        stroke="#44474D"
+                        tick={{ fontSize: 10, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(val) => `${val}M`}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#263142',
+                          border: 'none',
+                          borderRadius: '8px',
+                          color: '#EBF1FF',
+                          boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        }}
+                        itemStyle={{ color: '#00A9CE' }}
+                        labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
+                        formatter={(value) => [`${value}M`, 'Doanh thu']}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="#006A61"
+                        strokeWidth={2.65624}
+                        fillOpacity={1}
+                        fill="url(#colorRevenueModern)"
+                        dot={{ fill: '#FFFFFF', stroke: '#006A61', strokeWidth: 1.77083, r: 4 }}
+                        activeDot={{ r: 6, strokeWidth: 0, fill: '#006A61' }}
+                      />
+                    </AreaChart>
+                  )}
+                </SafeChartContainer>
               </div>
             </div>
           </div>
@@ -630,33 +632,35 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={tierData.map(t => ({
-                            name: t.tier ?? t.tierName ?? t.name,
-                            value: t.total ?? t.count ?? 0
-                          }))}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={50}
-                          outerRadius={70}
-                          paddingAngle={3}
-                          dataKey="value"
-                        >
-                          {tierData.map((entry, index) => {
-                            const name = String(entry.tier ?? entry.tierName ?? entry.name).toUpperCase();
-                            let fill = '#00677F';
-                            if (name.includes('PLATINUM')) fill = '#FF00FF';
-                            else if (name.includes('GOLD')) fill = '#FFD700';
-                            else if (name.includes('SILVER')) fill = '#C0C0C0';
-                            else if (name.includes('MEMBER')) fill = '#4DC3D6';
-                            return <Cell key={`cell-${index}`} fill={fill} />;
-                          })}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <SafeChartContainer height={160}>
+                      {(width, height) => (
+                        <PieChart width={width} height={height}>
+                          <Pie
+                            data={tierData.map(t => ({
+                              name: t.tier ?? t.tierName ?? t.name,
+                              value: t.total ?? t.count ?? 0
+                            }))}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={70}
+                            paddingAngle={3}
+                            dataKey="value"
+                          >
+                            {tierData.map((entry, index) => {
+                              const name = String(entry.tier ?? entry.tierName ?? entry.name).toUpperCase();
+                              let fill = '#00677F';
+                              if (name.includes('PLATINUM')) fill = '#FF00FF';
+                              else if (name.includes('GOLD')) fill = '#FFD700';
+                              else if (name.includes('SILVER')) fill = '#C0C0C0';
+                              else if (name.includes('MEMBER')) fill = '#4DC3D6';
+                              return <Cell key={`cell-${index}`} fill={fill} />;
+                            })}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      )}
+                    </SafeChartContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <span className="text-2xl font-bold text-[#000F24]" style={{ fontFamily: "'Inter', sans-serif" }}>{totalCustomers}</span>
                       <span className="text-[10px] font-bold text-[#44474D] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Thành viên</span>

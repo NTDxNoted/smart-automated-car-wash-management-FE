@@ -1,5 +1,4 @@
 import {
-  ResponsiveContainer,
   BarChart,
   Bar,
   XAxis,
@@ -8,6 +7,7 @@ import {
   CartesianGrid,
   Cell,
 } from "recharts";
+import SafeChartContainer from "../common/SafeChartContainer";
 
 export default function HourlyOccupancyChart({ data }) {
   if (!data || data.length === 0) {
@@ -33,56 +33,60 @@ export default function HourlyOccupancyChart({ data }) {
         Tần suất đặt lịch theo khung giờ trong ngày
       </h3>
 
-      <ResponsiveContainer width="100%" aspect={1.8}>
-        <BarChart
-          layout="vertical"
-          data={sortedData}
-          margin={{ top: 5, right: 5, left: 10, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-          <XAxis
-            type="number"
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            stroke="#CBD5E1"
-            tickLine={false}
-          />
-          <YAxis
-            type="category"
-            dataKey="time"
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            stroke="#CBD5E1"
-            tickLine={false}
-            width={45}
-          />
-          <Tooltip
-            contentStyle={{
-              background: '#FFFFFF',
-              border: '1px solid #BCC8CE',
-              borderRadius: '8px',
-              boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
-              fontSize: '12px',
-              fontFamily: 'Inter, sans-serif',
-            }}
-            formatter={(value, name, props) => {
-              const item = props.payload;
-              if (name === "count") {
-                return [`${value} lượt đặt`, "Số lượng"];
-              }
-              if (name === "occupancyRate") {
-                return [`${value}%`, "Tỷ lệ lấp đầy"];
-              }
-              return [value, name];
-            }}
-          />
-          <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-            {sortedData.map((entry, index) => {
-              const rate = entry.occupancyRate;
-              const fill = rate >= 80 ? "#EF4444" : rate >= 70 ? "#F59E0B" : "#00677F";
-              return <Cell key={`cell-${index}`} fill={fill} />;
-            })}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <SafeChartContainer aspect={1.8}>
+        {(width, height) => (
+          <BarChart
+            layout="vertical"
+            width={width}
+            height={height}
+            data={sortedData}
+            margin={{ top: 5, right: 5, left: 10, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+            <XAxis
+              type="number"
+              tick={{ fontSize: 11, fill: '#64748B' }}
+              stroke="#CBD5E1"
+              tickLine={false}
+            />
+            <YAxis
+              type="category"
+              dataKey="time"
+              tick={{ fontSize: 11, fill: '#64748B' }}
+              stroke="#CBD5E1"
+              tickLine={false}
+              width={45}
+            />
+            <Tooltip
+              contentStyle={{
+                background: '#FFFFFF',
+                border: '1px solid #BCC8CE',
+                borderRadius: '8px',
+                boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
+                fontSize: '12px',
+                fontFamily: 'Inter, sans-serif',
+              }}
+              formatter={(value, name, props) => {
+                const item = props.payload;
+                if (name === "count") {
+                  return [`${value} lượt đặt`, "Số lượng"];
+                }
+                if (name === "occupancyRate") {
+                  return [`${value}%`, "Tỷ lệ lấp đầy"];
+                }
+                return [value, name];
+              }}
+            />
+            <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+              {sortedData.map((entry, index) => {
+                const rate = entry.occupancyRate;
+                const fill = rate >= 80 ? "#EF4444" : rate >= 70 ? "#F59E0B" : "#00677F";
+                return <Cell key={`cell-${index}`} fill={fill} />;
+              })}
+            </Bar>
+          </BarChart>
+        )}
+      </SafeChartContainer>
 
       <div className="flex items-center justify-center gap-6 mt-4 text-xs font-medium text-slate-500">
         <div className="flex items-center gap-1.5">
