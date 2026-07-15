@@ -7,7 +7,7 @@ export default function PaymentForm({
   confirmed,
   setConfirmed,
 }) {
-  const isPaid = booking.paymentStatus === "Paid" || booking.isPaid || booking.paymentAt || false;
+  const isPaid = booking.status?.toUpperCase() === "COMPLETED" || booking.paymentStatus === "Paid" || booking.isPaid || booking.paymentAt || false;
   const isPending = booking.status?.toUpperCase() === "PENDING";
 
   useEffect(() => {
