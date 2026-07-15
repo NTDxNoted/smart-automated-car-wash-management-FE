@@ -10,7 +10,7 @@ export default function StatusUpdateDropdown({
     useState(false);
 
   const disabled =
-    booking.status !== "PENDING";
+    booking.status?.toUpperCase() !== "PENDING";
 
   const handleChange = async (e) => {
     const status = e.target.value;
