@@ -135,8 +135,8 @@ export default function BookingDetailDrawer({
     : "";
 
   return (
-    <div className="booking-drawer-overlay">
-      <div className="booking-drawer-container">
+    <div className="booking-drawer-overlay" onClick={onClose}>
+      <div className="booking-drawer-container" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="booking-drawer-header">
           <div className="booking-drawer-title-wrapper">
