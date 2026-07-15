@@ -533,7 +533,7 @@ export default function ReportPage() {
       )}
 
       {activeTab === "tiers" && (
-        <div className="transition-all">
+        <div className="transition-all report-large-visualization-container">
           <TierDistributionChart data={tiers} />
         </div>
       )}

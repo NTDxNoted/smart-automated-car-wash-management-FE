@@ -38,7 +38,7 @@ export default function SafeChartContainer({ children, aspect, height = 300 }) {
       ref={containerRef} 
       style={{ 
         width: "100%", 
-        height: aspect ? "auto" : `${height}px`, 
+        height: `${chartHeight}px`, 
         minWidth: 0, 
         minHeight: 0,
         position: "relative"
