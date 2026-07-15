@@ -5,7 +5,6 @@ import RfmTable from "../../components/admin/RfmTable";
 import TierDistributionChart from "../../components/admin/TierDistributionChart";
 import LoyaltyStatsPanel from "../../components/admin/LoyaltyStatsPanel";
 import BookingStatusPieChart from "../../components/admin/BookingStatusPieChart";
-import PopularServicesChart from "../../components/admin/PopularServicesChart";
 
 import {
   getOverviewReport,
@@ -455,9 +454,7 @@ export default function ReportPage() {
             <BookingStatusPieChart data={bookingStatusPieData} />
           </div>
 
-          <div className="report-large-visualization-container">
-            <PopularServicesChart data={popularServicesData} />
-          </div>
+
 
           {/* Loyalty & RFM Insights Panel */}
           <div className="rfm-insights-section">
