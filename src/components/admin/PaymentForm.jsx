@@ -1,104 +1,77 @@
-import { useState, useEffect } from "react";
-import { toast } from "react-hot-toast";
-import adminBookingService from "../../services/adminBookingService";
+import { useEffect } from "react";
 
 export default function PaymentForm({
   booking,
-  onSuccess,
+  method,
+  setMethod,
+  confirmed,
+  setConfirmed,
 }) {
-  const [method, setMethod] = useState("CASH");
-  const [confirmed, setConfirmed] = useState(false);
-  const [paid, setPaid] = useState(false);
-  const [paymentAt, setPaymentAt] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const isPaid = booking.paymentStatus === "Paid" || booking.isPaid || booking.paymentAt || false;
+  const isPending = booking.status?.toUpperCase() === "PENDING";
 
   useEffect(() => {
     if (booking) {
-      const isBookingPaid = booking.paymentStatus === "Paid" || booking.isPaid || booking.paymentAt || false;
-      setPaid(isBookingPaid);
-      setConfirmed(isBookingPaid);
       if (booking.paymentMethod) {
         setMethod(booking.paymentMethod.toUpperCase());
       } else {
         setMethod("CASH");
       }
-      setPaymentAt(booking.paymentAt || null);
     }
-  }, [booking]);
-
-  const handleConfirm = async () => {
-    try {
-      setLoading(true);
-      const res = await adminBookingService.payment(booking.id, {
-        paymentMethod: method,
-        confirmed: true,
-      });
-
-      setPaid(true);
-      setPaymentAt(res.data?.paymentAt || res.data?.updatedAt || new Date().toISOString());
-      toast.success("Ghi nhận thanh toán thành công!");
-      onSuccess?.(method);
-    } catch (error) {
-      console.error("Lỗi ghi nhận thanh toán:", error);
-      const serverMsg = error.response?.data?.message || error.response?.data?.error;
-      toast.error(
-        serverMsg || "Không thể ghi nhận thanh toán"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [booking, setMethod]);
 
   const handleMethodChange = (value) => {
     setMethod(value);
     setConfirmed(false);
   };
 
-  const formattedPaymentTime = paymentAt
-    ? new Date(paymentAt).toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-    : "";
-
-  const isPending = booking.status?.toUpperCase() === "PENDING";
-
   return (
-    <fieldset
-      disabled={paid || loading || !isPending}
-      className="booking-drawer-payment-fieldset"
-    >
-      <legend className="booking-drawer-payment-legend">
+    <div className="booking-drawer-payment-fieldset">
+      <span className="booking-drawer-payment-legend">
         Thanh toán tại quầy
-      </legend>
+      </span>
 
       <div className="booking-drawer-radio-group">
         <div
-          className={`booking-drawer-radio-card ${method === "CASH" ? "active" : ""} ${!isPending && !paid ? "opacity-50" : ""}`}
-          onClick={() => !paid && isPending && handleMethodChange("CASH")}
+          className={`booking-drawer-radio-card ${method === "CASH" ? "active" : ""} ${!isPending && !isPaid ? "opacity-50" : ""}`}
+          onClick={() => !isPaid && isPending && handleMethodChange("CASH")}
         >
           <input
             type="radio"
             checked={method === "CASH"}
             readOnly
-            disabled={paid || !isPending}
+            disabled={isPaid || !isPending}
             className="booking-drawer-radio-input"
           />
+          {/* Banknote SVG icon */}
+          <svg width="22" height="16" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: '4px' }}>
+            <rect x="1" y="1" width="22" height="14" rx="2" stroke={method === "CASH" ? "#006B5F" : "#3C4947"} strokeWidth="2"/>
+            <circle cx="12" cy="8" r="3" stroke={method === "CASH" ? "#006B5F" : "#3C4947"} strokeWidth="2"/>
+            <path d="M5 5h.01M19 5h.01M5 11h.01M19 11h.01" stroke={method === "CASH" ? "#006B5F" : "#3C4947"} strokeWidth="2" strokeLinecap="round"/>
+          </svg>
           <span className="booking-drawer-radio-text">Tiền mặt (Cash)</span>
         </div>
 
         <div
-          className={`booking-drawer-radio-card ${method === "TRANSFER" ? "active" : ""} ${!isPending && !paid ? "opacity-50" : ""}`}
-          onClick={() => !paid && isPending && handleMethodChange("TRANSFER")}
+          className={`booking-drawer-radio-card ${method === "TRANSFER" ? "active" : ""} ${!isPending && !isPaid ? "opacity-50" : ""}`}
+          onClick={() => !isPaid && isPending && handleMethodChange("TRANSFER")}
         >
           <input
             type="radio"
             checked={method === "TRANSFER"}
             readOnly
-            disabled={paid || !isPending}
+            disabled={isPaid || !isPending}
             className="booking-drawer-radio-input"
           />
+          {/* Bank temple SVG icon */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: '4px' }}>
+            <path d="M12 2L2 7V9H22V7L12 2Z" fill={method === "TRANSFER" ? "#006B5F" : "#3C4947"}/>
+            <path d="M4 10H6V18H4V10Z" fill={method === "TRANSFER" ? "#006B5F" : "#3C4947"}/>
+            <path d="M9 10H11V18H9V10Z" fill={method === "TRANSFER" ? "#006B5F" : "#3C4947"}/>
+            <path d="M14 10H16V18H14V10Z" fill={method === "TRANSFER" ? "#006B5F" : "#3C4947"}/>
+            <path d="M19 10H21V18H19V10Z" fill={method === "TRANSFER" ? "#006B5F" : "#3C4947"}/>
+            <path d="M2 20H22V22H2V20Z" fill={method === "TRANSFER" ? "#006B5F" : "#3C4947"}/>
+          </svg>
           <span className="booking-drawer-radio-text">Chuyển khoản (Transfer)</span>
         </div>
       </div>
@@ -108,44 +81,13 @@ export default function PaymentForm({
           <input
             type="checkbox"
             checked={confirmed}
-            disabled={paid || !isPending}
+            disabled={isPaid || !isPending}
             onChange={(e) => setConfirmed(e.target.checked)}
             className="booking-drawer-checkbox-input"
           />
           <span className="booking-drawer-checkbox-text">Tôi xác nhận đã thu đủ tiền mặt từ khách hàng</span>
         </label>
       )}
-
-      <button
-        disabled={paid || !isPending || (method === "CASH" && !confirmed) || loading}
-        onClick={handleConfirm}
-        className="booking-drawer-pay-btn"
-        style={{
-          background: !isPending && !paid ? 'rgba(255, 255, 255, 0.05)' : undefined,
-          border: !isPending && !paid ? '1px solid rgba(255, 255, 255, 0.05)' : undefined,
-          color: !isPending && !paid ? '#64748b' : undefined,
-          cursor: !isPending && !paid ? 'not-allowed' : undefined
-        }}
-      >
-        {loading ? (
-          <>
-            <span className="booking-drawer-spinner"></span>
-            <span>Đang ghi nhận...</span>
-          </>
-        ) : paid ? (
-          "Đã thanh toán (Paid)"
-        ) : !isPending ? (
-          "Chỉ đơn ở trạng thái Pending mới được thanh toán"
-        ) : (
-          "Xác nhận thanh toán"
-        )}
-      </button>
-
-      {paid && paymentAt && (
-        <p className="text-emerald-400 text-xs text-center mt-2">
-          ✓ Ghi nhận thanh toán bằng {method === "CASH" ? "Tiền mặt" : "Chuyển khoản"} lúc {formattedPaymentTime}
-        </p>
-      )}
-    </fieldset>
+    </div>
   );
 }
