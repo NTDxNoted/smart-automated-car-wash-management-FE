@@ -120,6 +120,12 @@ export default function BookingDetailDrawer({
   const isPaid = currentDetails.paymentStatus === "Paid" || currentDetails.isPaid || currentDetails.paymentAt || false;
   const checkInTimeVal = currentDetails.checkInTime || currentDetails.checkinTime || currentDetails.CheckInTime;
 
+  // No-show detection (overdue checkin by 15 mins or explicit status)
+  const isNoShowStatus = currentDetails.status?.toUpperCase() === "NOSHOW" || currentDetails.status?.toUpperCase() === "NO_SHOW" || currentDetails.status?.toUpperCase() === "NO-SHOW";
+  const scheduledDate = currentDetails.scheduledTime ? new Date(currentDetails.scheduledTime) : null;
+  const isTimeOverdue = scheduledDate && !checkInTimeVal && (new Date() - scheduledDate) > 15 * 60 * 1000;
+  const isNoShow = isNoShowStatus || (isPending && isTimeOverdue);
+
   const formattedPaymentTime = currentDetails.paymentAt
     ? new Date(currentDetails.paymentAt).toLocaleTimeString("vi-VN", {
         hour: "2-digit",
@@ -229,7 +235,15 @@ export default function BookingDetailDrawer({
 
               {/* Check-in Banner / Button */}
               <div className="w-full">
-                {checkInTimeVal ? (
+                {isNoShow ? (
+                  <div className="booking-drawer-noshow-banner">
+                    {/* SVG warning icon */}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#BA1A1A"/>
+                    </svg>
+                    <span>Ghi nhận xe không đến (No-show)</span>
+                  </div>
+                ) : checkInTimeVal ? (
                   <div className="booking-drawer-checkin-banner">
                     {/* SVG check icon */}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -281,11 +295,11 @@ export default function BookingDetailDrawer({
         {/* Sticky Bottom Actions Container */}
         <div className="booking-drawer-footer">
           <button
-            disabled={isPaid || !isPending || (paymentMethod === "CASH" && !paymentConfirmed) || paying}
+            disabled={isPaid || !isPending || isNoShow || (paymentMethod === "CASH" && !paymentConfirmed) || paying}
             onClick={handleConfirmPayment}
             className="booking-drawer-pay-btn"
           >
-            {!isPaid && isPending && (
+            {!isPaid && isPending && !isNoShow && (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }}>
                 <path d="M9 16.2L4.8 12L3.4 13.4L9 19L21 7L19.6 5.6L9 16.2Z" fill="#FFFFFF"/>
               </svg>
@@ -295,6 +309,8 @@ export default function BookingDetailDrawer({
                 "Đang ghi nhận..."
               ) : isPaid ? (
                 "Đã thanh toán (Paid)"
+              ) : isNoShow ? (
+                "Ghi nhận xe không đến (No-show)"
               ) : !isPending ? (
                 "Chỉ đơn ở trạng thái Pending mới được thanh toán"
               ) : (
