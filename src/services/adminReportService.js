@@ -61,7 +61,16 @@ export const getRfmReport = async ({ signal } = {}) => {
   }
 
   const { data } = await adminAxiosInstance.get('/admin/reports/rfm', { signal });
-  return data.data || data;
+  const rawList = data.data || data || [];
+  return rawList.map(item => ({
+    customerId: item.customerId ?? item.CustomerId,
+    customer: item.fullName ?? item.FullName ?? "",
+    recency: item.recencyDays ?? item.RecencyDays ?? null,
+    frequency: item.frequency ?? item.Frequency ?? 0,
+    monetary: item.monetaryTotal ?? item.MonetaryTotal ?? 0,
+    points: item.totalPoints ?? item.TotalPoints ?? null,
+    tier: item.currentTier ?? item.CurrentTier ?? "Member",
+  }));
 };
 
 export const getTierDistribution = async ({ signal } = {}) => {

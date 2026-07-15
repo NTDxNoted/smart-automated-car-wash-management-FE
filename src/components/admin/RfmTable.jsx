@@ -227,12 +227,12 @@ export default function RfmTable({ data, initialSegment = "" }) {
 
           <tbody>
             {paginatedData.map((row) => (
-              <tr key={row.customer} className="rfm-tbody-row">
+              <tr key={row.customerId ?? row.customer} className="rfm-tbody-row">
                 <td className="rfm-td customer">{row.customer}</td>
-                <td className="rfm-td recency">{row.recency} ngày</td>
+                <td className="rfm-td recency">{row.recency != null ? `${row.recency} ngày` : "—"}</td>
                 <td className="rfm-td frequency">{row.frequency} lần</td>
                 <td className="rfm-td monetary">{row.monetary?.toLocaleString()}đ</td>
-                <td className="rfm-td points">{row.points?.toLocaleString()}</td>
+                <td className="rfm-td points">{row.points != null ? row.points.toLocaleString() : "—"}</td>
                 <td className="rfm-td tier">
                   {getTierBadge(row.tier)}
                 </td>
