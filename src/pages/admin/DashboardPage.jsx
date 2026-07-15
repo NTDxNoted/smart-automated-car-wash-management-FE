@@ -205,20 +205,7 @@ export default function DashboardPage() {
       const list = res.data?.data || res.data || [];
       if (list.length > 0) {
         const today = new Date();
-        const hasBookingsToday = list.some(b => b.scheduledTime && new Date(b.scheduledTime).toLocaleDateString('en-CA') === today.toLocaleDateString('en-CA'));
-        
         let targetTodayDate = today;
-        if (!hasBookingsToday && list.length > 0) {
-          // Fallback to the latest scheduled booking date in database for demo purposes
-          const latestTime = list.reduce((max, b) => {
-            if (!b.scheduledTime) return max;
-            const t = new Date(b.scheduledTime).getTime();
-            return t > max ? t : max;
-          }, 0);
-          if (latestTime > 0) {
-            targetTodayDate = new Date(latestTime);
-          }
-        }
         const todayDateStr = targetTodayDate.toLocaleDateString('en-CA');
         const now = targetTodayDate;
 
