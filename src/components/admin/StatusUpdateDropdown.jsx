@@ -51,16 +51,12 @@ export default function StatusUpdateDropdown({
           Cập nhật trạng thái...
         </option>
 
-        <option value="COMPLETED">
-          Completed
-        </option>
-
         <option value="FAILED">
-          Failed
+          Failed (Thất bại)
         </option>
 
         <option value="CANCELLED">
-          Cancelled
+          Cancelled (Đã hủy)
         </option>
       </select>
     </div>
