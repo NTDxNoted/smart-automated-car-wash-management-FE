@@ -1194,3 +1194,193 @@
   transition: all 0.3s ease;
 }
 
+/* Redesigned Booking Status Card classes */
+.booking-status-card {
+  align-items: flex-start;
+  min-height: 382px;
+}
+
+.booking-status-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 0px 24px;
+  width: 100%;
+  align-self: stretch;
+}
+
+.booking-status-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.booking-status-title {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 28px;
+  color: #1E293B;
+  margin: 0;
+}
+
+.booking-status-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #6B7280;
+  margin: 0;
+}
+
+.booking-status-icon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.booking-status-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  align-self: stretch;
+  gap: 16px;
+}
+
+.booking-status-chart-container {
+  position: relative;
+  width: 224px;
+  height: 224px;
+  flex-shrink: 0;
+}
+
+.booking-status-total-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.booking-status-total-label {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.7px;
+  text-transform: uppercase;
+  color: #94A3B8;
+}
+
+.booking-status-total-value {
+  font-family: 'Nimbus Sans', 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 36px;
+  color: #1E293B;
+  margin: 0;
+}
+
+.booking-status-legend-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 12px;
+  width: 160px;
+  flex-grow: 1;
+}
+
+.booking-status-legend-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  width: 100%;
+  background: rgba(249, 250, 251, 0.3);
+  border: 1px solid #F9FAFB;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.booking-status-legend-item:hover {
+  background: rgba(243, 244, 246, 0.6);
+  border-color: #E5E7EB;
+}
+
+.booking-status-legend-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.booking-status-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.booking-status-legend-name {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.booking-status-legend-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.booking-status-legend-count {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  color: #1E293B;
+}
+
+.booking-status-legend-percent {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 15px;
+}
+
+@media (max-width: 640px) {
+  .booking-status-body {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+}
+
