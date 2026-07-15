@@ -117,7 +117,7 @@ export default function BookingDetailDrawer({
   };
 
   const isPending = currentDetails.status?.toUpperCase() === "PENDING";
-  const isPaid = currentDetails.paymentStatus === "Paid" || currentDetails.isPaid || currentDetails.paymentAt || false;
+  const isPaid = currentDetails.status?.toUpperCase() === "COMPLETED" || currentDetails.paymentStatus === "Paid" || currentDetails.isPaid || currentDetails.paymentAt || false;
   const checkInTimeVal = currentDetails.checkInTime || currentDetails.checkinTime || currentDetails.CheckInTime;
 
   // No-show detection (overdue checkin by 15 mins or explicit status)
@@ -307,10 +307,10 @@ export default function BookingDetailDrawer({
             <span>
               {paying ? (
                 "Đang ghi nhận..."
-              ) : isPaid ? (
-                "Đã thanh toán (Paid)"
               ) : isNoShow ? (
                 "Ghi nhận xe không đến (No-show)"
+              ) : currentDetails.status?.toUpperCase() === "COMPLETED" ? (
+                "Đã xác nhận thanh toán"
               ) : !isPending ? (
                 "Chỉ đơn ở trạng thái Pending mới được thanh toán"
               ) : (
