@@ -868,13 +868,14 @@
   box-sizing: border-box;
 }
 
-.rfm-th.customer { width: 18%; flex: 0 0 18%; }
-.rfm-th.recency { width: 12%; flex: 0 0 12%; }
-.rfm-th.frequency { width: 12%; flex: 0 0 12%; }
-.rfm-th.monetary { width: 16%; flex: 0 0 16%; }
-.rfm-th.points { width: 12%; flex: 0 0 12%; }
-.rfm-th.tier { width: 14%; flex: 0 0 14%; }
+.rfm-th.customer { width: 14%; flex: 0 0 14%; }
+.rfm-th.recency { width: 10%; flex: 0 0 10%; }
+.rfm-th.frequency { width: 10%; flex: 0 0 10%; }
+.rfm-th.monetary { width: 12%; flex: 0 0 12%; }
+.rfm-th.points { width: 8%; flex: 0 0 8%; }
+.rfm-th.tier { width: 10%; flex: 0 0 10%; }
 .rfm-th.segment { width: 16%; flex: 0 0 16%; }
+.rfm-th.action { width: 20%; flex: 0 0 20%; }
 
 .rfm-th-arrow {
   font-size: 10px;
@@ -917,13 +918,14 @@
   box-sizing: border-box;
 }
 
-.rfm-td.customer { width: 18%; flex: 0 0 18%; font-weight: 500; color: #1E293B; }
-.rfm-td.recency { width: 12%; flex: 0 0 12%; }
-.rfm-td.frequency { width: 12%; flex: 0 0 12%; }
-.rfm-td.monetary { width: 16%; flex: 0 0 16%; font-weight: 600; color: #111C2C; }
-.rfm-td.points { width: 12%; flex: 0 0 12%; }
-.rfm-td.tier { width: 14%; flex: 0 0 14%; }
+.rfm-td.customer { width: 14%; flex: 0 0 14%; font-weight: 500; color: #1E293B; }
+.rfm-td.recency { width: 10%; flex: 0 0 10%; }
+.rfm-td.frequency { width: 10%; flex: 0 0 10%; }
+.rfm-td.monetary { width: 12%; flex: 0 0 12%; font-weight: 600; color: #111C2C; }
+.rfm-td.points { width: 8%; flex: 0 0 8%; }
+.rfm-td.tier { width: 10%; flex: 0 0 10%; }
 .rfm-td.segment { width: 16%; flex: 0 0 16%; }
+.rfm-td.action { width: 20%; flex: 0 0 20%; }
 
 /* Tier Badge styling in table */
 .rfm-tier-badge {
@@ -1186,7 +1188,8 @@
 
 /* Custom styles for columns */
 .rfm-th.action, .rfm-td.action {
-  width: 180px;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
