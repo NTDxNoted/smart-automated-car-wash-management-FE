@@ -193,6 +193,40 @@
   .sidebar-panel nav {
     margin-top: 1px;
   }
+
+  /* Hover to temporary expand collapsed sidebar on desktop */
+  .sidebar-panel.collapsed:hover {
+    width: 260px !important;
+    box-shadow: 10px 0 30px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  .sidebar-panel.collapsed:hover .logo-text,
+  .sidebar-panel.collapsed:hover nav a span:not(.material-symbols-outlined),
+  .sidebar-panel.collapsed:hover .support-container a span:not(.material-symbols-outlined) {
+    opacity: 1 !important;
+    max-width: 220px !important;
+    visibility: visible !important;
+    transition-delay: 0.08s !important;
+  }
+
+  .sidebar-panel.collapsed:hover .logo-container,
+  .sidebar-panel.collapsed:hover .logo-container a,
+  .sidebar-panel.collapsed:hover .support-container,
+  .sidebar-panel.collapsed:hover .support-container a {
+    justify-content: flex-start !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    gap: 10px !important;
+  }
+
+  .sidebar-panel.collapsed:hover nav a {
+    justify-content: flex-start !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+    gap: 16px !important;
+  }
 }
 
 /* Gold Shimmer Button for Gold Member Upgrade */
