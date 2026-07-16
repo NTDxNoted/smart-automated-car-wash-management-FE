@@ -150,7 +150,7 @@
   .sidebar-panel nav a span:not(.material-symbols-outlined),
   .sidebar-panel .support-container a span:not(.material-symbols-outlined) {
     opacity: 1;
-    max-width: 180px;
+    max-width: 220px;
     visibility: visible;
     display: inline-block;
     white-space: nowrap;
