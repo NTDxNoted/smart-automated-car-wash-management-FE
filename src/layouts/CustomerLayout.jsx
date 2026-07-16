@@ -269,11 +269,14 @@ export default function CustomerLayout() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 active:scale-95 transition-all flex items-center justify-center mr-1"
+                className="p-2.5 rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-cyan-50 hover:text-cyan-600 hover:border-cyan-200 active:scale-95 transition-all flex items-center justify-center mr-2 shadow-xs cursor-pointer"
                 aria-label="Toggle Sidebar Menu"
               >
-                <span className="material-symbols-outlined text-xl font-bold">
-                  {sidebarOpen ? 'menu_open' : 'menu'}
+                <span 
+                  className="material-symbols-outlined text-lg font-bold transition-transform duration-300 ease-out"
+                  style={{ transform: sidebarOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}
+                >
+                  menu_open
                 </span>
               </button>
               {!sidebarOpen && (
