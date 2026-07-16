@@ -13,7 +13,15 @@ export default function CustomerLayout() {
 
   // Track desktop status to prevent zoom resizing from overriding manual sidebar toggle
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
-  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const saved = localStorage.getItem('sidebarOpen');
+    return saved !== null ? JSON.parse(saved) : false; // Default to false (collapsed) on fresh load
+  });
+
+  // Persist sidebarOpen state to localStorage
+  useEffect(() => {
+    localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
+  }, [sidebarOpen]);
 
   // Track page size to dynamically adjust sidebar visibility on mobile/desktop crossing
   useEffect(() => {
