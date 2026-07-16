@@ -239,7 +239,7 @@ export default function CustomerLayout() {
         </nav>
 
         {/* Gold Upgrade Membership Banner in Sidebar */}
-        <div className="p-4 mt-auto border-t border-slate-100 space-y-2 bg-slate-50/50">
+        <div className="p-4 mt-auto border-t border-slate-100 space-y-2 bg-slate-50/50 support-container">
           <a
             href="tel:19006000"
             className="flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-sm transition-all"

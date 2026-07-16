@@ -147,13 +147,16 @@
 
   /* Hide text content when collapsed */
   .sidebar-panel.collapsed .logo-text,
-  .sidebar-panel.collapsed nav a span:not(.material-symbols-outlined) {
+  .sidebar-panel.collapsed nav a span:not(.material-symbols-outlined),
+  .sidebar-panel.collapsed .support-container a span:not(.material-symbols-outlined) {
     display: none !important;
   }
 
   /* Center items when collapsed */
   .sidebar-panel.collapsed .logo-container,
-  .sidebar-panel.collapsed .logo-container a {
+  .sidebar-panel.collapsed .logo-container a,
+  .sidebar-panel.collapsed .support-container,
+  .sidebar-panel.collapsed .support-container a {
     justify-content: center !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -166,6 +169,10 @@
     padding-right: 0 !important;
     margin-left: 8px !important;
     margin-right: 8px !important;
+  }
+
+  .sidebar-panel nav {
+    margin-top: 1px;
   }
 }
 
