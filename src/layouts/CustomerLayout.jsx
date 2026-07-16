@@ -128,12 +128,8 @@ export default function CustomerLayout() {
         />
       )}
 
-      {/* Left Sidebar Panel (Fixed Position, styled for Light Theme) */}
       <aside className={`sidebar-panel ${sidebarOpen ? "active shadow-lg" : "collapsed"}`}>
         
-        {/* Sidebar Top Spacer */}
-        <div className="h-16 shrink-0" />
-
         <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
           <Link
             to="/"

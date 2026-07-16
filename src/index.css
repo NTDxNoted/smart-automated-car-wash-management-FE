@@ -88,8 +88,7 @@
   left: 0;
   right: 0;
   width: 100% !important;
-  z-index: 30;
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50; /* Full-width header sits above sidebar */
 }
 
 .main-content-area {
@@ -107,6 +106,8 @@
 @media (min-width: 1024px) {
   /* Sidebar always visible, width transitions instead of translate */
   .sidebar-panel {
+    top: 64px !important; /* Starts below the 64px header */
+    height: calc(100vh - 64px) !important;
     transform: translateX(0) !important;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
@@ -119,16 +120,11 @@
     width: 260px !important;
   }
 
-  /* Adjust header area transition */
-  .header-area {
-    left: 72px;
-    width: calc(100% - 72px) !important;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-
+  /* Header stays static at full width, no shifts needed */
+  .header-area,
   .header-area.shifted {
-    left: 260px;
-    width: calc(100% - 260px) !important;
+    left: 0 !important;
+    width: 100% !important;
   }
 
   /* Adjust main content & footer area transition */
@@ -459,6 +455,13 @@
 .sidebar-nav-item:hover .material-symbols-outlined {
   color: #06b6d4; /* Glow icon cyan on hover! */
   transform: scale(1.12);
+}
+
+/* Ensure mobile sidebar covers the full-width header when opened */
+@media (max-width: 1023px) {
+  .sidebar-panel {
+    z-index: 60 !important;
+  }
 }
 
 
