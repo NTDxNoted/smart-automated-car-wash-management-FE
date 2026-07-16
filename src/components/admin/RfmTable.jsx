@@ -36,7 +36,7 @@ const getRfmSegment = (recency, frequency, monetary) => {
     return { name: "At Risk", className: "at-risk" };
   }
   if (r > 30 && f <= 5) {
-    return { name: "About to Sleep", className: "about-to-sleep" };
+    return { name: "Inactive customer", className: "about-to-sleep" };
   }
   return { name: "Lost Customers", className: "lost" };
 };
@@ -184,7 +184,7 @@ export default function RfmTable({ data, initialSegment = "" }) {
               <option value="Potential Loyalists">Potential Loyalists</option>
               <option value="New Customers">New Customers</option>
               <option value="At Risk">At Risk</option>
-              <option value="About to Sleep">About to Sleep</option>
+              <option value="Inactive customer">Inactive customer</option>
               <option value="Lost Customers">Lost Customers</option>
             </select>
           </div>
