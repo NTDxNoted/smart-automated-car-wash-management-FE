@@ -187,6 +187,7 @@
     padding-right: 0 !important;
     margin-left: 8px !important;
     margin-right: 8px !important;
+    gap: 0 !important;
   }
 
   .sidebar-panel nav {
