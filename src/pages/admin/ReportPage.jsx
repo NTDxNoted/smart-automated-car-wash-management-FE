@@ -536,8 +536,8 @@ export default function ReportPage() {
       )}
 
       {activeTab === "loyalty" && (
-        <div className="transition-all">
-          <LoyaltyStatsPanel stats={loyalty} />
+        <div className="transition-all loyalty-tab-container">
+          <LoyaltyStatsPanel stats={loyalty} customers={rfm} />
         </div>
       )}
     </div>

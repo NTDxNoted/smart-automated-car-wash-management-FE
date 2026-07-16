@@ -857,7 +857,7 @@ export default function DashboardPage() {
                     <div className="modern-loyalty-item-info">
                       <span className="modern-loyalty-item-label">TỔNG ĐIỂM LƯU HÀNH</span>
                       <span className="modern-loyalty-item-value circulating">
-                        {loyaltyStats.totalPoints?.toLocaleString()} đ
+                        {loyaltyStats.totalPoints?.toLocaleString()} pts
                       </span>
                     </div>
                     <div className="modern-loyalty-progress-bg">
@@ -870,12 +870,14 @@ export default function DashboardPage() {
                     <div className="modern-loyalty-item-info">
                       <span className="modern-loyalty-item-label">SẮP HẾT HẠN (≤ 30 NGÀY)</span>
                       <span className="modern-loyalty-item-value expiring">
-                        {loyaltyStats.expiringSoon?.toLocaleString()} đ
+                        {loyaltyStats.expiringSoon?.toLocaleString()} pts
                       </span>
                     </div>
-                    <div className="modern-loyalty-progress-bg">
-                      <div className="modern-loyalty-progress-fill expiring" style={{ width: `${expiringPct}%` }}></div>
-                    </div>
+                    {loyaltyStats.expiringSoon > 0 && (
+                      <div className="modern-loyalty-progress-bg">
+                        <div className="modern-loyalty-progress-fill expiring" style={{ width: `${expiringPct}%` }}></div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Đã hết hạn */}
@@ -883,7 +885,7 @@ export default function DashboardPage() {
                     <div className="modern-loyalty-item-info">
                       <span className="modern-loyalty-item-label">ĐÃ HẾT HẠN</span>
                       <span className="modern-loyalty-item-value expired">
-                        {loyaltyStats.expired?.toLocaleString()} đ
+                        {loyaltyStats.expired?.toLocaleString()} pts
                       </span>
                     </div>
                     <div className="modern-loyalty-progress-bg">
