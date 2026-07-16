@@ -249,7 +249,7 @@ export default function CustomerLayout() {
                   className="material-symbols-outlined text-lg font-bold transition-transform duration-300 ease-out"
                   style={{ transform: sidebarOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}
                 >
-                  menu_open
+                  chevron_left
                 </span>
               </button>
               {!sidebarOpen && (
