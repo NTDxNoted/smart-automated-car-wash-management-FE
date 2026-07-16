@@ -119,10 +119,10 @@ export default function CustomerLayout() {
       <aside className={`sidebar-panel ${sidebarOpen ? "active shadow-lg" : "collapsed"}`}>
         
         {/* Sidebar Brand/Logo Area */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-100 shrink-0">
+        <div className="h-16 flex items-center px-6 border-b border-slate-100 shrink-0 logo-container">
           <Link to="/" className="flex items-center gap-2.5 font-black text-xl tracking-wider uppercase text-cyan-600">
-            <span className="text-cyan-500">⟡</span>
-            AutoWash <span className="text-slate-800 font-medium">Pro</span>
+            <span className="text-cyan-500 text-2xl">⟡</span>
+            <span className="logo-text">AutoWash <span className="text-slate-800 font-medium">Pro</span></span>
           </Link>
         </div>
 

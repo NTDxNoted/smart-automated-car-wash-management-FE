@@ -105,12 +105,25 @@
 
 /* Desktop Shifting Squeeze Logic */
 @media (min-width: 1024px) {
+  /* Sidebar always visible, width transitions instead of translate */
+  .sidebar-panel {
+    transform: translateX(0) !important;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
   .sidebar-panel.collapsed {
-    transform: translateX(-100%);
+    width: 72px !important;
   }
 
   .sidebar-panel.active {
-    transform: translateX(0);
+    width: 260px !important;
+  }
+
+  /* Adjust header area transition */
+  .header-area {
+    left: 72px;
+    width: calc(100% - 72px) !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .header-area.shifted {
@@ -118,10 +131,41 @@
     width: calc(100% - 260px) !important;
   }
 
+  /* Adjust main content & footer area transition */
+  .main-content-area,
+  .footer-area {
+    margin-left: 72px;
+    width: calc(100% - 72px);
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
   .main-content-area.shifted,
   .footer-area.shifted {
     margin-left: 260px;
     width: calc(100% - 260px);
+  }
+
+  /* Hide text content when collapsed */
+  .sidebar-panel.collapsed .logo-text,
+  .sidebar-panel.collapsed nav a span:not(.material-symbols-outlined) {
+    display: none !important;
+  }
+
+  /* Center items when collapsed */
+  .sidebar-panel.collapsed .logo-container,
+  .sidebar-panel.collapsed .logo-container a {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    gap: 0 !important;
+  }
+
+  .sidebar-panel.collapsed nav a {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
   }
 }
 
