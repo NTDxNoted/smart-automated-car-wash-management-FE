@@ -231,13 +231,13 @@ export default function CustomerLayout() {
         
         {/* ── Fixed Header (Light Theme) ── */}
         <header className={`fixed top-0 right-0 z-30 backdrop-blur-md bg-white/95 border-b border-slate-200 transition-all duration-300 shadow-sm header-area ${sidebarOpen ? "shifted" : ""}`}>
-          <div className="w-full px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="w-full pl-4 pr-6 lg:pl-5 lg:pr-8 h-16 flex items-center justify-between">
             
             {/* Left: Hamburger Toggle & Logo */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2.5 rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-cyan-50 hover:text-cyan-600 hover:border-cyan-200 active:scale-95 transition-all flex items-center justify-center mr-2 shadow-xs cursor-pointer"
+                className="p-2.5 rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-cyan-50 hover:text-cyan-600 hover:border-cyan-200 active:scale-95 transition-all flex items-center justify-center shadow-xs cursor-pointer"
                 aria-label="Toggle Sidebar Menu"
               >
                 <span 
