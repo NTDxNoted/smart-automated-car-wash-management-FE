@@ -57,7 +57,7 @@ export default function HomePage() {
   return (
     <main className="home-page overflow-x-hidden">
       {/* ── SECTION 1: Hero (Full screen) ── */}
-      <section id="hero" className="w-full min-h-screen lg:h-screen lg:min-h-0 flex flex-col justify-center items-center pt-20 pb-16 px-4 sm:px-6 lg:px-8 relative bg-slate-50" aria-label="Giới thiệu">
+      <section id="hero" className="w-full min-h-screen lg:h-screen lg:min-h-0 flex flex-col justify-center items-center pt-20 pb-16 px-4 sm:px-6 lg:px-12 relative bg-slate-50" aria-label="Giới thiệu">
         {/* soft background accents */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute right-[-10%] top-[-20%] w-[380px] h-[380px] sm:w-[480px] sm:h-[480px] rounded-full bg-cyan-500/10 blur-3xl" />
@@ -70,7 +70,7 @@ export default function HomePage() {
               {t('heroSubtitle')}
             </span>
 
-            <h1 className="mt-6 font-heading text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-[1.05] tracking-tight text-slate-900">
+            <h1 className="mt-6 font-heading text-4xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-extrabold leading-[1.05] tracking-tight text-slate-900">
               {t('heroTitleMain')}{" "}
               <span className="bg-gradient-to-r from-cyan-600 to-cyan-400 bg-clip-text text-transparent">{t('heroTitleAccent')}</span>
             </h1>

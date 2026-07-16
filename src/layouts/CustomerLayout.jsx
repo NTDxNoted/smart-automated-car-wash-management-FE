@@ -44,6 +44,13 @@ export default function CustomerLayout() {
     }
   }, [location.pathname, location.hash]);
 
+  // Auto-close sidebar on page navigation for mobile/tablet devices
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+  }, [location.pathname, location.hash]);
+
   const handleLogout = () => {
     logout();
     navigate('/login');
