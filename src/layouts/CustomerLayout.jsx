@@ -100,6 +100,11 @@ export default function CustomerLayout() {
     return location.pathname === path;
   };
 
+  const getLinkClass = (to, hash = '') => {
+    const isActive = isLinkActive(to, hash);
+    return `sidebar-nav-item ${isActive ? 'active' : ''}`;
+  };
+
   const handleHashLinkClick = (hashId) => {
     if (window.innerWidth < 1024) {
       setSidebarOpen(false);
@@ -138,65 +143,45 @@ export default function CustomerLayout() {
           <Link
             to="/"
             onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-              isLinkActive('/')
-                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
+            className={getLinkClass('/')}
           >
-            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">home</span>
+            <span className="material-symbols-outlined">home</span>
             <span className="text-sm font-medium">{t('navHome')}</span>
           </Link>
 
           <Link
             to="/booking"
             onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-              isLinkActive('/booking')
-                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
+            className={getLinkClass('/booking')}
           >
-            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">local_car_wash</span>
+            <span className="material-symbols-outlined">local_car_wash</span>
             <span className="text-sm font-medium">{t('navBooking')}</span>
           </Link>
 
           <Link
             to="/#services"
             onClick={() => handleHashLinkClick('#services')}
-            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-              isLinkActive('/', '#services')
-                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
+            className={getLinkClass('/', '#services')}
           >
-            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">auto_awesome</span>
+            <span className="material-symbols-outlined">auto_awesome</span>
             <span className="text-sm font-medium">{t('navServices')}</span>
           </Link>
 
           <Link
             to="/#results"
             onClick={() => handleHashLinkClick('#results')}
-            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-              isLinkActive('/', '#results')
-                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
+            className={getLinkClass('/', '#results')}
           >
-            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">image</span>
+            <span className="material-symbols-outlined">image</span>
             <span className="text-sm font-medium">{t('navResults')}</span>
           </Link>
 
           <Link
             to="/#membership"
             onClick={() => handleHashLinkClick('#membership')}
-            className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-              isLinkActive('/', '#membership')
-                ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
+            className={getLinkClass('/', '#membership')}
           >
-            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">workspace_premium</span>
+            <span className="material-symbols-outlined">workspace_premium</span>
             <span className="text-sm font-medium">{t('navMembership')}</span>
           </Link>
 
@@ -205,26 +190,18 @@ export default function CustomerLayout() {
               <Link
                 to="/bookings"
                 onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-                className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-                  isLinkActive('/bookings')
-                    ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
+                className={getLinkClass('/bookings')}
               >
-                <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">history</span>
+                <span className="material-symbols-outlined">history</span>
                 <span className="text-sm font-medium">{t('navHistory')}</span>
               </Link>
 
               <Link
                 to="/loyalty"
                 onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-                className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-                  isLinkActive('/loyalty')
-                    ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
+                className={getLinkClass('/loyalty')}
               >
-                <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">stars</span>
+                <span className="material-symbols-outlined">stars</span>
                 <span className="text-sm font-medium">{t('navLoyalty')}</span>
               </Link>
             </>
@@ -234,13 +211,9 @@ export default function CustomerLayout() {
             <Link
               to="/profile"
               onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-              className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-all duration-300 ${
-                isLinkActive('/profile')
-                  ? 'bg-cyan-50 text-cyan-600 font-semibold shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
+              className={getLinkClass('/profile')}
             >
-              <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center">person</span>
+              <span className="material-symbols-outlined">person</span>
               <span className="text-sm font-medium">{t('navProfile')}</span>
             </Link>
           )}
