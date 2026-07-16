@@ -131,13 +131,8 @@ export default function CustomerLayout() {
       {/* Left Sidebar Panel (Fixed Position, styled for Light Theme) */}
       <aside className={`sidebar-panel ${sidebarOpen ? "active shadow-lg" : "collapsed"}`}>
         
-        {/* Sidebar Brand/Logo Area */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-100 shrink-0 logo-container">
-          <Link to="/" className="flex items-center gap-2.5 font-black text-xl tracking-wider uppercase text-cyan-600">
-            <span className="text-cyan-500 text-2xl">⟡</span>
-            <span className="logo-text">AutoWash <span className="text-slate-800 font-medium">Pro</span></span>
-          </Link>
-        </div>
+        {/* Sidebar Top Spacer */}
+        <div className="h-16 shrink-0" />
 
         <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
           <Link
@@ -252,12 +247,10 @@ export default function CustomerLayout() {
                   chevron_left
                 </span>
               </button>
-              {!sidebarOpen && (
-                <Link to="/" className="flex items-center gap-2 font-black text-xl tracking-wider uppercase text-cyan-600">
-                  <span className="text-cyan-500">⟡</span>
-                  AutoWash <span className="text-slate-800 font-medium">Pro</span>
-                </Link>
-              )}
+              <Link to="/" className="flex items-center gap-2 font-black text-xl tracking-wider uppercase text-cyan-600">
+                <span className="text-cyan-500">⟡</span>
+                AutoWash <span className="text-slate-800 font-medium">Pro</span>
+              </Link>
             </div>
 
             {/* Right Area: Language Switcher, Notifications, Auth actions */}
