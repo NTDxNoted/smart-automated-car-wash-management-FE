@@ -18,25 +18,25 @@ export default function PointSummary({ totalPoints = 0, canRedeem = false }) {
       }}
     >
       {/* Background glow */}
-      <div 
+      <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] rounded-full blur-3xl opacity-20 pointer-events-none"
         style={{
           background: 'radial-gradient(circle, rgba(6,182,212,0.4) 0%, transparent 60%)'
         }}
       />
 
-      <h3 
+      <h3
         className="text-sm uppercase tracking-widest text-slate-500 z-10"
         style={{ fontFamily: "'Archivo', sans-serif" }}
       >
         {t('loyaltySummaryTitle')}
       </h3>
 
-      <div 
+      <div
         className="text-6xl md:text-7xl font-bold text-transparent bg-clip-text z-10"
-        style={{ 
+        style={{
           backgroundImage: 'linear-gradient(135deg, #0891b2, #06b6d4)',
-          fontFamily: "'Archivo', sans-serif" 
+          fontFamily: "'Archivo', sans-serif"
         }}
       >
         {totalPoints.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN')}
@@ -46,8 +46,8 @@ export default function PointSummary({ totalPoints = 0, canRedeem = false }) {
         {canRedeem ? (
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-50 border border-cyan-300 text-cyan-600 text-sm font-semibold" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M14.667 8A6.667 6.667 0 111.333 8a6.667 6.667 0 0113.334 0z" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M5.333 8l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M14.667 8A6.667 6.667 0 111.333 8a6.667 6.667 0 0113.334 0z" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M5.333 8l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             {t('loyaltyCanRedeem')}
           </span>
@@ -59,4 +59,5 @@ export default function PointSummary({ totalPoints = 0, canRedeem = false }) {
       </div>
     </div>
   );
+
 }
