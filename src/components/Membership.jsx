@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const tiers = [
   {
@@ -33,8 +35,19 @@ const tiers = [
 ];
 
 export default function Membership() {
+  const navigate = useNavigate();
+  const { auth } = useAuth();
+
+  const handleCtaClick = () => {
+    if (auth.token) {
+      navigate('/booking');
+    } else {
+      navigate('/register');
+    }
+  };
+
   return (
-    <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '40px 16px', block: 'display' }}>
+    <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', padding: '40px 16px', display: 'block' }}>
 
       {/* Grid chống lỗi bằng cách chỉ định rõ display grid inline */}
       <div style={{
@@ -104,20 +117,23 @@ export default function Membership() {
             </ul>
 
             {/* Nút bấm to khỏe đầy đặn nằm sát đáy card */}
-            <button style={{
-              marginTop: 'auto',
-              width: '100%',
-              padding: '14px 24px',
-              borderRadius: '12px',
-              border: `2px solid ${t.color}`,
-              backgroundColor: t.featured ? t.color : 'transparent',
-              color: t.featured ? '#0f172a' : t.color,
-              fontSize: '13px',
-              fontWeight: '800',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              cursor: 'pointer'
-            }}>
+            <button 
+              onClick={handleCtaClick}
+              style={{
+                marginTop: 'auto',
+                width: '100%',
+                padding: '14px 24px',
+                borderRadius: '12px',
+                border: `2px solid ${t.color}`,
+                backgroundColor: t.featured ? t.color : 'transparent',
+                color: t.featured ? '#0f172a' : t.color,
+                fontSize: '13px',
+                fontWeight: '800',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                cursor: 'pointer'
+              }}
+            >
               {t.id === 4 ? "Contact Us" : t.id === 1 ? "Get Started" : `Go ${t.name}`}
             </button>
 

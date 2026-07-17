@@ -1,9 +1,11 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function MembershipTiers() {
   const { locale } = useLanguage();
+  const { auth } = useAuth();
   const isVi = locale === 'vi';
 
   // Data mirrors the Tier table in autowash_supabase_3.sql exactly
@@ -169,7 +171,7 @@ export default function MembershipTiers() {
             </div>
             {/* CTA */}
             <Link
-              to={tier.ctaLink}
+              to={auth.token ? '/booking' : tier.ctaLink}
               className={`tier-cta block w-[85%] mx-auto text-center py-4 px-6 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-200 ${tier.btnClass} mt-auto mb-6 shrink-0`}
             >
               {tier.cta}
