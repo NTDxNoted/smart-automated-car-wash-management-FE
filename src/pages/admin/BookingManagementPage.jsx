@@ -57,6 +57,17 @@ export default function BookingManagementPage() {
     fetchBookings();
   }, [filters]);
 
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      console.log("BookingManagementPage: Nhận thông báo dữ liệu thay đổi, tự động làm mới bảng...");
+      fetchBookings();
+    };
+    window.addEventListener("autowash_data_updated", handleDataUpdate);
+    return () => {
+      window.removeEventListener("autowash_data_updated", handleDataUpdate);
+    };
+  }, [filters]);
+
   return (
     <div className="admin-booking-page-container">
       
