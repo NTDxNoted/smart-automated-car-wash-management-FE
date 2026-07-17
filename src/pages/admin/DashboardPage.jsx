@@ -289,17 +289,7 @@ export default function DashboardPage() {
               nsCount++;
             }
 
-            // 3. Cảnh báo vận hành
-            // a. No-show
-            if (bStatus === 'NOSHOW' || bStatus === 'NO-SHOW' || bStatus === 'NO_SHOW') {
-              warningList.push({
-                type: 'NOSHOW',
-                message: `Khách hàng ${customerName} (${mappedObj.plate}) không đến hẹn (No-show)`,
-                detail: `Lịch hẹn lúc ${bTime ? bTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Hôm nay'}`,
-                booking: mappedObj
-              });
-            }
-            // b. Booking Pending quá lâu (> 30 phút so với giờ đặt)
+            // 3. Cảnh báo vận hành - Chỉ hiển thị khi khách hẹn bị trễ quá 30 phút
             if (bStatus === 'PENDING') {
               if (bTime && (now - bTime) / 60000 > 30) {
                 warningList.push({
@@ -309,24 +299,6 @@ export default function DashboardPage() {
                   booking: mappedObj
                 });
               }
-            }
-            // c. Chưa có biển số xe
-            if ((bStatus === 'PENDING' || bStatus === 'PROCESSING') && (!b.licensePlate || b.licensePlate.trim() === '-' || b.licensePlate.toLowerCase().includes('chưa'))) {
-              warningList.push({
-                type: 'NO_PLATE',
-                message: `Xe của khách hàng ${customerName} chưa cập nhật biển số`,
-                detail: `Trạng thái: ${bStatus === 'PENDING' ? 'Đang chờ' : 'Đang xử lý'}`,
-                booking: mappedObj
-              });
-            }
-            // d. Booking failed/cancelled
-            if (['FAILED', 'CANCELLED', 'CANCEL', 'CANCEL_BY_ADMIN', 'CANCEL_BY_CUSTOMER'].includes(bStatus)) {
-              warningList.push({
-                type: 'FAILED_CANCEL',
-                message: `Lịch đặt của ${customerName} bị hủy hoặc thất bại`,
-                detail: `Lý do/Trạng thái: ${bStatus === 'FAILED' ? 'Thất bại' : 'Bị hủy'}`,
-                booking: mappedObj
-              });
             }
           }
 
