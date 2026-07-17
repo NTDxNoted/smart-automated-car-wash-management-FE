@@ -11,6 +11,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(true);
+  const [useCustomLicensePlate, setUseCustomLicensePlate] = useState(false);
 
   const getBookingWindowDays = (tier) => {
     const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
@@ -35,11 +36,20 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       bookingService.getVehicles()
         .then(data => {
           setVehicles(data);
-          if (data.length > 0 && !bookingData.selectedVehicleId) {
+          if (data.length > 0) {
+            setUseCustomLicensePlate(false);
+            if (!bookingData.selectedVehicleId) {
+              setBookingData(prev => ({
+                ...prev,
+                selectedVehicleId: data[0].id,
+                licensePlate: data[0].licensePlate,
+              }));
+            }
+          } else {
+            setUseCustomLicensePlate(true);
             setBookingData(prev => ({
               ...prev,
-              selectedVehicleId: data[0].id,
-              licensePlate: data[0].licensePlate,
+              selectedVehicleId: '',
             }));
           }
         })
@@ -204,38 +214,112 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
               {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.phone}</p>}
             </label>
 
-            {/* Vehicle select */}
-            <label className="block">
+            {/* Segmented Switch for Vehicle Choice */}
+            <div className="flex flex-col justify-end">
               <span 
                 className="block text-sm font-bold text-slate-700 tracking-wide"
                 style={{ marginBottom: '8px' }}
               >
-                {t('selectVehicleLabel')}
+                {t('vehicleSelectionMode') || 'Phương thức chọn xe'}
               </span>
-              {vehicles.length > 0 ? (
+              <div className="flex p-1 bg-slate-100 rounded-2xl w-full sm:w-fit" style={{ minHeight: '52px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUseCustomLicensePlate(false);
+                    if (vehicles.length > 0) {
+                      setBookingData(prev => ({
+                        ...prev,
+                        selectedVehicleId: vehicles[0].id,
+                        licensePlate: vehicles[0].licensePlate,
+                      }));
+                    }
+                  }}
+                  className={`flex-1 sm:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer ${
+                    !useCustomLicensePlate
+                      ? 'bg-white text-cyan-600 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {t('selectSavedVehicle') || 'Chọn xe đã lưu'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUseCustomLicensePlate(true);
+                    setBookingData(prev => ({
+                      ...prev,
+                      selectedVehicleId: '',
+                      licensePlate: '',
+                    }));
+                  }}
+                  className={`flex-1 sm:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer ${
+                    useCustomLicensePlate
+                      ? 'bg-white text-cyan-600 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {t('inputLicensePlate') || 'Nhập biển số mới'}
+                </button>
+              </div>
+            </div>
+
+            {/* Conditional input based on switch */}
+            {!useCustomLicensePlate ? (
+              /* Vehicle select */
+              <label className="block sm:col-span-2">
+                <span 
+                  className="block text-sm font-bold text-slate-700 tracking-wide"
+                  style={{ marginBottom: '8px' }}
+                >
+                  {t('selectVehicleLabel')}
+                </span>
+                {vehicles.length > 0 ? (
+                  <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
+                    <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
+                    <select
+                      value={bookingData.selectedVehicleId}
+                      onChange={e => handleVehicleChange(e.target.value)}
+                      className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none cursor-pointer"
+                    >
+                      {vehicles.map(v => (
+                        <option key={v.id} value={v.id} className="bg-white">
+                          {v.model} ({v.licensePlate})
+                        </option>
+                      ))}
+                    </select>
+                  </span>
+                ) : (
+                  <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                    ⚠️ {t('profileNoVehicles') || 'Chưa có xe nào được đăng ký.'} 
+                    <a href="/profile" className="ml-2 font-bold underline hover:text-amber-950">
+                      {t('btnAddVehicle') || 'Thêm xe mới'}
+                    </a>
+                  </div>
+                )}
+              </label>
+            ) : (
+              /* Custom license plate input */
+              <label className="block sm:col-span-2">
+                <span 
+                  className="block text-sm font-bold text-slate-700 tracking-wide"
+                  style={{ marginBottom: '8px' }}
+                >
+                  {t('licensePlateLabel')}
+                </span>
                 <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
                   <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
-                  <select
-                    value={bookingData.selectedVehicleId}
-                    onChange={e => handleVehicleChange(e.target.value)}
-                    className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none cursor-pointer"
-                  >
-                    {vehicles.map(v => (
-                      <option key={v.id} value={v.id} className="bg-white">
-                        {v.model} ({v.licensePlate})
-                      </option>
-                    ))}
-                  </select>
+                  <input
+                    type="text"
+                    value={bookingData.licensePlate}
+                    onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
+                    placeholder={t('licensePlatePlaceholder')}
+                    className="w-full bg-transparent text-base font-semibold uppercase text-slate-800 placeholder:text-slate-400 outline-none"
+                  />
                 </span>
-              ) : (
-                <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                  ⚠️ {t('profileNoVehicles') || 'Chưa có xe nào được đăng ký.'} 
-                  <a href="/profile" className="ml-2 font-bold underline hover:text-amber-950">
-                    {t('btnAddVehicle') || 'Thêm xe mới'}
-                  </a>
-                </div>
-              )}
-            </label>
+                {errors.licensePlate && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.licensePlate}</p>}
+              </label>
+            )}
           </>
         ) : (
           <>
