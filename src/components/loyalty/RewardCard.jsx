@@ -13,19 +13,19 @@ export default function RewardCard({ reward }) {
   };
 
   return (
-    <div 
+    <div
       className="group relative rounded-2xl border border-slate-200/80 p-4 sm:p-5 transition-all duration-300 hover:border-cyan-400 hover:shadow-lg hover:-translate-y-1 bg-white"
     >
       {/* Glow on hover */}
-      <div 
-        className="absolute inset-0 rounded-2xl bg-cyan-500/0 group-hover:bg-cyan-500/[0.02] transition-colors duration-300 pointer-events-none" 
+      <div
+        className="absolute inset-0 rounded-2xl bg-cyan-500/0 group-hover:bg-cyan-500/[0.02] transition-colors duration-300 pointer-events-none"
       />
 
       <div className="flex flex-col h-full gap-4 relative z-10">
         {/* Top section: Title/Value & Icon Box */}
         <div className="flex items-start justify-between">
           <div>
-            <h4 
+            <h4
               className="text-2xl font-black text-cyan-600 tracking-tight group-hover:text-cyan-700 transition-colors"
               style={{ fontFamily: "'Archivo', sans-serif" }}
             >
@@ -35,7 +35,7 @@ export default function RewardCard({ reward }) {
               VOUCHER ƯU ĐÃI
             </p>
           </div>
-          
+
           {/* Icon Box in Top-Right */}
           <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-cyan-50 group-hover:border-cyan-100 transition-all duration-300">
             <span className="material-symbols-outlined text-slate-400 group-hover:text-cyan-600 transition-colors text-lg">
@@ -61,7 +61,7 @@ export default function RewardCard({ reward }) {
               CẦN TÍCH LŨY
             </span>
             <div className="flex items-baseline gap-1">
-              <span 
+              <span
                 className="text-2xl font-black text-slate-800 leading-none"
                 style={{ fontFamily: "'Archivo', sans-serif" }}
               >
@@ -88,5 +88,6 @@ export default function RewardCard({ reward }) {
       </div>
     </div>
   );
+
 }
 
