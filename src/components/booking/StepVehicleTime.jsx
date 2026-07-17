@@ -12,6 +12,14 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
   const [selectedTime, setSelectedTime] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(true);
   const [useCustomLicensePlate, setUseCustomLicensePlate] = useState(false);
+  const [debouncedLicensePlate, setDebouncedLicensePlate] = useState(bookingData.licensePlate);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedLicensePlate(bookingData.licensePlate);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [bookingData.licensePlate]);
 
   const getBookingWindowDays = (tier) => {
     const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
@@ -94,7 +102,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     if (!selectedDate) return;
 
     setLoadingSlots(true);
-    bookingService.getAvailableSlots(selectedDate, bookingData.licensePlate)
+    bookingService.getAvailableSlots(selectedDate, debouncedLicensePlate)
       .then(slotsData => {
         setAvailableDays(prevDays => {
           return prevDays.map(day => {
@@ -145,7 +153,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         console.error('Lỗi fetch slot giờ trống:', err);
         setLoadingSlots(false);
       });
-  }, [selectedDate, bookingData.licensePlate, bookingData.service?.id]);
+  }, [selectedDate, debouncedLicensePlate, bookingData.service?.id]);
 
   const handleSelectSlot = (dateStr, timeStr) => {
     setSelectedDate(dateStr);
