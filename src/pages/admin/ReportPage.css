@@ -470,6 +470,7 @@
 }
 
 @media (max-width: 768px) {
+
   .report-stats-grid-row1,
   .report-stats-grid-row2,
   .report-charts-grid {
@@ -868,14 +869,45 @@
   box-sizing: border-box;
 }
 
-.rfm-th.customer { width: 14%; flex: 0 0 14%; }
-.rfm-th.recency { width: 10%; flex: 0 0 10%; }
-.rfm-th.frequency { width: 10%; flex: 0 0 10%; }
-.rfm-th.monetary { width: 12%; flex: 0 0 12%; }
-.rfm-th.points { width: 8%; flex: 0 0 8%; }
-.rfm-th.tier { width: 10%; flex: 0 0 10%; }
-.rfm-th.segment { width: 16%; flex: 0 0 16%; }
-.rfm-th.action { width: 20%; flex: 0 0 20%; }
+.rfm-th.customer {
+  width: 14%;
+  flex: 0 0 14%;
+}
+
+.rfm-th.recency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-th.frequency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-th.monetary {
+  width: 12%;
+  flex: 0 0 12%;
+}
+
+.rfm-th.points {
+  width: 8%;
+  flex: 0 0 8%;
+}
+
+.rfm-th.tier {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-th.segment {
+  width: 16%;
+  flex: 0 0 16%;
+}
+
+.rfm-th.action {
+  width: 20%;
+  flex: 0 0 20%;
+}
 
 .rfm-th-arrow {
   font-size: 10px;
@@ -918,14 +950,49 @@
   box-sizing: border-box;
 }
 
-.rfm-td.customer { width: 14%; flex: 0 0 14%; font-weight: 500; color: #1E293B; }
-.rfm-td.recency { width: 10%; flex: 0 0 10%; }
-.rfm-td.frequency { width: 10%; flex: 0 0 10%; }
-.rfm-td.monetary { width: 12%; flex: 0 0 12%; font-weight: 600; color: #111C2C; }
-.rfm-td.points { width: 8%; flex: 0 0 8%; }
-.rfm-td.tier { width: 10%; flex: 0 0 10%; }
-.rfm-td.segment { width: 16%; flex: 0 0 16%; }
-.rfm-td.action { width: 20%; flex: 0 0 20%; }
+.rfm-td.customer {
+  width: 14%;
+  flex: 0 0 14%;
+  font-weight: 500;
+  color: #1E293B;
+}
+
+.rfm-td.recency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-td.frequency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-td.monetary {
+  width: 12%;
+  flex: 0 0 12%;
+  font-weight: 600;
+  color: #111C2C;
+}
+
+.rfm-td.points {
+  width: 8%;
+  flex: 0 0 8%;
+}
+
+.rfm-td.tier {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-td.segment {
+  width: 16%;
+  flex: 0 0 16%;
+}
+
+.rfm-td.action {
+  width: 20%;
+  flex: 0 0 20%;
+}
 
 /* Tier Badge styling in table */
 .rfm-tier-badge {
@@ -1055,7 +1122,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .report-loading-text {
@@ -1125,8 +1194,15 @@
 }
 
 @keyframes pulse-border {
-  0%, 100% { border-color: #FECDD3; }
-  50% { border-color: #FB7185; }
+
+  0%,
+  100% {
+    border-color: #FECDD3;
+  }
+
+  50% {
+    border-color: #FB7185;
+  }
 }
 
 /* RFM Table Action Buttons */
@@ -1186,8 +1262,18 @@
   background: #334155;
 }
 
+.rfm-action-btn.remind {
+  background: #d1210a;
+  color: #FFFFFF;
+}
+
+.rfm-action-btn.remind:hover {
+  background: #941108;
+}
+
 /* Custom styles for columns */
-.rfm-th.action, .rfm-td.action {
+.rfm-th.action,
+.rfm-td.action {
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -1451,12 +1537,15 @@
   z-index: 0;
   pointer-events: none;
 }
+
 .loyalty-card-overlay-circle.circle-blue {
   background: rgba(0, 80, 203, 0.05);
 }
+
 .loyalty-card-overlay-circle.circle-red {
   background: rgba(186, 26, 26, 0.05);
 }
+
 .loyalty-card-overlay-circle.circle-gray {
   background: rgba(84, 95, 115, 0.05);
 }
@@ -1490,12 +1579,15 @@
   padding: 8px;
   border-radius: 8px;
 }
+
 .loyalty-card-icon-overlay.bg-blue-tint {
   background: rgba(0, 102, 255, 0.1);
 }
+
 .loyalty-card-icon-overlay.bg-orange-tint {
   background: rgba(255, 218, 214, 0.1);
 }
+
 .loyalty-card-icon-overlay.bg-red-tint {
   background: rgba(213, 224, 248, 0.1);
 }
@@ -1508,12 +1600,15 @@
   padding: 2px 8px;
   border-radius: 9999px;
 }
+
 .loyalty-card-badge.badge-green {
   background: #ECFDF5;
 }
+
 .loyalty-card-badge.badge-neutral {
   background: #ECEEF0;
 }
+
 .loyalty-card-badge.badge-red {
   background: rgba(255, 218, 214, 0.5);
 }
@@ -1527,12 +1622,15 @@
   display: flex;
   align-items: center;
 }
+
 .loyalty-card-badge-text.color-green {
   color: #059669;
 }
+
 .loyalty-card-badge-text.color-neutral {
   color: #727687;
 }
+
 .loyalty-card-badge-text.color-red {
   color: #BA1A1A;
 }
@@ -1542,6 +1640,7 @@
   padding: 4px 0px 0px;
   width: 100%;
 }
+
 .loyalty-card-label {
   font-family: 'Inter', sans-serif;
   font-style: normal;
@@ -1558,6 +1657,7 @@
   padding: 0px 0px 12px;
   width: 100%;
 }
+
 .loyalty-card-value {
   font-family: 'Inter', sans-serif;
   font-style: normal;
@@ -1597,9 +1697,11 @@
   border-radius: 9999px;
   transition: width 0.4s ease-out;
 }
+
 .loyalty-progress-filler.bg-green {
   background: #089F31;
 }
+
 .loyalty-progress-filler.bg-red {
   background: #BA1A1A;
 }
@@ -1701,16 +1803,19 @@
   border-color: rgba(0, 80, 203, 0.4);
   color: #0050CB;
 }
+
 .loyalty-ranking-badge.rank-gray {
   background: rgba(84, 95, 115, 0.05);
   border-color: rgba(84, 95, 115, 0.4);
   color: #545F73;
 }
+
 .loyalty-ranking-badge.rank-teal {
   background: rgba(0, 95, 137, 0.05);
   border-color: rgba(0, 95, 137, 0.4);
   color: #005F89;
 }
+
 .loyalty-ranking-badge.rank-light {
   background: rgba(114, 118, 135, 0.05);
   border-color: rgba(114, 118, 135, 0.3);
@@ -1765,4 +1870,3 @@
   color: #0050CB;
   text-align: right;
 }
-

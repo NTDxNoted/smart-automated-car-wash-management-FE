@@ -150,11 +150,13 @@ export default function RfmTable({ data, initialSegment = "" }) {
     if (segmentName === "Champions") {
       toast.success(`Đã gửi tặng Voucher VIP giảm 20% cho khách hàng ${customerName}! 💎`);
     } else if (segmentName === "At Risk") {
-      toast.success(`Đã gửi tặng mã giảm giá tri ân 15% cho khách hàng ${customerName}! ✉️`);
+      toast.success(`Đã gửi tặng mã giảm giá tri ân 15% cho khách hàng ${customerName}! 🔔`);
     } else if (segmentName === "New Customers") {
       toast.success(`Đã gửi tặng ưu đãi giảm 10% lần rửa thứ 2 cho khách hàng ${customerName}! 🎁`);
     } else if (segmentName === "Lost Customers") {
       toast.success(`Đã kích hoạt chiến dịch win-back và gửi quà tặng đặc biệt cho khách hàng ${customerName}! ⚡`);
+    } else if (segmentName === "Inactive customer") {
+      toast.success(`Đã gửi thông báo nhắc nhở kèm mã giảm giá 5% cho khách hàng ${customerName}! 🔔`);
     }
   };
 
@@ -249,7 +251,7 @@ export default function RfmTable({ data, initialSegment = "" }) {
                   )}
                   {row.segmentName === "At Risk" && (
                     <button className="rfm-action-btn discount" onClick={() => handleAction(row.customer, "At Risk")}>
-                      ✉️ Gửi mã giảm giá
+                      🔔 Gửi mã giảm giá
                     </button>
                   )}
                   {row.segmentName === "New Customers" && (
@@ -262,7 +264,12 @@ export default function RfmTable({ data, initialSegment = "" }) {
                       ⚡ Chiến dịch win-back
                     </button>
                   )}
-                  {!["Champions", "At Risk", "New Customers", "Lost Customers"].includes(row.segmentName) && (
+                  {row.segmentName === "Inactive customer" && (
+                    <button className="rfm-action-btn remind" onClick={() => handleAction(row.customer, "Inactive customer")}>
+                      🔔 Nhắc nhở & giảm giá
+                    </button>
+                  )}
+                  {!["Champions", "At Risk", "New Customers", "Lost Customers", "Inactive customer"].includes(row.segmentName) && (
                     <span className="text-xs text-slate-400 italic">Chăm sóc định kỳ</span>
                   )}
                 </td>
