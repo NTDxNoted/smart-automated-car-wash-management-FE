@@ -21,8 +21,9 @@ export default function BookingTable({
       case 'CONFIRMED':
         return 'booking-status-badge confirmed';
       case 'CANCELLED':
-      case 'FAILED':
         return 'booking-status-badge cancelled';
+      case 'FAILED':
+        return 'booking-status-badge failed';
       case 'NOSHOW':
       case 'NO-SHOW':
         return 'booking-status-badge noshow';
@@ -53,6 +54,37 @@ export default function BookingTable({
       case 'PENDING':
       default:
         return 'PENDING';
+    }
+  };
+
+  const formatScheduledTime = (timeStr) => {
+    if (!timeStr) return "-";
+    const dateObj = new Date(timeStr);
+    
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    
+    const isToday = dateObj.toDateString() === today.toDateString();
+    const isTomorrow = dateObj.toDateString() === tomorrow.toDateString();
+    
+    const timeFormatted = dateObj.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+    
+    if (isToday) {
+      return `Hôm nay ${timeFormatted}`;
+    } else if (isTomorrow) {
+      return `Ngày mai ${timeFormatted}`;
+    } else {
+      const dateFormatted = dateObj.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+      return `${dateFormatted} ${timeFormatted}`;
     }
   };
 
@@ -93,6 +125,7 @@ export default function BookingTable({
             <th className="booking-th customer">CUSTOMER</th>
             <th className="booking-th phone">PHONE</th>
             <th className="booking-th plate">PLATE</th>
+            <th className="booking-th time">TIME</th>
             <th className="booking-th service">SERVICE</th>
             <th className="booking-th status">STATUS</th>
             <th className="booking-th amount">AMOUNT</th>
@@ -124,6 +157,12 @@ export default function BookingTable({
               <td className="booking-td plate">
                 <span className="booking-plate-badge">
                   {booking.licensePlate || '-'}
+                </span>
+              </td>
+
+              <td className="booking-td time">
+                <span className="booking-time-text">
+                  {formatScheduledTime(booking.scheduledTime)}
                 </span>
               </td>
               

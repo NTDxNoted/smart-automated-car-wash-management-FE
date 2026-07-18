@@ -15,6 +15,7 @@ export default function BookingManagementPage() {
     status: searchParams.get("status") || "",
     date: searchParams.get("date") || "",
     keyword: searchParams.get("keyword") || "",
+    hour: "",
     page: 1,
   });
 
@@ -23,6 +24,7 @@ export default function BookingManagementPage() {
       status: searchParams.get("status") || "",
       date: searchParams.get("date") || "",
       keyword: searchParams.get("keyword") || "",
+      hour: "",
       page: 1,
     });
   }, [searchParams]);
@@ -31,7 +33,13 @@ export default function BookingManagementPage() {
     try {
       setLoading(true);
 
-      const res = await adminBookingService.getAll(filters);
+      const apiFilters = {
+        status: filters.status,
+        date: filters.date,
+        keyword: filters.keyword,
+        page: filters.page
+      };
+      const res = await adminBookingService.getAll(apiFilters);
       const rawList = res.data?.data || res.data || [];
       const mapped = rawList.map(b => ({
         id: b.bookingID ?? b.bookingId ?? b.id,
@@ -55,7 +63,7 @@ export default function BookingManagementPage() {
 
   useEffect(() => {
     fetchBookings();
-  }, [filters]);
+  }, [filters.status, filters.date, filters.keyword, filters.page]);
 
   useEffect(() => {
     const handleDataUpdate = () => {
@@ -66,7 +74,15 @@ export default function BookingManagementPage() {
     return () => {
       window.removeEventListener("autowash_data_updated", handleDataUpdate);
     };
-  }, [filters]);
+  }, [filters.status, filters.date, filters.keyword, filters.page]);
+
+  const filteredBookings = bookings.filter(b => {
+    if (!filters.hour) return true;
+    if (!b.scheduledTime) return false;
+    const dateObj = new Date(b.scheduledTime);
+    const hour = dateObj.getHours();
+    return hour === parseInt(filters.hour, 10);
+  });
 
   return (
     <div className="admin-booking-page-container">
@@ -86,7 +102,7 @@ export default function BookingManagementPage() {
             <option value="">All status</option>
             <option value="PENDING">Pending</option>
             <option value="CONFIRMED">Confirmed</option>
-            <option value="PROCESSING">Processing</option>
+            <option value="FAILED">Failed</option>
             <option value="COMPLETED">Completed</option>
             <option value="CANCELLED">Cancelled</option>
             <option value="NOSHOW">No-show</option>
@@ -107,6 +123,34 @@ export default function BookingManagementPage() {
             className="booking-date-input"
             placeholder="mm/dd/yyyy"
           />
+        </div>
+
+        {/* Hour Dropdown */}
+        <div className="booking-select-wrapper">
+          <select
+            value={filters.hour}
+            onChange={(e) =>
+              setFilters({ ...filters, hour: e.target.value })
+            }
+            className="booking-select"
+          >
+            <option value="">Tất cả giờ</option>
+            <option value="7">07:00 - 08:00</option>
+            <option value="8">08:00 - 09:00</option>
+            <option value="9">09:00 - 10:00</option>
+            <option value="10">10:00 - 11:00</option>
+            <option value="11">11:00 - 12:00</option>
+            <option value="12">12:00 - 13:00</option>
+            <option value="13">13:00 - 14:00</option>
+            <option value="14">14:00 - 15:00</option>
+            <option value="15">15:00 - 16:00</option>
+            <option value="16">16:00 - 17:00</option>
+            <option value="17">17:00 - 18:00</option>
+            <option value="18">18:00 - 19:00</option>
+          </select>
+          <svg className="booking-select-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
 
         {/* Search Input */}
@@ -130,7 +174,7 @@ export default function BookingManagementPage() {
       {/* Booking List Table (Data Card) */}
       <div className="booking-data-card">
         <BookingTable
-          bookings={bookings}
+          bookings={filteredBookings}
           loading={loading}
           onRowClick={setSelectedBooking}
         />
@@ -138,7 +182,7 @@ export default function BookingManagementPage() {
         {/* Pagination Panel */}
         <div className="booking-pagination-row">
           <div className="booking-pagination-info">
-            Hiển thị {bookings.length > 0 ? 1 : 0} đến {bookings.length} trong {bookings.length} kết quả
+            Hiển thị {filteredBookings.length > 0 ? 1 : 0} đến {filteredBookings.length} trong {filteredBookings.length} kết quả
           </div>
           <div className="booking-pagination-nav">
             <span className="booking-pagination-label">Trang {filters.page}</span>
@@ -156,7 +200,7 @@ export default function BookingManagementPage() {
               </button>
               <button
                 type="button"
-                disabled={bookings.length === 0 || loading}
+                disabled={filteredBookings.length === 0 || loading}
                 onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
                 className="booking-pagination-btn"
               >

@@ -212,34 +212,39 @@
 }
 
 .booking-th.customer {
-  width: 24%;
-  flex: 0 0 24%;
+  width: 22%;
+  flex: 0 0 22%;
   padding-left: 24px;
 }
 
 .booking-th.phone {
-  width: 14%;
-  flex: 0 0 14%;
-}
-
-.booking-th.plate {
-  width: 15%;
-  flex: 0 0 15%;
-}
-
-.booking-th.service {
-  width: 22%;
-  flex: 0 0 22%;
-}
-
-.booking-th.status {
   width: 12%;
   flex: 0 0 12%;
 }
 
+.booking-th.plate {
+  width: 11%;
+  flex: 0 0 11%;
+}
+
+.booking-th.time {
+  width: 17%;
+  flex: 0 0 17%;
+}
+
+.booking-th.service {
+  width: 18%;
+  flex: 0 0 18%;
+}
+
+.booking-th.status {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
 .booking-th.amount {
-  width: 13%;
-  flex: 0 0 13%;
+  width: 10%;
+  flex: 0 0 10%;
   align-items: flex-end;
   text-align: right;
   padding-right: 24px;
@@ -253,7 +258,8 @@
   align-items: center;
   padding: 0px;
   width: 100%;
-  height: 65px;
+  min-height: 65px;
+  height: auto;
   background: #FFFFFF;
   border-bottom: 1px solid #E7EEFF;
   cursor: pointer;
@@ -265,7 +271,8 @@
 }
 
 .booking-tbody-row:nth-child(even) {
-  height: 66px;
+  min-height: 66px;
+  height: auto;
   border-top: 1px solid rgba(231, 238, 255, 0.5);
 }
 
@@ -273,15 +280,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 20.5px 12px;
-  height: 65px;
+  padding: 12px;
+  min-height: 65px;
+  height: auto;
   justify-content: center;
 }
 
 .booking-td.customer {
-  width: 24%;
-  flex: 0 0 24%;
-  padding: 0 12px 0 24px;
+  width: 22%;
+  flex: 0 0 22%;
+  padding: 12px 12px 12px 24px;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
@@ -313,15 +321,14 @@
   font-size: 14px;
   line-height: 20px;
   color: #111C2C;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .booking-td.phone {
-  width: 14%;
-  flex: 0 0 14%;
-  padding: 22px 12px 23px;
+  width: 12%;
+  flex: 0 0 12%;
+  padding: 12px;
 }
 
 .booking-phone-text {
@@ -333,8 +340,21 @@
 }
 
 .booking-td.plate {
-  width: 15%;
-  flex: 0 0 15%;
+  width: 11%;
+  flex: 0 0 11%;
+}
+
+.booking-td.time {
+  width: 17%;
+  flex: 0 0 17%;
+}
+
+.booking-time-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #3D494D;
 }
 
 .booking-plate-badge {
@@ -353,9 +373,9 @@
 }
 
 .booking-td.service {
-  width: 22%;
-  flex: 0 0 22%;
-  padding: 22px 12px 23px;
+  width: 18%;
+  flex: 0 0 18%;
+  padding: 12px;
 }
 
 .booking-service-text {
@@ -364,15 +384,14 @@
   font-size: 14px;
   line-height: 20px;
   color: #3D494D;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
   width: 100%;
 }
 
 .booking-td.status {
-  width: 12%;
-  flex: 0 0 12%;
+  width: 10%;
+  flex: 0 0 10%;
 }
 
 /* Status Capsules */
@@ -407,10 +426,14 @@
   color: #059669;
 }
 
-.booking-status-badge.cancelled,
-.booking-status-badge.failed {
+.booking-status-badge.cancelled {
   background: #DEE8FF;
   color: #3D494D;
+}
+
+.booking-status-badge.failed {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
 }
 
 .booking-status-badge.noshow {
@@ -419,10 +442,10 @@
 }
 
 .booking-td.amount {
-  width: 13%;
-  flex: 0 0 13%;
+  width: 10%;
+  flex: 0 0 10%;
   align-items: flex-end;
-  padding: 22px 24px 23px 12px;
+  padding: 12px 24px 12px 12px;
 }
 
 .booking-amount-text {
