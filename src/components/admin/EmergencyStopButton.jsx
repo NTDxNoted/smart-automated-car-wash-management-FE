@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import adminBookingService from "../../services/adminBookingService";
 
 export default function EmergencyStopButton({
@@ -21,18 +21,17 @@ export default function EmergencyStopButton({
       try {
         setLoading(true);
 
-        // await emergencyService.stop(
-        //   bookingId
-        // );
+        await adminBookingService.emergencyStop(bookingId, { reason: "Dừng khẩn cấp máy rửa" });
 
         toast.error(
-          "Đã kích hoạt dừng khẩn cấp"
+          "Đã kích hoạt dừng khẩn cấp!",
+          { icon: "🚨", duration: 4000 }
         );
 
         await onRefresh?.();
       } catch (error) {
         toast.error(
-          "Không thể dừng khẩn cấp"
+          "Không thể thực hiện dừng khẩn cấp"
         );
       } finally {
         setLoading(false);
