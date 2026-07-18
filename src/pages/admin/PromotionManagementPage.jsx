@@ -84,7 +84,7 @@ const PromotionManagementPage = () => {
       minTierID: mappedTierId,
       discountValue: Number(form.value),
       value: Number(form.value),
-      maxUsage: Number(form.maxUsage),
+      maxUsage: form.maxUsage !== '' && form.maxUsage !== null && form.maxUsage !== undefined ? Number(form.maxUsage) : null,
       startDate: form.startDate,
       endDate: form.endDate,
       isActive: form.isActive !== undefined ? form.isActive : true,
@@ -137,6 +137,25 @@ const PromotionManagementPage = () => {
       default:
         return <span className="promo-tier-badge member">{tierName}</span>;
     }
+  };
+
+  const isPromoActive = (item) => {
+    if (!item.isActive) return false;
+    const now = new Date();
+    const vnTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    const todayStr = vnTime.toISOString().split('T')[0];
+    
+    if (item.startDate) {
+      const startStr = item.startDate.split('T')[0];
+      if (todayStr < startStr) return false;
+    }
+    
+    if (item.endDate) {
+      const endStr = item.endDate.split('T')[0];
+      if (todayStr > endStr) return false;
+    }
+    
+    return true;
   };
 
   return (
@@ -234,10 +253,10 @@ const PromotionManagementPage = () => {
                         type="button"
                         onClick={() => handleToggle(item)}
                         disabled={togglingIds.includes(item.id)}
-                        className={`promo-status-capsule ${item.isActive ? 'active' : 'inactive'}`}
-                        title="Click để đổi trạng thái"
+                        className={`promo-status-capsule ${isPromoActive(item) ? 'active' : 'inactive'}`}
+                        title="Click để đổi trạng thái thủ công"
                       >
-                        {item.isActive ? 'Đang hoạt động' : 'Ngưng hoạt động'}
+                        {isPromoActive(item) ? 'Đang hoạt động' : 'Ngưng hoạt động'}
                       </button>
                     </td>
 
