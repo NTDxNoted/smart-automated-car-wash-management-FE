@@ -37,7 +37,6 @@ export default function BookingManagementPage() {
         status: filters.status,
         date: filters.date,
         keyword: filters.keyword,
-        page: filters.page
       };
       const res = await adminBookingService.getAll(apiFilters);
       const rawList = res.data?.data || res.data || [];
@@ -63,7 +62,7 @@ export default function BookingManagementPage() {
 
   useEffect(() => {
     fetchBookings();
-  }, [filters.status, filters.date, filters.keyword, filters.page]);
+  }, [filters.status, filters.date, filters.keyword]);
 
   useEffect(() => {
     const handleDataUpdate = () => {
@@ -74,7 +73,9 @@ export default function BookingManagementPage() {
     return () => {
       window.removeEventListener("autowash_data_updated", handleDataUpdate);
     };
-  }, [filters.status, filters.date, filters.keyword, filters.page]);
+  }, [filters.status, filters.date, filters.keyword]);
+
+  const PAGE_SIZE = 10;
 
   const filteredBookings = bookings.filter(b => {
     if (!filters.hour) return true;
@@ -83,6 +84,13 @@ export default function BookingManagementPage() {
     const hour = dateObj.getHours();
     return hour === parseInt(filters.hour, 10);
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredBookings.length / PAGE_SIZE));
+
+  const paginatedBookings = filteredBookings.slice(
+    (filters.page - 1) * PAGE_SIZE,
+    filters.page * PAGE_SIZE
+  );
 
   return (
     <div className="admin-booking-page-container">
@@ -130,7 +138,7 @@ export default function BookingManagementPage() {
           <select
             value={filters.hour}
             onChange={(e) =>
-              setFilters({ ...filters, hour: e.target.value })
+              setFilters({ ...filters, hour: e.target.value, page: 1 })
             }
             className="booking-select"
           >
@@ -174,7 +182,7 @@ export default function BookingManagementPage() {
       {/* Booking List Table (Data Card) */}
       <div className="booking-data-card">
         <BookingTable
-          bookings={filteredBookings}
+          bookings={paginatedBookings}
           loading={loading}
           onRowClick={setSelectedBooking}
         />
@@ -182,10 +190,10 @@ export default function BookingManagementPage() {
         {/* Pagination Panel */}
         <div className="booking-pagination-row">
           <div className="booking-pagination-info">
-            Hiển thị {filteredBookings.length > 0 ? 1 : 0} đến {filteredBookings.length} trong {filteredBookings.length} kết quả
+            Hiển thị {filteredBookings.length > 0 ? (filters.page - 1) * PAGE_SIZE + 1 : 0} đến {Math.min(filters.page * PAGE_SIZE, filteredBookings.length)} trong {filteredBookings.length} kết quả
           </div>
           <div className="booking-pagination-nav">
-            <span className="booking-pagination-label">Trang {filters.page}</span>
+            <span className="booking-pagination-label">Trang {filters.page} / {totalPages}</span>
             <div className="booking-pagination-actions">
               <button
                 type="button"
@@ -200,7 +208,7 @@ export default function BookingManagementPage() {
               </button>
               <button
                 type="button"
-                disabled={filteredBookings.length === 0 || loading}
+                disabled={filters.page >= totalPages || loading}
                 onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
                 className="booking-pagination-btn"
               >
