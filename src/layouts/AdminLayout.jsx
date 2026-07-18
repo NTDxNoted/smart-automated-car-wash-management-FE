@@ -318,7 +318,7 @@ export default function AdminLayout() {
           read: false
         };
         newNotifications.push(notif);
-        toast.info(`Đơn đặt lịch đổi trạng thái sang: ${data.newStatus}`, { icon: '🔄', duration: 4000 });
+        toast(`Đơn đặt lịch đổi trạng thái sang: ${data.newStatus}`, { icon: '🔄', duration: 4000 });
       } else if (event === "NewCustomer") {
         const notif = {
           id: `cust-${data.customerId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

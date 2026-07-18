@@ -63,6 +63,8 @@ export const getRfmReport = async ({ signal } = {}) => {
   const { data } = await adminAxiosInstance.get('/admin/reports/rfm', { signal });
   const rawList = data.data || data || [];
   return rawList.map(item => ({
+    customerId: item.customerId ?? item.CustomerId,
+    phone: item.phone ?? item.Phone,
     customer: item.fullName ?? item.FullName ?? "Vãng lai",
     recency: item.recencyDays ?? item.RecencyDays ?? 9999,
     frequency: item.frequency ?? item.Frequency ?? 0,

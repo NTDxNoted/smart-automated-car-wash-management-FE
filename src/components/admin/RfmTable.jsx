@@ -227,7 +227,7 @@ export default function RfmTable({ data, initialSegment = "" }) {
 
           <tbody>
             {paginatedData.map((row) => (
-              <tr key={row.customer} className="rfm-tbody-row">
+              <tr key={row.customerId || row.phone || row.customer} className="rfm-tbody-row">
                 <td className="rfm-td customer">{row.customer}</td>
                 <td className="rfm-td recency">{row.recency} ngày</td>
                 <td className="rfm-td frequency">{row.frequency} lần</td>

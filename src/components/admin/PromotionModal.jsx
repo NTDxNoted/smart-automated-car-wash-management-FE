@@ -13,6 +13,11 @@ const defaultForm = {
   isActive: true,
 };
 
+const formatDateForInput = (dateStr) => {
+  if (!dateStr) return '';
+  return dateStr.slice(0, 10);
+};
+
 const PromotionModal = ({
   open,
   onClose,
@@ -27,6 +32,8 @@ const PromotionModal = ({
       setForm({
         ...defaultForm,
         ...initialData,
+        startDate: formatDateForInput(initialData.startDate),
+        endDate: formatDateForInput(initialData.endDate),
         isActive: initialData.isActive !== undefined ? initialData.isActive : true,
       });
     } else {
