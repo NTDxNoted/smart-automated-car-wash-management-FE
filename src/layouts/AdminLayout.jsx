@@ -307,6 +307,14 @@ export default function AdminLayout() {
         };
         newNotifications.push(notif);
         toast.success(`Lịch đặt mới từ ${data.customerName}!`, { icon: '📅', duration: 4000 });
+
+        // Cập nhật refs tránh thông báo trùng lặp khi chạy fetch sau đó
+        prevBookingsRef.current[data.bookingId] = {
+          status: 'Pending',
+          customerName: data.customerName,
+          licensePlate: data.licensePlate,
+          serviceName: data.serviceName
+        };
       } else if (event === "BookingStatusChanged") {
         const notif = {
           id: `status-${data.bookingId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -319,6 +327,18 @@ export default function AdminLayout() {
         };
         newNotifications.push(notif);
         toast(`Đơn đặt lịch đổi trạng thái sang: ${data.newStatus}`, { icon: '🔄', duration: 4000 });
+
+        // Cập nhật refs tránh thông báo trùng lặp khi chạy fetch sau đó
+        if (prevBookingsRef.current[data.bookingId]) {
+          prevBookingsRef.current[data.bookingId].status = data.newStatus;
+        } else {
+          prevBookingsRef.current[data.bookingId] = {
+            status: data.newStatus,
+            customerName: data.customerName,
+            licensePlate: data.licensePlate,
+            serviceName: data.serviceName || 'Dịch vụ'
+          };
+        }
       } else if (event === "NewCustomer") {
         const notif = {
           id: `cust-${data.customerId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -331,6 +351,12 @@ export default function AdminLayout() {
         };
         newNotifications.push(notif);
         toast.success(`Khách hàng mới đăng ký: ${data.fullName}!`, { icon: '👤', duration: 4000 });
+
+        // Cập nhật refs tránh thông báo trùng lặp khi chạy fetch sau đó
+        prevCustomersRef.current[data.customerId] = {
+          fullName: data.fullName,
+          phone: data.phone
+        };
       }
 
       if (newNotifications.length > 0) {
