@@ -82,57 +82,59 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                     : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-300 hover:shadow-md hover:scale-[1.005]'
                 }`}
               >
-                {/* Upper row: Icon & Badge/Checkmark */}
-                <div className="flex items-center justify-between w-full">
-                  <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                      isSelected ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-2xl">{meta.icon}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${meta.badgeClass}`}
+                <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '2px' }}>
+                  {/* Upper row: Icon & Badge/Checkmark */}
+                  <div className="flex items-center justify-between w-full">
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${
+                        isSelected ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600'
+                      }`}
                     >
-                      {meta.badge}
-                    </span>
-                    {isSelected && (
-                      <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md animate-fade-in shrink-0">
-                        <span className="material-symbols-outlined text-[14px] font-extrabold">check</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
+                      <span className="material-symbols-outlined text-2xl">{meta.icon}</span>
+                    </div>
 
-                {/* Service Info */}
-                <div className="mt-4 flex-grow">
-                  <h3 className="text-lg font-bold tracking-tight leading-snug group-hover:text-cyan-600 transition-colors duration-200">
-                    {service.name}
-                  </h3>
-                  <p
-                    className={`text-xs mt-1.5 leading-relaxed overflow-hidden text-ellipsis line-clamp-2 h-9 ${
-                      isSelected ? 'text-slate-500' : 'text-slate-400'
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${meta.badgeClass}`}
+                      >
+                        {meta.badge}
+                      </span>
+                      {isSelected && (
+                        <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md animate-fade-in shrink-0">
+                          <span className="material-symbols-outlined text-[14px] font-extrabold">check</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Service Info */}
+                  <div className="mt-4 flex-grow">
+                    <h3 className="text-lg font-bold tracking-tight leading-snug group-hover:text-cyan-600 transition-colors duration-200">
+                      {service.name}
+                    </h3>
+                    <p
+                      className={`text-xs mt-1.5 leading-relaxed overflow-hidden text-ellipsis line-clamp-2 h-9 ${
+                        isSelected ? 'text-slate-500' : 'text-slate-400'
+                      }`}
+                    >
+                      {service.description || (locale === 'en' ? 'Premium car care service' : 'Dịch vụ chăm sóc xe chuẩn cao cấp')}
+                    </p>
+                  </div>
+
+                  {/* Lower row: Duration & Price */}
+                  <div
+                    className={`mt-4 pt-4 border-t w-full flex items-center justify-between ${
+                      isSelected ? 'border-cyan-100' : 'border-slate-100'
                     }`}
                   >
-                    {service.description || (locale === 'en' ? 'Premium car care service' : 'Dịch vụ chăm sóc xe chuẩn cao cấp')}
-                  </p>
-                </div>
-
-                {/* Lower row: Duration & Price */}
-                <div
-                  className={`mt-4 pt-4 border-t w-full flex items-center justify-between ${
-                    isSelected ? 'border-cyan-100' : 'border-slate-100'
-                  }`}
-                >
-                  <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-cyan-600' : 'text-slate-400'}`}>
-                    <span className="material-symbols-outlined text-[16px]">schedule</span>
-                    <span className="font-medium">{meta.duration}</span>
+                    <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-cyan-600' : 'text-slate-400'}`}>
+                      <span className="material-symbols-outlined text-[16px]">schedule</span>
+                      <span className="font-medium">{meta.duration}</span>
+                    </div>
+                    <span className="text-lg font-extrabold font-sans tracking-tight text-cyan-600">
+                      {formatPrice(service.price)}
+                    </span>
                   </div>
-                  <span className="text-lg font-extrabold font-sans tracking-tight text-cyan-600">
-                    {formatPrice(service.price)}
-                  </span>
                 </div>
               </button>
             );
