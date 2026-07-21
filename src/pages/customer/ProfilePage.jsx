@@ -6,6 +6,22 @@ import TierBadge from '../../components/profile/TierBadge';
 import TierProgressBar from '../../components/profile/TierProgressBar';
 import VehicleList from '../../components/profile/VehicleList';
 
+export function resolveEffectiveTier(rawTier, totalSpending = 0) {
+  let calculated = 'MEMBER';
+  if (totalSpending >= 3000000) calculated = 'PLATINUM';
+  else if (totalSpending >= 1500000) calculated = 'GOLD';
+  else if (totalSpending >= 500000) calculated = 'SILVER';
+
+  const tStr = String(rawTier !== undefined && rawTier !== null ? rawTier : '').trim().toUpperCase();
+  let explicit = 'MEMBER';
+  if (tStr === '4' || tStr === 'PLATINUM') explicit = 'PLATINUM';
+  else if (tStr === '3' || tStr === 'GOLD') explicit = 'GOLD';
+  else if (tStr === '2' || tStr === 'SILVER') explicit = 'SILVER';
+
+  const tierOrder = { MEMBER: 1, SILVER: 2, GOLD: 3, PLATINUM: 4 };
+  return tierOrder[calculated] > tierOrder[explicit] ? calculated : explicit;
+}
+
 export default function ProfilePage() {
   const { auth, setAuth } = useAuth();
   const { t, locale } = useLanguage();
@@ -89,6 +105,8 @@ export default function ProfilePage() {
     setEditMode(false);
   };
 
+  const effectiveTier = resolveEffectiveTier(profile?.tier, profile?.totalSpending);
+
   // ── Loading skeleton ────────────────────────────────────────────────────────
   if (loadingProfile) {
     return (
@@ -145,7 +163,7 @@ export default function ProfilePage() {
               <div className="space-y-2.5 min-w-0">
                 {/* Tier badge */}
                 <div>
-                  <TierBadge tier={profile?.tier} size="sm" />
+                  <TierBadge tier={effectiveTier} size="sm" />
                 </div>
 
                 {/* Name & Editing */}
@@ -256,7 +274,7 @@ export default function ProfilePage() {
 
           {/* Bottom Row: Tier progress bar */}
           <div className="w-full" style={{ marginBottom: '24px' }}>
-            <TierProgressBar tier={profile?.tier} totalSpending={profile?.totalSpending} />
+            <TierProgressBar tier={effectiveTier} totalSpending={profile?.totalSpending} />
           </div>
 
           <hr className="border-slate-200/60" style={{ marginBottom: '24px' }} />

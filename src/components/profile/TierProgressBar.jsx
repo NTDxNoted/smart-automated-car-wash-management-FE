@@ -33,12 +33,19 @@ const formatVND = (amount, locale) =>
 export default function TierProgressBar({ tier = 'MEMBER', totalSpending = 0 }) {
   const { t, locale } = useLanguage();
   
+  let calculated = 'MEMBER';
+  if (totalSpending >= 3000000) calculated = 'PLATINUM';
+  else if (totalSpending >= 1500000) calculated = 'GOLD';
+  else if (totalSpending >= 500000) calculated = 'SILVER';
+
   const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
-  let normalizedTier = 'MEMBER';
-  if (tStr === '4' || tStr === 'PLATINUM') normalizedTier = 'PLATINUM';
-  else if (tStr === '3' || tStr === 'GOLD') normalizedTier = 'GOLD';
-  else if (tStr === '2' || tStr === 'SILVER') normalizedTier = 'SILVER';
-  else if (tStr === '1' || tStr === 'MEMBER') normalizedTier = 'MEMBER';
+  let explicit = 'MEMBER';
+  if (tStr === '4' || tStr === 'PLATINUM') explicit = 'PLATINUM';
+  else if (tStr === '3' || tStr === 'GOLD') explicit = 'GOLD';
+  else if (tStr === '2' || tStr === 'SILVER') explicit = 'SILVER';
+
+  const tierOrder = { MEMBER: 1, SILVER: 2, GOLD: 3, PLATINUM: 4 };
+  const normalizedTier = tierOrder[calculated] > tierOrder[explicit] ? calculated : explicit;
 
   const threshold = TIER_THRESHOLDS[normalizedTier];
 
