@@ -64,8 +64,8 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
         {t('step1Title') || 'Bước 1: Chọn dịch vụ chăm sóc xe'}
       </h2>
 
-      <div className="max-h-[460px] overflow-y-auto pr-2 custom-booking-scrollbar">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 py-1">
+      <div className="max-h-[460px] overflow-y-auto pr-4 pl-1 py-1 custom-booking-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-2">
           {servicesList.map((service) => {
             const isSelected = bookingData.service?.id === service.id;
             const meta = getServiceMeta(service.name);
