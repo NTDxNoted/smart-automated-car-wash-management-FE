@@ -45,7 +45,16 @@ export default function StepConfirm({ bookingData, onBack, user }) {
   }
 
   const selectedReward = rewardsList.find(r => String(r.id) === String(selectedRewardId));
-  let rawRewardDiscount = selectedReward ? (selectedReward.discountValue || selectedReward.discountAmount || 0) : 0;
+  let rawRewardDiscount = 0;
+  if (selectedReward) {
+    const val = selectedReward.discountValue || selectedReward.discountAmount || 0;
+    const typeStr = String(selectedReward.discountType || selectedReward.discounttype || '').toLowerCase();
+    if (typeStr.includes('percent')) {
+      rawRewardDiscount = Math.floor(baseAmount * (val / 100));
+    } else {
+      rawRewardDiscount = val;
+    }
+  }
   let rewardDiscount = Math.min(rawRewardDiscount, baseAmount);
 
   const finalAmount = Math.max(0, baseAmount - tierDiscount - promotionDiscount - rewardDiscount);
@@ -259,10 +268,15 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                       <option value="">{t('rewardNoUse') || 'Không đổi điểm'}</option>
                       {rewardsList.map(r => {
                         const isEnough = (user?.points || 0) >= r.pointsRequired;
-                        const val = (r.discountValue || r.discountAmount || 0).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN');
+                        const rawVal = r.discountValue || r.discountAmount || 0;
+                        const typeStr = String(r.discountType || r.discounttype || '').toLowerCase();
+                        const calculatedDiscount = typeStr.includes('percent')
+                          ? Math.floor(baseAmount * (rawVal / 100))
+                          : rawVal;
+                        const valDisplay = calculatedDiscount.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN');
                         return (
                           <option key={r.id} value={r.id} disabled={!isEnough}>
-                            {r.name} — Đổi {r.pointsRequired} điểm (Giảm {val}đ){!isEnough ? ' — Không đủ điểm' : ''}
+                            {r.name} — Đổi {r.pointsRequired} điểm (Giảm {valDisplay}đ){!isEnough ? ' — Không đủ điểm' : ''}
                           </option>
                         );
                       })}
