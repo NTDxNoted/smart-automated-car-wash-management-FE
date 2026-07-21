@@ -1,5 +1,6 @@
-import { createContext, useState, useCallback, useContext } from "react";
+import { createContext, useState, useCallback, useContext, useEffect } from "react";
 import { logout as logoutService } from "../services/authService";
+import { profileService, resolveEffectiveTier } from "../services/profileService";
 
 /**
  * AuthContext — global auth state.
@@ -10,6 +11,7 @@ import { logout as logoutService } from "../services/authService";
  *   customerId   : string | null,
  *   fullName     : string | null,
  *   tier         : 'MEMBER' | 'SILVER' | 'GOLD' | 'PLATINUM' | null,
+ *   totalSpending: number | null,
  *   suspendedUntil: string | null,  // ISO date or null
  *   role         : 'ADMIN' | 'MEMBER' | null,
  * }
@@ -21,6 +23,7 @@ const DEFAULT_AUTH = {
   adminId: null,
   fullName: null,
   tier: null,
+  totalSpending: 0,
   suspendedUntil: null,
   role: null,
 };
@@ -39,7 +42,9 @@ function loadFromStorage() {
     const memberRaw = localStorage.getItem("member_user");
 
     if (memberToken && memberRaw) {
-      return { token: memberToken, ...JSON.parse(memberRaw) };
+      const parsed = JSON.parse(memberRaw);
+      const effectiveTier = resolveEffectiveTier(parsed.tier, parsed.totalSpending || 0);
+      return { token: memberToken, ...parsed, tier: effectiveTier };
     }
   } catch (_) {}
   return DEFAULT_AUTH;
@@ -56,6 +61,34 @@ export const AuthContext = createContext({
 
 export function AuthProvider({ children }) {
   const [auth, setAuthState] = useState(loadFromStorage);
+
+  // Auto-sync member profile to resolve real-time tier & spending from API
+  useEffect(() => {
+    if (auth.token && auth.role === "MEMBER") {
+      profileService.getProfile()
+        .then(profile => {
+          if (profile) {
+            const effectiveTier = resolveEffectiveTier(profile.tier, profile.totalSpending);
+            const updated = {
+              ...auth,
+              fullName: profile.fullName || auth.fullName,
+              tier: effectiveTier,
+              totalSpending: profile.totalSpending ?? auth.totalSpending ?? 0,
+            };
+            setAuthState(updated);
+            localStorage.setItem("member_user", JSON.stringify({
+              customerId: auth.customerId,
+              fullName: updated.fullName,
+              tier: updated.tier,
+              totalSpending: updated.totalSpending,
+              suspendedUntil: auth.suspendedUntil,
+              role: "MEMBER",
+            }));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [auth.token, auth.role]);
 
   const setAuth = useCallback((payload) => {
     setAuthState(payload ?? DEFAULT_AUTH);

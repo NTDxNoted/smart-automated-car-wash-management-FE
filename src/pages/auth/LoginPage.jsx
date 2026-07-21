@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { login } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext";
 import { adminLogin } from "../../services/adminAuthService";
+import { profileService, resolveEffectiveTier } from "../../services/profileService";
 import bg from "../../assets/img/bg-car.png";
 
 // ─── Validators ─────────────────────────────────────────────────────────────
@@ -190,24 +191,34 @@ export default function LoginPage() {
       });
 
       localStorage.setItem("member_token", data.token);
-      localStorage.setItem(
-        "member_user",
-        JSON.stringify({
-          customerId: data.customerId,
-          fullName: data.fullName,
-          tier: data.tier,
-          suspendedUntil: data.suspendedUntil ?? null,
-          role: "MEMBER",
-        })
-      );
+
+      let effectiveTier = resolveEffectiveTier(data.tier, data.totalSpending || 0);
+      let totalSpending = data.totalSpending || 0;
+      let fullName = data.fullName;
+
+      try {
+        const profile = await profileService.getProfile();
+        if (profile) {
+          totalSpending = profile.totalSpending ?? totalSpending;
+          effectiveTier = resolveEffectiveTier(profile.tier || data.tier, totalSpending);
+          fullName = profile.fullName || fullName;
+        }
+      } catch (_) {}
+
+      const memberUserPayload = {
+        customerId: data.customerId,
+        fullName: fullName,
+        tier: effectiveTier,
+        totalSpending: totalSpending,
+        suspendedUntil: data.suspendedUntil ?? null,
+        role: "MEMBER",
+      };
+
+      localStorage.setItem("member_user", JSON.stringify(memberUserPayload));
 
       setAuth({
         token: data.token,
-        customerId: data.customerId,
-        fullName: data.fullName,
-        tier: data.tier,
-        suspendedUntil: data.suspendedUntil ?? null,
-        role: "MEMBER",
+        ...memberUserPayload,
       });
 
       toast.success(`Chào mừng, ${data.fullName}!`);
