@@ -99,12 +99,15 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                       >
                         {meta.badge}
                       </span>
-                      {isSelected && (
-                        <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md animate-fade-in shrink-0">
-                          <span className="material-symbols-outlined text-[14px] font-extrabold">check</span>
-                        </span>
-                      )}
                     </div>
+
+                    {isSelected && (
+                      <span
+                        className="absolute -top-2.5 -right-2.5 w-6.5 h-6.5 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md border-2 border-white animate-fade-in shrink-0 z-10"
+                      >
+                        <span className="material-symbols-outlined text-[12px] font-black">check</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Service Info */}
