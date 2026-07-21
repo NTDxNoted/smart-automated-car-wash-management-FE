@@ -126,8 +126,8 @@
 }
 
 .promo-th.name {
-  width: 22%;
-  flex: 0 0 22%;
+  width: 20%;
+  flex: 0 0 20%;
   min-width: 0;
   overflow: hidden;
 }
@@ -161,10 +161,12 @@
 }
 
 .promo-th.limit {
-  width: 10%;
-  flex: 0 0 10%;
+  width: 12%;
+  flex: 0 0 12%;
   min-width: 0;
   overflow: hidden;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .promo-th.status {
@@ -264,8 +266,8 @@
 }
 
 .promo-td.name {
-  width: 22%;
-  flex: 0 0 22%;
+  width: 20%;
+  flex: 0 0 20%;
   min-width: 0;
 }
 
@@ -378,10 +380,12 @@
 }
 
 .promo-td.limit {
-  width: 10%;
-  flex: 0 0 10%;
+  width: 12%;
+  flex: 0 0 12%;
   min-width: 0;
   overflow: hidden;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .promo-limit-text {

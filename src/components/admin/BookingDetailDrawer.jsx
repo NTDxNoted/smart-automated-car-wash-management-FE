@@ -6,7 +6,6 @@ import StatusUpdateDropdown from "./StatusUpdateDropdown";
 import EmergencyStopButton from "./EmergencyStopButton";
 import "./BookingDetailDrawer.css";
 
-
 export default function BookingDetailDrawer({
   booking,
   open,
@@ -18,6 +17,11 @@ export default function BookingDetailDrawer({
   const [plate, setPlate] = useState("");
   const [updatingPlate, setUpdatingPlate] = useState(false);
   const [checkingIn, setCheckingIn] = useState(false);
+
+  // Lifted payment states
+  const [paymentMethod, setPaymentMethod] = useState("CASH");
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     if (booking && open) {
@@ -32,8 +36,19 @@ export default function BookingDetailDrawer({
       setLoading(true);
       const res = await adminBookingService.getDetail(booking.id);
       const data = res.data?.data || res.data || booking;
+      if (data) {
+        data.id = data.bookingID ?? data.bookingId ?? data.id ?? booking.id;
+      }
       setDetails(data);
       setPlate(data.licensePlate || "");
+
+      const isBookingPaid = data.paymentStatus === "Paid" || data.isPaid || data.paymentAt || false;
+      setPaymentConfirmed(isBookingPaid);
+      if (data.paymentMethod) {
+        setPaymentMethod(data.paymentMethod.toUpperCase());
+      } else {
+        setPaymentMethod("CASH");
+      }
     } catch (err) {
       console.error("Fetch booking detail error:", err);
       setDetails(booking);
@@ -82,36 +97,75 @@ export default function BookingDetailDrawer({
     }
   };
 
-  // Determine checkin status
-  const checkInTimeVal = currentDetails.checkInTime || currentDetails.checkinTime || currentDetails.CheckInTime;
-  return (
-    <div className="booking-drawer-overlay">
-      <div className="booking-drawer-container">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="booking-drawer-header">
-            <div className="booking-drawer-title-wrapper">
-              <h2 className="booking-drawer-title">Chi tiết Đặt lịch</h2>
-              <p className="booking-drawer-subtitle">Mã booking: {booking.id}</p>
-            </div>
-            <button onClick={onClose} className="booking-drawer-close-btn">
-              ✕
-            </button>
-          </div>
+  const handleConfirmPayment = async () => {
+    try {
+      setPaying(true);
+      const res = await adminBookingService.payment(booking.id, {
+        paymentMethod,
+        confirmed: true,
+      });
+      toast.success("Ghi nhận thanh toán thành công!");
+      onRefresh?.(booking.id, "PAYMENT", paymentMethod);
+      fetchDetail();
+    } catch (error) {
+      console.error("Lỗi ghi nhận thanh toán:", error);
+      const serverMsg = error.response?.data?.message || error.response?.data?.error;
+      toast.error(serverMsg || "Không thể ghi nhận thanh toán");
+    } finally {
+      setPaying(false);
+    }
+  };
 
+  const isPending = currentDetails.status?.toUpperCase() === "PENDING";
+  const isPaid = currentDetails.status?.toUpperCase() === "COMPLETED" || currentDetails.paymentStatus === "Paid" || currentDetails.isPaid || currentDetails.paymentAt || false;
+  const checkInTimeVal = currentDetails.checkInTime || currentDetails.checkinTime || currentDetails.CheckInTime;
+
+  // No-show detection (overdue checkin by 15 mins or explicit status)
+  const isNoShowStatus = currentDetails.status?.toUpperCase() === "NOSHOW" || currentDetails.status?.toUpperCase() === "NO_SHOW" || currentDetails.status?.toUpperCase() === "NO-SHOW";
+  const scheduledDate = currentDetails.scheduledTime ? new Date(currentDetails.scheduledTime) : null;
+  const isTimeOverdue = scheduledDate && !checkInTimeVal && (new Date() - scheduledDate) > 15 * 60 * 1000;
+  const isNoShow = isNoShowStatus || (isPending && isTimeOverdue);
+
+  const formattedPaymentTime = currentDetails.paymentAt
+    ? new Date(currentDetails.paymentAt).toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }) + " " + new Date(currentDetails.paymentAt).toLocaleDateString("vi-VN")
+    : "";
+
+  return (
+    <div className="booking-drawer-overlay" onClick={onClose}>
+      <div className="booking-drawer-container" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="booking-drawer-header">
+          <div className="booking-drawer-title-wrapper">
+            <h2 className="booking-drawer-title">Chi tiết Đặt lịch</h2>
+            <p className="booking-drawer-subtitle">Mã booking: {booking.id}</p>
+          </div>
+          <button onClick={onClose} className="booking-drawer-close-btn">
+            ✕
+          </button>
+        </div>
+
+        {/* Scrollable Body */}
+        <div className="booking-drawer-body">
           {loading && !details ? (
-            <div className="py-12 text-center text-slate-400">
+            <div className="py-12 text-center text-slate-400 w-full">
               <div className="booking-drawer-spinner mb-2"></div>
               <p className="text-xs">Đang tải chi tiết...</p>
             </div>
           ) : (
-            <div className="space-y-5">
+            <>
               {/* Customer Info */}
               <div className="booking-drawer-section">
-                <h3 className="booking-drawer-section-title">Thông tin Khách hàng</h3>
+                <h3 className="booking-drawer-section-title">
+                  <span className="booking-drawer-section-title-icon"></span>
+                  Thông tin Khách hàng
+                </h3>
                 <div className="booking-drawer-grid">
                   <div className="booking-drawer-row">
-                    <span className="booking-drawer-label">Tên khách:</span>
+                    <span className="booking-drawer-label">Tên khách hàng:</span>
                     <span className="booking-drawer-value highlight">
                       {currentDetails.customerName || "Vãng lai"}
                     </span>
@@ -122,7 +176,7 @@ export default function BookingDetailDrawer({
                       {currentDetails.phone || "-"}
                     </span>
                   </div>
-                  <div className="booking-drawer-row" style={{ alignItems: 'center' }}>
+                  <div className="booking-drawer-row">
                     <span className="booking-drawer-label">Biển số:</span>
                     <div className="booking-drawer-plate-wrapper">
                       <input
@@ -143,8 +197,11 @@ export default function BookingDetailDrawer({
               </div>
 
               {/* Invoice Summary */}
-              <div className="booking-drawer-section">
-                <h3 className="booking-drawer-section-title">Hóa đơn thanh toán</h3>
+              <div className="booking-drawer-section booking-drawer-section-billing">
+                <h3 className="booking-drawer-section-title">
+                  <span className="booking-drawer-section-title-icon"></span>
+                  Hóa đơn thanh toán
+                </h3>
                 <div className="booking-drawer-grid">
                   <div className="booking-drawer-row">
                     <span className="booking-drawer-label">Giá cơ bản:</span>
@@ -154,14 +211,14 @@ export default function BookingDetailDrawer({
                   </div>
                   <div className="booking-drawer-row">
                     <span className="booking-drawer-label">Giảm giá:</span>
-                    <span className="booking-drawer-value" style={{ color: '#f87171' }}>
+                    <span className="booking-drawer-value" style={{ color: '#BA1A1A' }}>
                       -{(currentDetails.discountApplied ?? 0).toLocaleString()}đ
                     </span>
                   </div>
                   {currentDetails.pointsEarned > 0 && (
                     <div className="booking-drawer-row">
                       <span className="booking-drawer-label">Điểm tích lũy:</span>
-                      <span className="booking-drawer-value" style={{ color: '#34d399' }}>
+                      <span className="booking-drawer-value" style={{ color: '#006B5F' }}>
                         +{currentDetails.pointsEarned} pts
                       </span>
                     </div>
@@ -176,29 +233,32 @@ export default function BookingDetailDrawer({
                 </div>
               </div>
 
-              {/* Check-in Block */}
-              <div>
-                {checkInTimeVal ? (
+              {/* Check-in Banner / Button */}
+              <div className="w-full">
+                {isNoShow ? (
+                  <div className="booking-drawer-noshow-banner">
+                    {/* SVG warning icon */}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#BA1A1A"/>
+                    </svg>
+                    <span>Ghi nhận xe không đến (No-show)</span>
+                  </div>
+                ) : checkInTimeVal ? (
                   <div className="booking-drawer-checkin-banner">
-                    <span>✓ Xe đã check-in lúc {new Date(checkInTimeVal).toLocaleString("vi-VN")}</span>
+                    {/* SVG check icon */}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#006B5F"/>
+                    </svg>
+                    <span>Xe đã check-in lúc {new Date(checkInTimeVal).toLocaleTimeString("vi-VN")} {new Date(checkInTimeVal).toLocaleDateString("vi-VN")}</span>
                   </div>
                 ) : (
                   <button
                     onClick={handleCheckIn}
                     disabled={checkingIn || currentDetails.status?.toUpperCase() !== "PENDING"}
                     className="booking-drawer-checkin-btn"
-                    style={{
-                      background: currentDetails.status?.toUpperCase() !== "PENDING" ? 'rgba(255, 255, 255, 0.05)' : undefined,
-                      border: currentDetails.status?.toUpperCase() !== "PENDING" ? '1px solid rgba(255, 255, 255, 0.05)' : undefined,
-                      color: currentDetails.status?.toUpperCase() !== "PENDING" ? '#64748b' : undefined,
-                      cursor: currentDetails.status?.toUpperCase() !== "PENDING" ? 'not-allowed' : undefined,
-                      boxShadow: currentDetails.status?.toUpperCase() !== "PENDING" ? 'none' : undefined
-                    }}
                   >
                     {checkingIn ? (
                       <span className="booking-drawer-spinner"></span>
-                    ) : currentDetails.status?.toUpperCase() !== "PENDING" ? (
-                      `Không thể check-in đơn ${currentDetails.status}`
                     ) : (
                       "Ghi nhận xe đến (Check-in)"
                     )}
@@ -206,8 +266,8 @@ export default function BookingDetailDrawer({
                 )}
               </div>
 
-              {/* Status Update Block */}
-              <div className="space-y-2">
+              {/* Status Update Dropdown */}
+              <div className="w-full">
                 <label className="booking-drawer-form-label">Cập nhật trạng thái</label>
                 <StatusUpdateDropdown
                   booking={currentDetails}
@@ -218,22 +278,47 @@ export default function BookingDetailDrawer({
                 />
               </div>
 
-              {/* Payment Form */}
-              <div className="pt-2">
+              {/* Payment Method Selection Card Wrapper */}
+              <div className="w-full">
                 <PaymentForm
                   booking={currentDetails}
-                  onSuccess={(method) => {
-                    onRefresh?.(booking.id, "PAYMENT", method);
-                    fetchDetail();
-                  }}
+                  method={paymentMethod}
+                  setMethod={setPaymentMethod}
+                  confirmed={paymentConfirmed}
+                  setConfirmed={setPaymentConfirmed}
                 />
               </div>
-            </div>
+            </>
           )}
         </div>
 
-        {/* Emergency Stop at the bottom */}
-        <div className="border-t border-white/5 pt-4 mt-6">
+        {/* Sticky Bottom Actions Container */}
+        <div className="booking-drawer-footer">
+          <button
+            disabled={isPaid || !isPending || isNoShow || (paymentMethod === "CASH" && !paymentConfirmed) || paying}
+            onClick={handleConfirmPayment}
+            className="booking-drawer-pay-btn"
+          >
+            {!isPaid && isPending && !isNoShow && (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }}>
+                <path d="M9 16.2L4.8 12L3.4 13.4L9 19L21 7L19.6 5.6L9 16.2Z" fill="#FFFFFF"/>
+              </svg>
+            )}
+            <span>
+              {paying ? (
+                "Đang ghi nhận..."
+              ) : isNoShow ? (
+                "Ghi nhận xe không đến (No-show)"
+              ) : currentDetails.status?.toUpperCase() === "COMPLETED" ? (
+                "Đã xác nhận thanh toán"
+              ) : !isPending ? (
+                "Chỉ đơn ở trạng thái Pending mới được thanh toán"
+              ) : (
+                "Xác nhận thanh toán"
+              )}
+            </span>
+          </button>
+
           <EmergencyStopButton
             bookingId={booking.id}
             onRefresh={() => {
@@ -241,6 +326,12 @@ export default function BookingDetailDrawer({
               fetchDetail();
             }}
           />
+
+          {isPaid && formattedPaymentTime && (
+            <p className="booking-drawer-payment-note">
+              ✓ Ghi nhận thanh toán bằng {paymentMethod === "TRANSFER" ? "Chuyển khoản" : "Tiền mặt"} lúc {formattedPaymentTime}
+            </p>
+          )}
         </div>
       </div>
     </div>

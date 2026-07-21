@@ -75,6 +75,14 @@ export default function PopularServicesTable({ data }) {
     );
   }
 
+  const COLUMN_FLEX_STYLES = {
+    ranking: { flex: "0 0 12%" },
+    serviceName: { flex: "1 1 35%" },
+    totalWashes: { flex: "0 0 15%" },
+    revenue: { flex: "0 0 20%" },
+    revenueContribution: { flex: "0 0 18%" },
+  };
+
   return (
     <div className="rfm-data-card">
       <div className="rfm-card-header">
@@ -97,7 +105,7 @@ export default function PopularServicesTable({ data }) {
                     key={item}
                     onClick={() => handleSort(item)}
                     className={`rfm-th ${item}`}
-                    style={{ cursor: "pointer", userSelect: "none" }}
+                    style={{ cursor: "pointer", userSelect: "none", ...COLUMN_FLEX_STYLES[item] }}
                   >
                     <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       {HEADER_LABELS[item]}
@@ -116,15 +124,15 @@ export default function PopularServicesTable({ data }) {
           <tbody>
             {sortedData.map((row) => (
               <tr key={row.serviceName} className="rfm-tbody-row">
-                <td className="rfm-td ranking">{row.ranking}</td>
-                <td className="rfm-td serviceName" style={{ fontWeight: 500, color: "#1E293B" }}>
+                <td className="rfm-td ranking" style={COLUMN_FLEX_STYLES.ranking}>{row.ranking}</td>
+                <td className="rfm-td serviceName" style={{ fontWeight: 500, color: "#1E293B", ...COLUMN_FLEX_STYLES.serviceName }}>
                   {row.serviceName}
                 </td>
-                <td className="rfm-td totalWashes">{row.totalWashes} lần</td>
-                <td className="rfm-td revenue" style={{ fontWeight: 600, color: "#111C2C" }}>
+                <td className="rfm-td totalWashes" style={COLUMN_FLEX_STYLES.totalWashes}>{row.totalWashes} lần</td>
+                <td className="rfm-td revenue" style={{ fontWeight: 600, color: "#111C2C", ...COLUMN_FLEX_STYLES.revenue }}>
                   {row.revenue?.toLocaleString()} VND
                 </td>
-                <td className="rfm-td revenueContribution">
+                <td className="rfm-td revenueContribution" style={COLUMN_FLEX_STYLES.revenueContribution}>
                   {row.revenueContribution?.toFixed(2)}%
                 </td>
               </tr>

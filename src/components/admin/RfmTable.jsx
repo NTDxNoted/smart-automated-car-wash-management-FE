@@ -36,7 +36,7 @@ const getRfmSegment = (recency, frequency, monetary) => {
     return { name: "At Risk", className: "at-risk" };
   }
   if (r > 30 && f <= 5) {
-    return { name: "About to Sleep", className: "about-to-sleep" };
+    return { name: "Inactive customer", className: "about-to-sleep" };
   }
   return { name: "Lost Customers", className: "lost" };
 };
@@ -150,11 +150,13 @@ export default function RfmTable({ data, initialSegment = "" }) {
     if (segmentName === "Champions") {
       toast.success(`Đã gửi tặng Voucher VIP giảm 20% cho khách hàng ${customerName}! 💎`);
     } else if (segmentName === "At Risk") {
-      toast.success(`Đã gửi tặng mã giảm giá tri ân 15% cho khách hàng ${customerName}! ✉️`);
+      toast.success(`Đã gửi tặng mã giảm giá tri ân 15% cho khách hàng ${customerName}! 🔔`);
     } else if (segmentName === "New Customers") {
       toast.success(`Đã gửi tặng ưu đãi giảm 10% lần rửa thứ 2 cho khách hàng ${customerName}! 🎁`);
     } else if (segmentName === "Lost Customers") {
       toast.success(`Đã kích hoạt chiến dịch win-back và gửi quà tặng đặc biệt cho khách hàng ${customerName}! ⚡`);
+    } else if (segmentName === "Inactive customer") {
+      toast.success(`Đã gửi thông báo nhắc nhở kèm mã giảm giá 5% cho khách hàng ${customerName}! 🔔`);
     }
   };
 
@@ -184,7 +186,7 @@ export default function RfmTable({ data, initialSegment = "" }) {
               <option value="Potential Loyalists">Potential Loyalists</option>
               <option value="New Customers">New Customers</option>
               <option value="At Risk">At Risk</option>
-              <option value="About to Sleep">About to Sleep</option>
+              <option value="Inactive customer">Inactive customer</option>
               <option value="Lost Customers">Lost Customers</option>
             </select>
           </div>
@@ -227,7 +229,7 @@ export default function RfmTable({ data, initialSegment = "" }) {
 
           <tbody>
             {paginatedData.map((row) => (
-              <tr key={row.customer} className="rfm-tbody-row">
+              <tr key={row.customerId || row.phone || row.customer} className="rfm-tbody-row">
                 <td className="rfm-td customer">{row.customer}</td>
                 <td className="rfm-td recency">{row.recency} ngày</td>
                 <td className="rfm-td frequency">{row.frequency} lần</td>
@@ -249,7 +251,7 @@ export default function RfmTable({ data, initialSegment = "" }) {
                   )}
                   {row.segmentName === "At Risk" && (
                     <button className="rfm-action-btn discount" onClick={() => handleAction(row.customer, "At Risk")}>
-                      ✉️ Gửi mã giảm giá
+                      🔔 Gửi mã giảm giá
                     </button>
                   )}
                   {row.segmentName === "New Customers" && (
@@ -262,7 +264,12 @@ export default function RfmTable({ data, initialSegment = "" }) {
                       ⚡ Chiến dịch win-back
                     </button>
                   )}
-                  {!["Champions", "At Risk", "New Customers", "Lost Customers"].includes(row.segmentName) && (
+                  {row.segmentName === "Inactive customer" && (
+                    <button className="rfm-action-btn remind" onClick={() => handleAction(row.customer, "Inactive customer")}>
+                      🔔 Nhắc nhở & giảm giá
+                    </button>
+                  )}
+                  {!["Champions", "At Risk", "New Customers", "Lost Customers", "Inactive customer"].includes(row.segmentName) && (
                     <span className="text-xs text-slate-400 italic">Chăm sóc định kỳ</span>
                   )}
                 </td>

@@ -13,6 +13,11 @@ const defaultForm = {
   isActive: true,
 };
 
+const formatDateForInput = (dateStr) => {
+  if (!dateStr) return '';
+  return dateStr.slice(0, 10);
+};
+
 const PromotionModal = ({
   open,
   onClose,
@@ -27,6 +32,8 @@ const PromotionModal = ({
       setForm({
         ...defaultForm,
         ...initialData,
+        startDate: formatDateForInput(initialData.startDate),
+        endDate: formatDateForInput(initialData.endDate),
         isActive: initialData.isActive !== undefined ? initialData.isActive : true,
       });
     } else {
@@ -63,9 +70,11 @@ const PromotionModal = ({
       return;
     }
 
-    if (!Number.isFinite(maxUsage) || maxUsage < 0) {
-      setError('Giới hạn phải là số không âm.');
-      return;
+    if (form.maxUsage !== '' && form.maxUsage !== null && form.maxUsage !== undefined) {
+      if (!Number.isFinite(maxUsage) || maxUsage < 0) {
+        setError('Giới hạn phải là số không âm.');
+        return;
+      }
     }
 
     onSubmit({
@@ -183,12 +192,11 @@ const PromotionModal = ({
                 <input
                   name="maxUsage"
                   type="number"
-                  placeholder="Ví dụ: 100 (lượt)"
+                  placeholder="Ví dụ: 100 (để trống nếu không giới hạn)"
                   value={form.maxUsage}
                   onChange={handleChange}
                   className="promo-modal-input"
                   min="0"
-                  required
                 />
               </div>
             </div>

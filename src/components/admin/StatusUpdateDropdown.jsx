@@ -10,7 +10,7 @@ export default function StatusUpdateDropdown({
     useState(false);
 
   const disabled =
-    booking.status !== "PENDING";
+    booking.status?.toUpperCase() !== "PENDING";
 
   const handleChange = async (e) => {
     const status = e.target.value;
@@ -51,16 +51,12 @@ export default function StatusUpdateDropdown({
           Cập nhật trạng thái...
         </option>
 
-        <option value="COMPLETED">
-          Completed
-        </option>
-
         <option value="FAILED">
-          Failed
+          Failed (Thất bại)
         </option>
 
         <option value="CANCELLED">
-          Cancelled
+          Cancelled (Đã hủy)
         </option>
       </select>
     </div>

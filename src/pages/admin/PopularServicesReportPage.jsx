@@ -35,7 +35,7 @@ export default function PopularServicesReportPage() {
         const res = await getPopularServices(startDate, endDate, { signal: controller.signal });
         setData(res || []);
       } catch (err) {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
           console.error(err);
           setError("Không thể tải báo cáo dịch vụ. Vui lòng kiểm tra kết nối API.");
         }

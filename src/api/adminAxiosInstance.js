@@ -18,4 +18,19 @@ adminAxiosInstance.interceptors.request.use(
   }
 );
 
+// Response interceptor to handle errors (specifically 401 Unauthorized / 403 Forbidden)
+adminAxiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      // Clear token and user info from localStorage
+      localStorage.removeItem("admin_token");
+      localStorage.removeItem("admin_user");
+      // Redirect to login page
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default adminAxiosInstance;

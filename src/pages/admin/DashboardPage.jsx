@@ -12,12 +12,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
   Legend,
 } from 'recharts';
+import SafeChartContainer from '../../components/common/SafeChartContainer';
 import './DashboardPage.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -205,20 +205,7 @@ export default function DashboardPage() {
       const list = res.data?.data || res.data || [];
       if (list.length > 0) {
         const today = new Date();
-        const hasBookingsToday = list.some(b => b.scheduledTime && new Date(b.scheduledTime).toLocaleDateString('en-CA') === today.toLocaleDateString('en-CA'));
-        
         let targetTodayDate = today;
-        if (!hasBookingsToday && list.length > 0) {
-          // Fallback to the latest scheduled booking date in database for demo purposes
-          const latestTime = list.reduce((max, b) => {
-            if (!b.scheduledTime) return max;
-            const t = new Date(b.scheduledTime).getTime();
-            return t > max ? t : max;
-          }, 0);
-          if (latestTime > 0) {
-            targetTodayDate = new Date(latestTime);
-          }
-        }
         const todayDateStr = targetTodayDate.toLocaleDateString('en-CA');
         const now = targetTodayDate;
 
@@ -302,17 +289,7 @@ export default function DashboardPage() {
               nsCount++;
             }
 
-            // 3. Cảnh báo vận hành
-            // a. No-show
-            if (bStatus === 'NOSHOW' || bStatus === 'NO-SHOW' || bStatus === 'NO_SHOW') {
-              warningList.push({
-                type: 'NOSHOW',
-                message: `Khách hàng ${customerName} (${mappedObj.plate}) không đến hẹn (No-show)`,
-                detail: `Lịch hẹn lúc ${bTime ? bTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Hôm nay'}`,
-                booking: mappedObj
-              });
-            }
-            // b. Booking Pending quá lâu (> 30 phút so với giờ đặt)
+            // 3. Cảnh báo vận hành - Chỉ hiển thị khi khách hẹn bị trễ quá 30 phút
             if (bStatus === 'PENDING') {
               if (bTime && (now - bTime) / 60000 > 30) {
                 warningList.push({
@@ -322,24 +299,6 @@ export default function DashboardPage() {
                   booking: mappedObj
                 });
               }
-            }
-            // c. Chưa có biển số xe
-            if ((bStatus === 'PENDING' || bStatus === 'PROCESSING') && (!b.licensePlate || b.licensePlate.trim() === '-' || b.licensePlate.toLowerCase().includes('chưa'))) {
-              warningList.push({
-                type: 'NO_PLATE',
-                message: `Xe của khách hàng ${customerName} chưa cập nhật biển số`,
-                detail: `Trạng thái: ${bStatus === 'PENDING' ? 'Đang chờ' : 'Đang xử lý'}`,
-                booking: mappedObj
-              });
-            }
-            // d. Booking failed/cancelled
-            if (['FAILED', 'CANCELLED', 'CANCEL', 'CANCEL_BY_ADMIN', 'CANCEL_BY_CUSTOMER'].includes(bStatus)) {
-              warningList.push({
-                type: 'FAILED_CANCEL',
-                message: `Lịch đặt của ${customerName} bị hủy hoặc thất bại`,
-                detail: `Lý do/Trạng thái: ${bStatus === 'FAILED' ? 'Thất bại' : 'Bị hủy'}`,
-                booking: mappedObj
-              });
             }
           }
 
@@ -576,53 +535,55 @@ export default function DashboardPage() {
 
             <div className="revenue-chart-body">
               <div className="revenue-chart-svg-container">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorRevenueModern" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#006A61" stopOpacity={0.2} />
-                        <stop offset="100%" stopColor="#006A61" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid stroke="#F1F5F9" vertical={false} />
-                    <XAxis
-                      dataKey="day"
-                      stroke="#44474D"
-                      tick={{ fontSize: 12, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      stroke="#44474D"
-                      tick={{ fontSize: 10, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(val) => `${val}M`}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#263142',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#EBF1FF',
-                        boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      }}
-                      itemStyle={{ color: '#00A9CE' }}
-                      labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
-                      formatter={(value) => [`${value}M`, 'Doanh thu']}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="revenue"
-                      stroke="#006A61"
-                      strokeWidth={2.65624}
-                      fillOpacity={1}
-                      fill="url(#colorRevenueModern)"
-                      dot={{ fill: '#FFFFFF', stroke: '#006A61', strokeWidth: 1.77083, r: 4 }}
-                      activeDot={{ r: 6, strokeWidth: 0, fill: '#006A61' }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <SafeChartContainer height={256}>
+                  {(width, height) => (
+                    <AreaChart width={width} height={height} data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorRevenueModern" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#006A61" stopOpacity={0.2} />
+                          <stop offset="100%" stopColor="#006A61" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="#F1F5F9" vertical={false} />
+                      <XAxis
+                        dataKey="day"
+                        stroke="#44474D"
+                        tick={{ fontSize: 12, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        stroke="#44474D"
+                        tick={{ fontSize: 10, fill: '#44474D', fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(val) => `${val}M`}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#263142',
+                          border: 'none',
+                          borderRadius: '8px',
+                          color: '#EBF1FF',
+                          boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        }}
+                        itemStyle={{ color: '#00A9CE' }}
+                        labelStyle={{ color: '#EBF1FF', fontWeight: 'bold' }}
+                        formatter={(value) => [`${value}M`, 'Doanh thu']}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="#006A61"
+                        strokeWidth={2.65624}
+                        fillOpacity={1}
+                        fill="url(#colorRevenueModern)"
+                        dot={{ fill: '#FFFFFF', stroke: '#006A61', strokeWidth: 1.77083, r: 4 }}
+                        activeDot={{ r: 6, strokeWidth: 0, fill: '#006A61' }}
+                      />
+                    </AreaChart>
+                  )}
+                </SafeChartContainer>
               </div>
             </div>
           </div>
@@ -643,33 +604,35 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={tierData.map(t => ({
-                            name: t.tier ?? t.tierName ?? t.name,
-                            value: t.total ?? t.count ?? 0
-                          }))}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={50}
-                          outerRadius={70}
-                          paddingAngle={3}
-                          dataKey="value"
-                        >
-                          {tierData.map((entry, index) => {
-                            const name = String(entry.tier ?? entry.tierName ?? entry.name).toUpperCase();
-                            let fill = '#00677F';
-                            if (name.includes('PLATINUM')) fill = '#FF00FF';
-                            else if (name.includes('GOLD')) fill = '#FFD700';
-                            else if (name.includes('SILVER')) fill = '#C0C0C0';
-                            else if (name.includes('MEMBER')) fill = '#4DC3D6';
-                            return <Cell key={`cell-${index}`} fill={fill} />;
-                          })}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <SafeChartContainer height={160}>
+                      {(width, height) => (
+                        <PieChart width={width} height={height}>
+                          <Pie
+                            data={tierData.map(t => ({
+                              name: t.tier ?? t.tierName ?? t.name,
+                              value: t.total ?? t.count ?? 0
+                            }))}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={70}
+                            paddingAngle={3}
+                            dataKey="value"
+                          >
+                            {tierData.map((entry, index) => {
+                              const name = String(entry.tier ?? entry.tierName ?? entry.name).toUpperCase();
+                              let fill = '#00677F';
+                              if (name.includes('PLATINUM')) fill = '#FF00FF';
+                              else if (name.includes('GOLD')) fill = '#FFD700';
+                              else if (name.includes('SILVER')) fill = '#C0C0C0';
+                              else if (name.includes('MEMBER')) fill = '#4DC3D6';
+                              return <Cell key={`cell-${index}`} fill={fill} />;
+                            })}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      )}
+                    </SafeChartContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <span className="text-2xl font-bold text-[#000F24]" style={{ fontFamily: "'Inter', sans-serif" }}>{totalCustomers}</span>
                       <span className="text-[10px] font-bold text-[#44474D] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Thành viên</span>
@@ -866,7 +829,7 @@ export default function DashboardPage() {
                     <div className="modern-loyalty-item-info">
                       <span className="modern-loyalty-item-label">TỔNG ĐIỂM LƯU HÀNH</span>
                       <span className="modern-loyalty-item-value circulating">
-                        {loyaltyStats.totalPoints?.toLocaleString()} đ
+                        {loyaltyStats.totalPoints?.toLocaleString()} pts
                       </span>
                     </div>
                     <div className="modern-loyalty-progress-bg">
@@ -879,12 +842,14 @@ export default function DashboardPage() {
                     <div className="modern-loyalty-item-info">
                       <span className="modern-loyalty-item-label">SẮP HẾT HẠN (≤ 30 NGÀY)</span>
                       <span className="modern-loyalty-item-value expiring">
-                        {loyaltyStats.expiringSoon?.toLocaleString()} đ
+                        {loyaltyStats.expiringSoon?.toLocaleString()} pts
                       </span>
                     </div>
-                    <div className="modern-loyalty-progress-bg">
-                      <div className="modern-loyalty-progress-fill expiring" style={{ width: `${expiringPct}%` }}></div>
-                    </div>
+                    {loyaltyStats.expiringSoon > 0 && (
+                      <div className="modern-loyalty-progress-bg">
+                        <div className="modern-loyalty-progress-fill expiring" style={{ width: `${expiringPct}%` }}></div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Đã hết hạn */}
@@ -892,7 +857,7 @@ export default function DashboardPage() {
                     <div className="modern-loyalty-item-info">
                       <span className="modern-loyalty-item-label">ĐÃ HẾT HẠN</span>
                       <span className="modern-loyalty-item-value expired">
-                        {loyaltyStats.expired?.toLocaleString()} đ
+                        {loyaltyStats.expired?.toLocaleString()} pts
                       </span>
                     </div>
                     <div className="modern-loyalty-progress-bg">
@@ -975,7 +940,7 @@ export default function DashboardPage() {
                   <td className="bookings-td customer" style={{ display: 'flex', alignItems: 'center', height: '73px' }}>
                     {renderAvatar(booking.customer)}
                     <div className="flex flex-col gap-1 items-start justify-center ml-2.5">
-                      <span className="bookings-td customer-name" style={{ padding: 0, fontSize: '13.5px', fontWeight: 600 }}>
+                      <span className="bookings-customer-name" style={{ padding: 0, fontSize: '13.5px', fontWeight: 600 }}>
                         {booking.customer}
                       </span>
                       <span className={`rfm-tier-badge ${booking.tier?.toLowerCase()}`} style={{ fontSize: '9px', padding: '1px 5px', textTransform: 'uppercase' }}>

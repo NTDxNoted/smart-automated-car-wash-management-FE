@@ -1,81 +1,114 @@
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-} from "recharts";
-
-const STATUS_COLORS = {
-  PENDING: "#F59E0B",
-  CONFIRMED: "#00677F",
-  PROCESSING: "#0EA5E9",
-  COMPLETED: "#10B981",
-  CANCELLED: "#EF4444",
-};
-
-const DEFAULT_COLORS = ["#00677F", "#10B981", "#F59E0B", "#EF4444", "#64748B"];
+import React, { useMemo } from "react";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 export default function BookingStatusPieChart({ data }) {
-  if (!data || data.length === 0) {
-    return (
-      <div className="report-chart-card">
-        <h3 className="report-chart-title">
-          Trạng thái đặt lịch
-        </h3>
-        <div className="flex flex-col items-center justify-center flex-1 min-h-[192px] text-slate-400">
-          <svg className="w-10 h-10 mb-2 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <p className="text-xs font-medium">Chưa có dữ liệu đặt lịch</p>
-        </div>
-      </div>
-    );
-  }
+  const grouped = useMemo(() => {
+    let completed = 0;
+    let pending = 0;
+    let cancelled = 0;
+
+    if (data && data.length > 0) {
+      data.forEach(item => {
+        const name = item.name?.toUpperCase() || "";
+        if (name === "COMPLETED") completed += item.value;
+        else if (name === "PENDING") pending += item.value;
+        else if (["CANCELLED", "FAILED", "NO-SHOW", "NOSHOW"].includes(name)) cancelled += item.value;
+        else pending += item.value;
+      });
+    }
+
+    const total = completed + pending + cancelled;
+
+    return {
+      total,
+      completed,
+      pending,
+      cancelled,
+      chartItems: [
+        { name: "Hoàn thành", value: completed, color: "#14B8A6" },
+        { name: "Chờ xác nhận", value: pending, color: "#FBBF24" },
+        { name: "Đã hủy", value: cancelled, color: "#FB7185" },
+      ].filter(x => x.value > 0)
+    };
+  }, [data]);
+
+  const legends = [
+    { name: "Hoàn thành", value: grouped.completed, percent: grouped.total > 0 ? (grouped.completed / grouped.total) * 100 : 0, color: "#14B8A6", textPercentColor: "#0D9488" },
+    { name: "Chờ xác nhận", value: grouped.pending, percent: grouped.total > 0 ? (grouped.pending / grouped.total) * 100 : 0, color: "#FBBF24", textPercentColor: "#D97706" },
+    { name: "Đã hủy", value: grouped.cancelled, percent: grouped.total > 0 ? (grouped.cancelled / grouped.total) * 100 : 0, color: "#FB7185", textPercentColor: "#E11D48" },
+  ];
 
   return (
-    <div className="report-chart-card">
-      <h3 className="report-chart-title">
-        Trạng thái đặt lịch
-      </h3>
+    <div className="report-chart-card booking-status-card">
+      <div className="booking-status-header">
+        <div className="booking-status-title-container">
+          <h3 className="booking-status-title">Trạng thái đặt lịch</h3>
+          <span className="booking-status-subtitle">Phân bổ dữ liệu theo trạng thái đơn</span>
+        </div>
+      </div>
 
-      <ResponsiveContainer width="100%" aspect={1.8}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            outerRadius={75}
-            dataKey="value"
-            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-            labelLine={false}
-          >
-            {data.map((entry, index) => {
-              const key = entry.name?.toUpperCase() || "";
-              const fill = STATUS_COLORS[key] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
-              return (
-                <Cell
-                  key={index}
-                  fill={fill}
+      <div className="booking-status-body">
+        {/* Left Side: Doughnut Chart */}
+        <div className="booking-status-chart-container">
+          {grouped.total > 0 ? (
+            <>
+              <PieChart width={224} height={224}>
+                <Pie
+                  data={grouped.chartItems}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={80}
+                  outerRadius={100}
+                  paddingAngle={4}
+                  cornerRadius={6}
+                  dataKey="value"
+                >
+                  {grouped.chartItems.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    background: '#FFFFFF',
+                    border: '1px solid #BCC8CE',
+                    borderRadius: '8px',
+                    boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
+                    fontSize: '12px',
+                    fontFamily: 'Inter, sans-serif',
+                  }}
                 />
-              );
-            })}
-          </Pie>
+              </PieChart>
+              <div className="booking-status-total-overlay">
+                <span className="booking-status-total-label">TỔNG CỘNG</span>
+                <h4 className="booking-status-total-value">{grouped.total}</h4>
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-full text-slate-400">
+              <span className="text-2xl font-bold">0</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider">Đơn hàng</span>
+            </div>
+          )}
+        </div>
 
-          <Tooltip
-            contentStyle={{
-              background: '#FFFFFF',
-              border: '1px solid #BCC8CE',
-              borderRadius: '8px',
-              boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
-              fontSize: '12px',
-              fontFamily: 'Inter, sans-serif',
-            }}
-          />
-          <Legend verticalAlign="bottom" height={36} iconType="circle" />
-        </PieChart>
-      </ResponsiveContainer>
+        {/* Right Side: Enhanced Legends */}
+        <div className="booking-status-legend-container">
+          {legends.map((item, index) => (
+            <div key={index} className="booking-status-legend-item">
+              <div className="booking-status-legend-left">
+                <span className="booking-status-legend-dot" style={{ backgroundColor: item.color }} />
+                <span className="booking-status-legend-name">{item.name}</span>
+              </div>
+              <div className="booking-status-legend-right">
+                <span className="booking-status-legend-count">{item.value}</span>
+                <span className="booking-status-legend-percent" style={{ color: item.textPercentColor }}>
+                  {item.percent.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

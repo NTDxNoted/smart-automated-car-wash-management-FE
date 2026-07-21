@@ -6,6 +6,7 @@ import adminBookingService from '../services/adminBookingService';
 import BookingDetailDrawer from '../components/admin/BookingDetailDrawer';
 import { toast } from 'react-hot-toast';
 import { getCustomers } from '../services/adminCustomerService';
+import { signalRService } from '../services/signalrService';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎨 SVG NAVIGATION ICONS
@@ -135,7 +136,7 @@ export default function AdminLayout() {
     try {
       const res = await adminBookingService.getAll({ pageSize: 1000 });
       const rawList = res.data?.data || res.data || [];
-      
+
       const newBookingsMap = {};
       const newNotifications = [];
 
@@ -145,7 +146,7 @@ export default function AdminLayout() {
         const customerName = b.customerName ?? b.phone ?? 'Khách';
         const licensePlate = b.licensePlate ?? 'Chưa cập nhật';
         const serviceName = b.serviceName ?? 'Dịch vụ';
-        
+
         newBookingsMap[id] = { status, customerName, licensePlate, serviceName };
 
         if (!isFirstFetchRef.current) {
@@ -187,7 +188,7 @@ export default function AdminLayout() {
       try {
         const customerRes = await getCustomers({ page: 1 });
         const rawCustomers = customerRes.data || customerRes || [];
-        
+
         const newCustomersMap = {};
         rawCustomers.forEach(c => {
           const cid = c.customerID ?? c.customerId ?? c.id;
@@ -224,7 +225,7 @@ export default function AdminLayout() {
 
       if (newNotifications.length > 0) {
         setNotifications(prev => {
-          const updated = [ ...newNotifications, ...prev ].slice(0, 100);
+          const updated = [...newNotifications, ...prev].slice(0, 100);
           localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
           return updated;
         });
@@ -274,7 +275,7 @@ export default function AdminLayout() {
     };
 
     setNotifications(prev => {
-      const updated = [ notif, ...prev ].slice(0, 100);
+      const updated = [notif, ...prev].slice(0, 100);
       localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
       return updated;
     });
@@ -286,13 +287,96 @@ export default function AdminLayout() {
     const token = localStorage.getItem("admin_token");
     if (!token || user?.role?.toUpperCase() !== "ADMIN") return;
 
+    // Khởi động kết nối SignalR
+    signalRService.startConnection();
+
+    // Lắng nghe sự kiện từ Hub
+    const unsubscribe = signalRService.registerListener((event, data) => {
+      const now = new Date().toISOString();
+      const newNotifications = [];
+
+      if (event === "NewBooking") {
+        const notif = {
+          id: `new-${data.bookingId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          bookingId: data.bookingId,
+          title: "Lịch đặt mới! 📅",
+          description: `Khách hàng ${data.customerName} (${data.licensePlate}) đã đặt lịch mới cho dịch vụ ${data.serviceName}.`,
+          time: now,
+          type: 'NEW_BOOKING',
+          read: false
+        };
+        newNotifications.push(notif);
+        toast.success(`Lịch đặt mới từ ${data.customerName}!`, { icon: '📅', duration: 4000 });
+
+        // Cập nhật refs tránh thông báo trùng lặp khi chạy fetch sau đó
+        prevBookingsRef.current[data.bookingId] = {
+          status: 'Pending',
+          customerName: data.customerName,
+          licensePlate: data.licensePlate,
+          serviceName: data.serviceName
+        };
+      } else if (event === "BookingStatusChanged") {
+        const notif = {
+          id: `status-${data.bookingId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          bookingId: data.bookingId,
+          title: "Cập nhật trạng thái lịch đặt 🔄",
+          description: `Đơn đặt lịch của ${data.customerName} (${data.licensePlate}) đã chuyển trạng thái từ "${data.oldStatus}" sang "${data.newStatus}".`,
+          time: now,
+          type: 'STATUS_UPDATE',
+          read: false
+        };
+        newNotifications.push(notif);
+        toast(`Đơn đặt lịch đổi trạng thái sang: ${data.newStatus}`, { icon: '🔄', duration: 4000 });
+
+        // Cập nhật refs tránh thông báo trùng lặp khi chạy fetch sau đó
+        if (prevBookingsRef.current[data.bookingId]) {
+          prevBookingsRef.current[data.bookingId].status = data.newStatus;
+        } else {
+          prevBookingsRef.current[data.bookingId] = {
+            status: data.newStatus,
+            customerName: data.customerName,
+            licensePlate: data.licensePlate,
+            serviceName: data.serviceName || 'Dịch vụ'
+          };
+        }
+      } else if (event === "NewCustomer") {
+        const notif = {
+          id: `cust-${data.customerId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          customerId: data.customerId,
+          title: "Khách hàng mới đăng ký! 👤",
+          description: `Khách hàng ${data.fullName} (${data.phone}) vừa tạo tài khoản thành viên mới.`,
+          time: now,
+          type: 'NEW_CUSTOMER',
+          read: false
+        };
+        newNotifications.push(notif);
+        toast.success(`Khách hàng mới đăng ký: ${data.fullName}!`, { icon: '👤', duration: 4000 });
+
+        // Cập nhật refs tránh thông báo trùng lặp khi chạy fetch sau đó
+        prevCustomersRef.current[data.customerId] = {
+          fullName: data.fullName,
+          phone: data.phone
+        };
+      }
+
+      if (newNotifications.length > 0) {
+        setNotifications(prev => {
+          const updated = [...newNotifications, ...prev].slice(0, 100);
+          localStorage.setItem('autowash_admin_notifications', JSON.stringify(updated));
+          return updated;
+        });
+
+        // Phát sự kiện nội bộ cho các component con (như trang Lịch khách hàng) tự làm mới dữ liệu
+        window.dispatchEvent(new Event("autowash_data_updated"));
+      }
+    });
+
+    // Chạy tải dữ liệu ban đầu để đồng bộ refs
     fetchBookingsAndCheckUpdates();
 
-    const interval = setInterval(() => {
-      fetchBookingsAndCheckUpdates();
-    }, 5000);
-
-    return () => clearInterval(interval);
+    return () => {
+      unsubscribe();
+    };
   }, [user]);
 
   useEffect(() => {
@@ -339,6 +423,7 @@ export default function AdminLayout() {
   }, [location.pathname]);
 
   const handleLogout = () => {
+    signalRService.stopConnection();
     logout();
     navigate('/login');
   };
@@ -417,9 +502,8 @@ export default function AdminLayout() {
           <div className="reports-dropdown-section">
             <button
               onClick={() => setReportsOpen(!reportsOpen)}
-              className={`sidebar-nav-item w-full text-left justify-between cursor-pointer ${
-                location.pathname.startsWith('/admin/reports') ? 'active' : ''
-              }`}
+              className={`sidebar-nav-item w-full text-left justify-between cursor-pointer ${location.pathname.startsWith('/admin/reports') ? 'active' : ''
+                }`}
             >
               <div className="flex items-center gap-[14px]">
                 <ReportsIcon className="w-5 h-5 shrink-0" />
@@ -525,7 +609,7 @@ export default function AdminLayout() {
               </button>
 
               {isBellOpen && (
-                <div 
+                <div
                   className="bg-white border border-[#BCC8CE] rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden text-sm"
                   style={{ position: 'absolute', right: 0, left: 'auto', top: '100%', marginTop: '12px', width: '320px', zIndex: 9999 }}
                 >
@@ -572,25 +656,23 @@ export default function AdminLayout() {
                         <div
                           key={notif.id}
                           onClick={() => handleNotificationClick(notif)}
-                          className={`p-3.5 hover:bg-slate-50 transition cursor-pointer flex gap-3.5 items-start relative ${
-                            !notif.read ? 'bg-cyan-50/20' : ''
-                          }`}
+                          className={`p-3.5 hover:bg-slate-50 transition cursor-pointer flex gap-3.5 items-start relative ${!notif.read ? 'bg-cyan-50/20' : ''
+                            }`}
                         >
                           {/* Unread indicator */}
                           {!notif.read && (
                             <span className="absolute top-4.5 left-2 w-2 h-2 bg-cyan-500 rounded-full" />
                           )}
-                          
+
                           {/* Icon wrapper */}
-                          <div className={`p-2 rounded-xl shrink-0 ${
-                            notif.type === 'NEW_BOOKING' 
-                              ? 'bg-emerald-50 text-emerald-600' 
+                          <div className={`p-2 rounded-xl shrink-0 ${notif.type === 'NEW_BOOKING'
+                              ? 'bg-emerald-50 text-emerald-600'
                               : notif.type === 'NEW_CUSTOMER'
-                              ? 'bg-amber-50 text-amber-600'
-                              : notif.type === 'ADMIN_UPDATE'
-                              ? 'bg-purple-50 text-purple-600'
-                              : 'bg-blue-50 text-blue-600'
-                          }`}>
+                                ? 'bg-amber-50 text-amber-600'
+                                : notif.type === 'ADMIN_UPDATE'
+                                  ? 'bg-purple-50 text-purple-600'
+                                  : 'bg-blue-50 text-blue-600'
+                            }`}>
                             {notif.type === 'NEW_BOOKING' ? (
                               <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

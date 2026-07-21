@@ -1,11 +1,11 @@
 import {
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
   Tooltip,
   Legend,
 } from "recharts";
+import SafeChartContainer from "../common/SafeChartContainer";
 
 const COLORS = ["#00677F", "#0EA5E9", "#10B981", "#F59E0B", "#EF4444", "#64748B"];
 
@@ -41,46 +41,52 @@ export default function PopularServicesChart({ data }) {
         Tỷ lệ lượt dịch vụ phổ biến
       </h3>
 
-      <ResponsiveContainer width="100%" aspect={1.8}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            outerRadius={75}
-            innerRadius={45} // Making it a Doughnut Chart
-            dataKey="value"
-            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-            labelLine={false}
-          >
-            {chartData.map((entry, index) => (
-              <Cell
-                key={index}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
+      <SafeChartContainer height={280}>
+        {(width, height) => {
+          const outerRadius = Math.min(65, width * 0.18);
+          const innerRadius = Math.max(20, outerRadius - 25);
+          return (
+            <PieChart width={width} height={height} margin={{ left: 20, right: 20 }}>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                outerRadius={outerRadius}
+                innerRadius={innerRadius} // Making it a Doughnut Chart
+                dataKey="value"
+                label={({ name, percent }) => width > 350 ? `${name}: ${(percent * 100).toFixed(0)}%` : `${(percent * 100).toFixed(0)}%`}
+                labelLine={false}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
 
-          <Tooltip
-            contentStyle={{
-              background: '#FFFFFF',
-              border: '1px solid #BCC8CE',
-              borderRadius: '8px',
-              boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
-              fontSize: '12px',
-              fontFamily: 'Inter, sans-serif',
-            }}
-            formatter={(value, name, props) => {
-              const item = props.payload;
-              return [
-                `${value} lượt (Doanh thu: ${item.revenue?.toLocaleString()}đ)`,
-                name
-              ];
-            }}
-          />
-          <Legend verticalAlign="bottom" height={36} iconType="circle" />
-        </PieChart>
-      </ResponsiveContainer>
+              <Tooltip
+                contentStyle={{
+                  background: '#FFFFFF',
+                  border: '1px solid #BCC8CE',
+                  borderRadius: '8px',
+                  boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
+                  fontSize: '12px',
+                  fontFamily: 'Inter, sans-serif',
+                }}
+                formatter={(value, name, props) => {
+                  const item = props.payload;
+                  return [
+                    `${value} lượt (Doanh thu: ${item.revenue?.toLocaleString()}đ)`,
+                    name
+                  ];
+                }}
+              />
+              <Legend verticalAlign="bottom" height={36} iconType="circle" />
+            </PieChart>
+          );
+        }}
+      </SafeChartContainer>
     </div>
   );
 }

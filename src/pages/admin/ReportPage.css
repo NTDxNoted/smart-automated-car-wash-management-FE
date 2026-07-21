@@ -470,6 +470,7 @@
 }
 
 @media (max-width: 768px) {
+
   .report-stats-grid-row1,
   .report-stats-grid-row2,
   .report-charts-grid {
@@ -868,13 +869,45 @@
   box-sizing: border-box;
 }
 
-.rfm-th.customer { width: 18%; flex: 0 0 18%; }
-.rfm-th.recency { width: 12%; flex: 0 0 12%; }
-.rfm-th.frequency { width: 12%; flex: 0 0 12%; }
-.rfm-th.monetary { width: 16%; flex: 0 0 16%; }
-.rfm-th.points { width: 12%; flex: 0 0 12%; }
-.rfm-th.tier { width: 14%; flex: 0 0 14%; }
-.rfm-th.segment { width: 16%; flex: 0 0 16%; }
+.rfm-th.customer {
+  width: 14%;
+  flex: 0 0 14%;
+}
+
+.rfm-th.recency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-th.frequency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-th.monetary {
+  width: 12%;
+  flex: 0 0 12%;
+}
+
+.rfm-th.points {
+  width: 8%;
+  flex: 0 0 8%;
+}
+
+.rfm-th.tier {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-th.segment {
+  width: 16%;
+  flex: 0 0 16%;
+}
+
+.rfm-th.action {
+  width: 20%;
+  flex: 0 0 20%;
+}
 
 .rfm-th-arrow {
   font-size: 10px;
@@ -917,13 +950,49 @@
   box-sizing: border-box;
 }
 
-.rfm-td.customer { width: 18%; flex: 0 0 18%; font-weight: 500; color: #1E293B; }
-.rfm-td.recency { width: 12%; flex: 0 0 12%; }
-.rfm-td.frequency { width: 12%; flex: 0 0 12%; }
-.rfm-td.monetary { width: 16%; flex: 0 0 16%; font-weight: 600; color: #111C2C; }
-.rfm-td.points { width: 12%; flex: 0 0 12%; }
-.rfm-td.tier { width: 14%; flex: 0 0 14%; }
-.rfm-td.segment { width: 16%; flex: 0 0 16%; }
+.rfm-td.customer {
+  width: 14%;
+  flex: 0 0 14%;
+  font-weight: 500;
+  color: #1E293B;
+}
+
+.rfm-td.recency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-td.frequency {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-td.monetary {
+  width: 12%;
+  flex: 0 0 12%;
+  font-weight: 600;
+  color: #111C2C;
+}
+
+.rfm-td.points {
+  width: 8%;
+  flex: 0 0 8%;
+}
+
+.rfm-td.tier {
+  width: 10%;
+  flex: 0 0 10%;
+}
+
+.rfm-td.segment {
+  width: 16%;
+  flex: 0 0 16%;
+}
+
+.rfm-td.action {
+  width: 20%;
+  flex: 0 0 20%;
+}
 
 /* Tier Badge styling in table */
 .rfm-tier-badge {
@@ -1053,7 +1122,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .report-loading-text {
@@ -1123,8 +1194,15 @@
 }
 
 @keyframes pulse-border {
-  0%, 100% { border-color: #FECDD3; }
-  50% { border-color: #FB7185; }
+
+  0%,
+  100% {
+    border-color: #FECDD3;
+  }
+
+  50% {
+    border-color: #FB7185;
+  }
 }
 
 /* RFM Table Action Buttons */
@@ -1184,9 +1262,20 @@
   background: #334155;
 }
 
+.rfm-action-btn.remind {
+  background: #d1210a;
+  color: #FFFFFF;
+}
+
+.rfm-action-btn.remind:hover {
+  background: #941108;
+}
+
 /* Custom styles for columns */
-.rfm-th.action, .rfm-td.action {
-  width: 180px;
+.rfm-th.action,
+.rfm-td.action {
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
@@ -1194,3 +1283,590 @@
   transition: all 0.3s ease;
 }
 
+/* Redesigned Booking Status Card classes */
+.booking-status-card {
+  align-items: flex-start;
+  min-height: 382px;
+}
+
+.booking-status-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 0px 24px;
+  width: 100%;
+  align-self: stretch;
+}
+
+.booking-status-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.booking-status-title {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 28px;
+  color: #1E293B;
+  margin: 0;
+}
+
+.booking-status-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #6B7280;
+  margin: 0;
+}
+
+.booking-status-icon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.booking-status-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  align-self: stretch;
+  gap: 16px;
+}
+
+.booking-status-chart-container {
+  position: relative;
+  width: 224px;
+  height: 224px;
+  flex-shrink: 0;
+}
+
+.booking-status-total-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.booking-status-total-label {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.7px;
+  text-transform: uppercase;
+  color: #94A3B8;
+}
+
+.booking-status-total-value {
+  font-family: 'Nimbus Sans', 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 36px;
+  color: #1E293B;
+  margin: 0;
+}
+
+.booking-status-legend-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 12px;
+  width: 160px;
+  flex-grow: 1;
+}
+
+.booking-status-legend-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  width: 100%;
+  background: rgba(249, 250, 251, 0.3);
+  border: 1px solid #F9FAFB;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.booking-status-legend-item:hover {
+  background: rgba(243, 244, 246, 0.6);
+  border-color: #E5E7EB;
+}
+
+.booking-status-legend-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.booking-status-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.booking-status-legend-name {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  color: #334155;
+}
+
+.booking-status-legend-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.booking-status-legend-count {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  color: #1E293B;
+}
+
+.booking-status-legend-percent {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 15px;
+}
+
+@media (max-width: 640px) {
+  .booking-status-body {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+}
+
+/* ==========================================
+   LOYALTY STATS CUSTOM DESIGN SPEC
+   ========================================== */
+
+/* Main Analytics Grid */
+.loyalty-tab-container {
+  width: 100%;
+  max-width: 972px;
+  align-self: stretch;
+}
+
+.loyalty-analytics-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 32px;
+  width: 100%;
+  max-width: 1152px;
+}
+
+/* 3 Cards Container */
+.loyalty-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  width: 100%;
+  gap: 24px;
+}
+
+/* Base Metric Card */
+.loyalty-metric-card {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  isolation: isolate;
+  background: #FFFFFF;
+  border: 1px solid rgba(68, 71, 77, 0.4);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  width: 100%;
+  min-height: 177px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.loyalty-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Overlay Circles */
+.loyalty-card-overlay-circle {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  right: -15px;
+  bottom: -15px;
+  border-radius: 9999px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.loyalty-card-overlay-circle.circle-blue {
+  background: rgba(0, 80, 203, 0.05);
+}
+
+.loyalty-card-overlay-circle.circle-red {
+  background: rgba(186, 26, 26, 0.05);
+}
+
+.loyalty-card-overlay-circle.circle-gray {
+  background: rgba(84, 95, 115, 0.05);
+}
+
+/* Card Content Wrapper */
+.loyalty-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 4px;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Row 1 Layout */
+.loyalty-card-row1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Icon Container */
+.loyalty-card-icon-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.loyalty-card-icon-overlay.bg-blue-tint {
+  background: rgba(0, 102, 255, 0.1);
+}
+
+.loyalty-card-icon-overlay.bg-orange-tint {
+  background: rgba(255, 218, 214, 0.1);
+}
+
+.loyalty-card-icon-overlay.bg-red-tint {
+  background: rgba(213, 224, 248, 0.1);
+}
+
+/* Badges */
+.loyalty-card-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.loyalty-card-badge.badge-green {
+  background: #ECFDF5;
+}
+
+.loyalty-card-badge.badge-neutral {
+  background: #ECEEF0;
+}
+
+.loyalty-card-badge.badge-red {
+  background: rgba(255, 218, 214, 0.5);
+}
+
+.loyalty-card-badge-text {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.loyalty-card-badge-text.color-green {
+  color: #059669;
+}
+
+.loyalty-card-badge-text.color-neutral {
+  color: #727687;
+}
+
+.loyalty-card-badge-text.color-red {
+  color: #BA1A1A;
+}
+
+/* Text Headers & Values */
+.loyalty-card-label-wrapper {
+  padding: 4px 0px 0px;
+  width: 100%;
+}
+
+.loyalty-card-label {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.6px;
+  color: #727687;
+}
+
+.loyalty-card-value-wrapper {
+  padding: 0px 0px 12px;
+  width: 100%;
+}
+
+.loyalty-card-value {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 34px;
+  display: flex;
+  align-items: center;
+  color: #191C1E;
+  margin: 0;
+}
+
+.loyalty-card-unit {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #64748B;
+  margin-left: 6px;
+}
+
+/* Progress bar styles */
+.loyalty-progress-container {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: #ECEEF0;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.loyalty-progress-filler {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  transition: width 0.4s ease-out;
+}
+
+.loyalty-progress-filler.bg-green {
+  background: #089F31;
+}
+
+.loyalty-progress-filler.bg-red {
+  background: #BA1A1A;
+}
+
+/* Bento Slot: Ranking Table style */
+.loyalty-ranking-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 24px;
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid rgba(68, 71, 77, 0.4);
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.loyalty-ranking-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.loyalty-ranking-title {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 32px;
+  display: flex;
+  align-items: center;
+  color: #191C1E;
+  margin: 0;
+}
+
+.loyalty-ranking-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 12px;
+  width: 100%;
+}
+
+.loyalty-ranking-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 8px;
+  gap: 16px;
+  width: 100%;
+  background: transparent;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.4);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.loyalty-ranking-item:last-child {
+  border-bottom: none;
+}
+
+.loyalty-ranking-item:hover {
+  transform: translateX(4px);
+  background-color: rgba(241, 245, 249, 0.4);
+  border-radius: 8px;
+}
+
+/* Rank Circle Badges */
+.loyalty-ranking-badge {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 1.5px solid transparent;
+  flex-shrink: 0;
+}
+
+.loyalty-ranking-badge-text {
+  font-family: 'Nimbus Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 21px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.loyalty-ranking-badge.rank-blue {
+  background: rgba(0, 80, 203, 0.05);
+  border-color: rgba(0, 80, 203, 0.4);
+  color: #0050CB;
+}
+
+.loyalty-ranking-badge.rank-gray {
+  background: rgba(84, 95, 115, 0.05);
+  border-color: rgba(84, 95, 115, 0.4);
+  color: #545F73;
+}
+
+.loyalty-ranking-badge.rank-teal {
+  background: rgba(0, 95, 137, 0.05);
+  border-color: rgba(0, 95, 137, 0.4);
+  color: #005F89;
+}
+
+.loyalty-ranking-badge.rank-light {
+  background: rgba(114, 118, 135, 0.05);
+  border-color: rgba(114, 118, 135, 0.3);
+  color: #727687;
+}
+
+/* Customer details in Rank Row */
+.loyalty-ranking-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  flex-grow: 1;
+}
+
+.loyalty-ranking-name {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.2px;
+  color: #191C1E;
+}
+
+.loyalty-ranking-tier {
+  font-family: 'Nimbus Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: #727687;
+  margin-top: 2px;
+}
+
+/* Customer Points in Rank Row */
+.loyalty-ranking-score-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0px;
+  flex-shrink: 0;
+}
+
+.loyalty-ranking-score {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.4px;
+  color: #0050CB;
+  text-align: right;
+}

@@ -377,6 +377,7 @@
 .bookings-td.customer {
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
   padding: 0px 0px 0px 16px;
   gap: 12px;
   width: 217.36px;
@@ -384,7 +385,7 @@
   height: 32px;
 }
 
-.bookings-td.customer-name {
+.bookings-customer-name {
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 14px;
@@ -1360,7 +1361,7 @@
   position: absolute;
   width: 89.66px;
   height: 38px;
-  right: 7.92px;
+  right: 14px;
   top: -0.5px;
   font-family: 'Manrope', sans-serif;
   font-style: normal;

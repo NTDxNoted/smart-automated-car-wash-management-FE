@@ -5,7 +5,6 @@ import RfmTable from "../../components/admin/RfmTable";
 import TierDistributionChart from "../../components/admin/TierDistributionChart";
 import LoyaltyStatsPanel from "../../components/admin/LoyaltyStatsPanel";
 import BookingStatusPieChart from "../../components/admin/BookingStatusPieChart";
-import PopularServicesChart from "../../components/admin/PopularServicesChart";
 
 import {
   getOverviewReport,
@@ -70,7 +69,7 @@ export default function ReportPage() {
         }));
         setAllBookings(mappedBookings);
       } catch (error) {
-        if (error.name !== "AbortError") {
+        if (error.name !== "AbortError" && error.name !== "CanceledError") {
           console.error(error);
         }
       } finally {
@@ -455,9 +454,7 @@ export default function ReportPage() {
             <BookingStatusPieChart data={bookingStatusPieData} />
           </div>
 
-          <div className="report-large-visualization-container">
-            <PopularServicesChart data={popularServicesData} />
-          </div>
+
 
           {/* Loyalty & RFM Insights Panel */}
           <div className="rfm-insights-section">
@@ -533,14 +530,14 @@ export default function ReportPage() {
       )}
 
       {activeTab === "tiers" && (
-        <div className="transition-all">
+        <div className="transition-all report-large-visualization-container">
           <TierDistributionChart data={tiers} />
         </div>
       )}
 
       {activeTab === "loyalty" && (
-        <div className="transition-all">
-          <LoyaltyStatsPanel stats={loyalty} />
+        <div className="transition-all loyalty-tab-container">
+          <LoyaltyStatsPanel stats={loyalty} customers={rfm} />
         </div>
       )}
     </div>

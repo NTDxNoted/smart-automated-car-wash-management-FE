@@ -61,7 +61,17 @@ export const getRfmReport = async ({ signal } = {}) => {
   }
 
   const { data } = await adminAxiosInstance.get('/admin/reports/rfm', { signal });
-  return data.data || data;
+  const rawList = data.data || data || [];
+  return rawList.map(item => ({
+    customerId: item.customerId ?? item.CustomerId,
+    phone: item.phone ?? item.Phone,
+    customer: item.fullName ?? item.FullName ?? "Vãng lai",
+    recency: item.recencyDays ?? item.RecencyDays ?? 9999,
+    frequency: item.frequency ?? item.Frequency ?? 0,
+    monetary: item.monetaryTotal ?? item.MonetaryTotal ?? 0,
+    points: item.totalPoints ?? item.TotalPoints ?? 0,
+    tier: item.currentTier ?? item.CurrentTier ?? "Member",
+  }));
 };
 
 export const getTierDistribution = async ({ signal } = {}) => {
@@ -115,7 +125,14 @@ export const getPopularServices = async (startDate, endDate, { signal } = {}) =>
     params: { startDate, endDate },
     signal
   });
-  return data.data || data;
+  const rawList = data.data || data || [];
+  return rawList.map((item, idx) => ({
+    ranking: idx + 1,
+    serviceName: item.serviceName ?? item.ServiceName ?? "Dịch vụ không xác định",
+    totalWashes: item.usageCount ?? item.UsageCount ?? 0,
+    revenue: item.totalRevenue ?? item.TotalRevenue ?? 0,
+    revenueContribution: item.percentage ?? item.Percentage ?? 0
+  }));
 };
 
 export const getPeakOccupancy = async (startDate, endDate, { signal } = {}) => {
