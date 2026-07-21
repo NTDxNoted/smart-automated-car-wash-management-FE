@@ -64,7 +64,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
         {t('step1Title') || 'Bước 1: Chọn dịch vụ chăm sóc xe'}
       </h2>
 
-      <div className="max-h-[580px] overflow-y-auto px-2 py-2 custom-booking-scrollbar" style={{ overflowX: 'hidden' }}>
+      <div className="max-h-[580px] overflow-y-auto px-4 py-3 custom-booking-scrollbar" style={{ overflowX: 'hidden' }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {servicesList.map((service) => {
             const isSelected = bookingData.service?.id === service.id;
@@ -76,33 +76,37 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                 type="button"
                 onClick={() => setBookingData(prev => ({ ...prev, service }))}
                 aria-pressed={isSelected}
-                className={`w-full text-left flex flex-col justify-between p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer group ${isSelected
-                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-800 shadow-md ring-2 ring-cyan-400/30'
-                  : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-300 hover:shadow-md'
+                className={`w-full text-left flex flex-col justify-between p-5 rounded-2xl border-2 transition-all duration-300 relative cursor-pointer group overflow-visible ${isSelected
+                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-800 shadow-md ring-2 ring-cyan-400/30 -translate-y-0.5'
+                  : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-400 hover:shadow-lg hover:-translate-y-1'
                   }`}
               >
-                {/* Upper row: Icon & Badge/Checkmark */}
-                <div className="flex items-center justify-between w-full">
-                  <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${isSelected ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600'
-                      }`}
-                  >
-                    <span className="material-symbols-outlined text-2xl">{meta.icon}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${meta.badgeClass}`}
+                <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '4px' }}>
+                  {/* Upper row: Icon & Badge/Checkmark */}
+                  <div className="flex items-center justify-between w-full">
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${isSelected ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600'
+                        }`}
                     >
-                      {meta.badge}
-                    </span>
+                      <span className="material-symbols-outlined text-2xl">{meta.icon}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${meta.badgeClass}`}
+                      >
+                        {meta.badge}
+                      </span>
+                    </div>
+
                     {isSelected && (
-                      <span className="w-6 h-6 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-sm shrink-0">
-                        <span className="material-symbols-outlined text-[14px] font-bold">check</span>
+                      <span
+                        className="absolute -top-2.5 -right-2.5 w-6.5 h-6.5 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md border-2 border-white animate-fade-in shrink-0 z-10"
+                      >
+                        <span className="material-symbols-outlined text-[12px] font-black">check</span>
                       </span>
                     )}
                   </div>
-                </div>
 
                   {/* Service Info */}
                   <div className="mt-4 flex-grow">
@@ -130,7 +134,8 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                       {formatPrice(service.price)}
                     </span>
                   </div>
-                </button>
+                </div>
+              </button>
             );
           })}
         </div>
