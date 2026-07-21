@@ -59,12 +59,27 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
 
   return (
     <section>
-      <h2 className="mt-[5px] mb-[16px] text-xl font-bold text-slate-800 flex items-center gap-2">
+      <h2 
+        className="text-xl font-bold text-slate-800 flex items-center gap-2"
+        style={{ marginTop: '10px', marginBottom: '25px' }}
+      >
         <span className="w-2.5 h-6 rounded-full bg-cyan-500"></span>
         {t('step1Title') || 'Bước 1: Chọn dịch vụ chăm sóc xe'}
       </h2>
 
-      <div className="max-h-[460px] overflow-y-auto px-4 pt-4 pb-3 custom-booking-scrollbar" style={{ overflowX: 'hidden' }}>
+      <div 
+        className="custom-booking-scrollbar" 
+        style={{ 
+          maxHeight: '460px', 
+          overflowY: 'auto', 
+          overflowX: 'hidden', 
+          paddingLeft: '16px', 
+          paddingRight: '16px', 
+          paddingTop: '20px', 
+          paddingBottom: '12px',
+          marginTop: '10px'
+        }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {servicesList.map((service) => {
             const isSelected = bookingData.service?.id === service.id;
