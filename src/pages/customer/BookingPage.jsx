@@ -96,7 +96,7 @@ export default function BookingPage() {
   return (
     <div className="booking-page-container w-full min-h-[calc(100vh-64px)] bg-slate-50 text-slate-800 font-sans p-[15px] flex flex-col justify-center items-center">
 
-      <div className="booking-card-wrapper w-full max-w-5xl bg-white border border-slate-200 p-8 md:p-12 rounded-3xl shadow-2xl">
+      <div className="booking-card-wrapper w-full max-w-6xl bg-white border border-slate-200 p-8 md:p-12 rounded-3xl shadow-2xl">
 
         <h1 className="text-2xl md:text-3xl font-bold font-heading text-center mb-10 bg-gradient-to-r from-slate-800 via-slate-600 to-cyan-600 bg-clip-text text-transparent tracking-wide uppercase">
           {t('bookingTitle')}

@@ -64,8 +64,8 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
         {t('step1Title') || 'Bước 1: Chọn dịch vụ chăm sóc xe'}
       </h2>
 
-      <div className="max-h-[460px] overflow-y-auto pr-4 pl-1 py-1 custom-booking-scrollbar">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-2">
+      <div className="max-h-[460px] overflow-y-auto overflow-x-hidden pr-2 custom-booking-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 py-1">
           {servicesList.map((service) => {
             const isSelected = bookingData.service?.id === service.id;
             const meta = getServiceMeta(service.name);
@@ -76,19 +76,17 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                 type="button"
                 onClick={() => setBookingData(prev => ({ ...prev, service }))}
                 aria-pressed={isSelected}
-                className={`w-full text-left flex flex-col justify-between p-5 rounded-2xl border-2 transition-all duration-300 relative cursor-pointer group ${
-                  isSelected
-                    ? 'border-cyan-500 bg-cyan-50/50 text-slate-800 shadow-md shadow-cyan-100 scale-[1.01] ring-2 ring-cyan-200/30'
-                    : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-300 hover:shadow-md hover:scale-[1.005]'
-                }`}
+                className={`w-full text-left flex flex-col justify-between p-5 rounded-2xl border-2 transition-all duration-300 relative cursor-pointer group overflow-visible ${isSelected
+                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-800 shadow-md shadow-cyan-100 scale-[1.01] ring-2 ring-cyan-200/30'
+                  : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-300 hover:shadow-md hover:scale-[1.005]'
+                  }`}
               >
                 <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '4px' }}>
                   {/* Upper row: Icon & Badge/Checkmark */}
                   <div className="flex items-center justify-between w-full">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                        isSelected ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600'
-                      }`}
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 ${isSelected ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600'
+                        }`}
                     >
                       <span className="material-symbols-outlined text-2xl">{meta.icon}</span>
                     </div>
@@ -103,7 +101,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
 
                     {isSelected && (
                       <span
-                        className="absolute -top-2.5 -right-2.5 w-6.5 h-6.5 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md border-2 border-white animate-fade-in shrink-0 z-10"
+                        className="absolute -top-2 -right-2 w-6.5 h-6.5 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md border-2 border-white animate-fade-in shrink-0 z-10"
                       >
                         <span className="material-symbols-outlined text-[12px] font-black">check</span>
                       </span>
@@ -116,9 +114,8 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                       {service.name}
                     </h3>
                     <p
-                      className={`text-xs mt-1.5 leading-relaxed overflow-hidden text-ellipsis line-clamp-2 h-9 ${
-                        isSelected ? 'text-slate-500' : 'text-slate-400'
-                      }`}
+                      className={`text-xs mt-1.5 leading-relaxed overflow-hidden text-ellipsis line-clamp-2 h-9 ${isSelected ? 'text-slate-500' : 'text-slate-400'
+                        }`}
                     >
                       {service.description || (locale === 'en' ? 'Premium car care service' : 'Dịch vụ chăm sóc xe chuẩn cao cấp')}
                     </p>
@@ -126,9 +123,8 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
 
                   {/* Lower row: Duration & Price */}
                   <div
-                    className={`mt-4 pt-4 border-t w-full flex items-center justify-between ${
-                      isSelected ? 'border-cyan-100' : 'border-slate-100'
-                    }`}
+                    className={`mt-4 pt-4 border-t w-full flex items-center justify-between ${isSelected ? 'border-cyan-100' : 'border-slate-100'
+                      }`}
                   >
                     <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-cyan-600' : 'text-slate-400'}`}>
                       <span className="material-symbols-outlined text-[16px]">schedule</span>
