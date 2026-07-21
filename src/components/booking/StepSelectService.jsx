@@ -82,7 +82,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                     : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-300 hover:shadow-md hover:scale-[1.005]'
                 }`}
               >
-                <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '2px' }}>
+                <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '4px' }}>
                   {/* Upper row: Icon & Badge/Checkmark */}
                   <div className="flex items-center justify-between w-full">
                     <div
