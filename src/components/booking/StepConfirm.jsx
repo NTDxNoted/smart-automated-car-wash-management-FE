@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bookingService } from '../../services/bookingService';
+import { loyaltyService } from '../../services/loyaltyService';
 import InvoicePreview from './InvoicePreview';
 import PromoCodeInput from './PromoCodeInput';
 import { useLanguage } from '../../context/LanguageContext';
@@ -12,7 +13,16 @@ export default function StepConfirm({ bookingData, onBack, user }) {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
   const [appliedPromo, setAppliedPromo] = useState(null);
-  const [selectedRewardOption, setSelectedRewardOption] = useState(0);
+  const [rewardsList, setRewardsList] = useState([]);
+  const [selectedRewardId, setSelectedRewardId] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      loyaltyService.getRewards()
+        .then(data => setRewardsList(data || []))
+        .catch(err => console.error('Lỗi lấy danh sách phần thưởng:', err));
+    }
+  }, [user]);
 
   const baseAmount = bookingData.service?.price || 0;
 
@@ -34,8 +44,9 @@ export default function StepConfirm({ bookingData, onBack, user }) {
     }
   }
 
+  const selectedReward = rewardsList.find(r => String(r.id) === String(selectedRewardId));
   const maxRewardCap = Math.floor(baseAmount * 0.5);
-  let rawRewardDiscount = selectedRewardOption * 1000;
+  let rawRewardDiscount = selectedReward ? (selectedReward.discountValue || selectedReward.discountAmount || 0) : 0;
   let rewardDiscount = rawRewardDiscount;
   let isRewardCapped = false;
   if (rawRewardDiscount > maxRewardCap) {
@@ -67,7 +78,8 @@ export default function StepConfirm({ bookingData, onBack, user }) {
       vehicleId:        bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
       scheduledTime:    bookingData.scheduledTime,
       promotionId:      appliedPromo?.promotionId || null,
-      rewardPointsUsed: selectedRewardOption,
+      rewardId:         selectedReward ? Number(selectedReward.id) : null,
+      rewardPointsUsed: selectedReward ? selectedReward.pointsRequired : 0,
     };
 
     try {
@@ -246,13 +258,20 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                   >
                     <span className="material-symbols-outlined text-purple-600 pl-2.5 text-lg">stars</span>
                     <select
-                      value={selectedRewardOption}
-                      onChange={e => setSelectedRewardOption(Number(e.target.value))}
+                      value={selectedRewardId}
+                      onChange={e => setSelectedRewardId(e.target.value)}
                       className="w-full bg-transparent pl-3 pr-8 py-1.5 text-sm font-semibold text-slate-800 outline-none appearance-none cursor-pointer"
                     >
-                      <option value={0}>{t('rewardNoUse')}</option>
-                      {user.points >= 50  && <option value={50}>{t('rewardUse50')}</option>}
-                      {user.points >= 100 && <option value={100}>{t('rewardUse100')}</option>}
+                      <option value="">{t('rewardNoUse') || 'Không đổi điểm'}</option>
+                      {rewardsList.map(r => {
+                        const isEnough = (user?.points || 0) >= r.pointsRequired;
+                        const val = (r.discountValue || r.discountAmount || 0).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN');
+                        return (
+                          <option key={r.id} value={r.id} disabled={!isEnough}>
+                            {r.name} — Đổi {r.pointsRequired} điểm (Giảm {val}đ){!isEnough ? ' — Không đủ điểm' : ''}
+                          </option>
+                        );
+                      })}
                     </select>
                     <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none text-base">
                       keyboard_arrow_down

@@ -230,7 +230,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
               >
                 {t('vehicleSelectionMode') || 'Phương thức chọn xe'}
               </span>
-              <div className="flex p-1 bg-slate-100 rounded-2xl w-full sm:w-fit" style={{ minHeight: '52px' }}>
+              <div className="flex p-1.5 bg-slate-100/90 rounded-2xl w-full border border-slate-200/60" style={{ minHeight: '52px' }}>
                 <button
                   type="button"
                   onClick={() => {
@@ -243,13 +243,13 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                       }));
                     }
                   }}
-                  className={`flex-1 sm:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer ${
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-extrabold text-sm transition-all duration-200 cursor-pointer ${
                     !useCustomLicensePlate
-                      ? 'bg-white text-cyan-600 shadow-sm'
+                      ? 'bg-white text-cyan-600 shadow-md border border-slate-200/50'
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  {t('selectSavedVehicle') || 'Chọn xe đã lưu'}
+                  🚗 {t('selectSavedVehicle')}
                 </button>
                 <button
                   type="button"
@@ -261,13 +261,13 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                       licensePlate: '',
                     }));
                   }}
-                  className={`flex-1 sm:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all duration-200 cursor-pointer ${
+                  className={`flex-1 px-4 py-2.5 rounded-xl font-extrabold text-sm transition-all duration-200 cursor-pointer ${
                     useCustomLicensePlate
-                      ? 'bg-white text-cyan-600 shadow-sm'
+                      ? 'bg-white text-cyan-600 shadow-md border border-slate-200/50'
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  {t('inputLicensePlate') || 'Nhập biển số mới'}
+                  ✏️ {t('inputLicensePlate')}
                 </button>
               </div>
             </div>
