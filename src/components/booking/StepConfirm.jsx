@@ -45,14 +45,8 @@ export default function StepConfirm({ bookingData, onBack, user }) {
   }
 
   const selectedReward = rewardsList.find(r => String(r.id) === String(selectedRewardId));
-  const maxRewardCap = Math.floor(baseAmount * 0.5);
   let rawRewardDiscount = selectedReward ? (selectedReward.discountValue || selectedReward.discountAmount || 0) : 0;
-  let rewardDiscount = rawRewardDiscount;
-  let isRewardCapped = false;
-  if (rawRewardDiscount > maxRewardCap) {
-    rewardDiscount = maxRewardCap;
-    isRewardCapped = true;
-  }
+  let rewardDiscount = Math.min(rawRewardDiscount, baseAmount);
 
   const finalAmount = Math.max(0, baseAmount - tierDiscount - promotionDiscount - rewardDiscount);
   const invoice = { baseAmount, tierDiscount, promotionDiscount, rewardDiscount, finalAmount };
@@ -276,18 +270,6 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                     <span className="material-symbols-outlined absolute right-4 text-slate-400 pointer-events-none text-base">
                       keyboard_arrow_down
                     </span>
-                  </div>
-                  
-                  <div className="space-y-1 mt-2">
-                    <p className="text-[11px] text-purple-600/90 font-medium">
-                      {t('rewardLimit').replace('{amount}', maxRewardCap.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN'))}
-                    </p>
-                    {isRewardCapped && (
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50/50 border border-amber-100/60 p-2.5 rounded-xl">
-                        <span className="material-symbols-outlined text-sm shrink-0">warning</span>
-                        <span>{t('rewardCappedMsg')}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
