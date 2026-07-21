@@ -20,10 +20,21 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
   const isEdit = mode === 'edit';
   const title = isEdit ? t('modalEditVehicle') : t('modalAddVehicle');
 
+  const VIETNAMESE_PLATE_REGEX = /^[0-9]{2}[A-Z0-9]{1,3}[-.\s]?[0-9]{3,5}(?:[.\s][0-9]{2})?$/i;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!licensePlate.trim()) {
+    const cleanPlate = licensePlate.trim();
+    if (!cleanPlate) {
       setErrorMsg(t('licensePlateRequired'));
+      return;
+    }
+    if (!VIETNAMESE_PLATE_REGEX.test(cleanPlate)) {
+      setErrorMsg(
+        locale === 'en'
+          ? 'Invalid license plate format (e.g., 30F-123.45, 51F12345)'
+          : 'Biển số xe không hợp lệ (Ví dụ: 30F-123.45, 51F12345)'
+      );
       return;
     }
 

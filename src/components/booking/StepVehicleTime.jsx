@@ -170,11 +170,29 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     }));
   };
 
+  const VIETNAMESE_PLATE_REGEX = /^[0-9]{2}[A-Z0-9]{1,3}[-.\s]?[0-9]{3,5}(?:[.\s][0-9]{2})?$/i;
+
   const validate = () => {
     const errs = {};
-    if (!bookingData.phone.trim())       errs.phone = t('phoneRequired');
-    if (!bookingData.licensePlate.trim()) errs.licensePlate = t('licensePlateRequired');
-    if (!selectedDate || !selectedTime)   errs.scheduledTime = t('selectSlotRequired');
+    const cleanPhone = (bookingData.phone || '').trim();
+    if (!cleanPhone) {
+      errs.phone = t('phoneRequired');
+    } else if (!/^0\d{9}$/.test(cleanPhone)) {
+      errs.phone = locale === 'en' ? 'Phone number must be 10 digits starting with 0' : 'Số điện thoại phải gồm 10 chữ số bắt đầu bằng số 0';
+    }
+
+    const cleanPlate = (bookingData.licensePlate || '').trim();
+    if (!cleanPlate) {
+      errs.licensePlate = t('licensePlateRequired');
+    } else if (!VIETNAMESE_PLATE_REGEX.test(cleanPlate)) {
+      errs.licensePlate = locale === 'en'
+        ? 'Invalid license plate format (e.g., 30F-123.45, 51F12345)'
+        : 'Biển số xe không hợp lệ (Ví dụ: 30F-123.45, 51F12345)';
+    }
+
+    if (!selectedDate || !selectedTime) {
+      errs.scheduledTime = t('selectSlotRequired');
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
