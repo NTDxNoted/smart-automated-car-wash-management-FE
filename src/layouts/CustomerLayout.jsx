@@ -64,21 +64,34 @@ export default function CustomerLayout() {
     navigate('/login');
   };
 
-  const getTierDetails = (tier) => {
+  const getTierDetails = (tier, totalSpending = 0) => {
+    let calculated = 'member';
+    if (totalSpending >= 3000000) calculated = 'platinum';
+    else if (totalSpending >= 1500000) calculated = 'gold';
+    else if (totalSpending >= 500000) calculated = 'silver';
+
     const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toLowerCase();
-    if (tStr === '4' || tStr === 'platinum') {
+    let explicit = 'member';
+    if (tStr === '4' || tStr === 'platinum') explicit = 'platinum';
+    else if (tStr === '3' || tStr === 'gold') explicit = 'gold';
+    else if (tStr === '2' || tStr === 'silver') explicit = 'silver';
+
+    const tierOrder = { member: 1, silver: 2, gold: 3, platinum: 4 };
+    const effective = tierOrder[calculated] > tierOrder[explicit] ? calculated : explicit;
+
+    if (effective === 'platinum') {
       return { 
         name: 'Platinum', 
         color: 'from-cyan-500 to-blue-600 text-white border-cyan-400/20 shadow-cyan-500/10' 
       };
     }
-    if (tStr === '3' || tStr === 'gold') {
+    if (effective === 'gold') {
       return { 
         name: 'Gold', 
         color: 'from-amber-400 to-yellow-500 text-white border-amber-300/20 shadow-amber-500/10' 
       };
     }
-    if (tStr === '2' || tStr === 'silver') {
+    if (effective === 'silver') {
       return { 
         name: 'Silver', 
         color: 'from-slate-300 to-slate-400 text-slate-800 border-slate-200/20 shadow-slate-300/5' 
@@ -293,7 +306,7 @@ export default function CustomerLayout() {
                       </div>
                       {user?.tier !== undefined && user?.tier !== null && user?.tier !== '' && (
                         <span 
-                          className={`inline-flex items-center gap-0.5 text-[8px] font-black uppercase rounded-full bg-gradient-to-r border shadow-2xs ${getTierDetails(user.tier).color}`}
+                          className={`inline-flex items-center gap-0.5 text-[8px] font-black uppercase rounded-full bg-gradient-to-r border shadow-2xs ${getTierDetails(user.tier, user.totalSpending).color}`}
                           style={{ 
                             letterSpacing: '0.05em',
                             padding: '3px 8px',
@@ -302,7 +315,7 @@ export default function CustomerLayout() {
                           }}
                         >
                           <span className="opacity-75 text-[7px]">✦</span>
-                          {getTierDetails(user.tier).name}
+                          {getTierDetails(user.tier, user.totalSpending).name}
                         </span>
                       )}
                     </div>
