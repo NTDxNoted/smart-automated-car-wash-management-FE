@@ -65,6 +65,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
       case 'PENDING_QUOTA_EXCEEDED':    return t('quotaExceeded');
       case 'SLOT_NOT_AVAILABLE':        return t('slotUnavailable');
       case 'VEHICLE_BUFFER_VIOLATION':  return t('bufferViolation');
+      case 'BOOKING_WINDOW_VIOLATION':  return t('bookingWindowViolation');
       case 'BOOKING_SUSPENDED':         return t('bookingSuspended');
       default:                          return serverMessage || t('genericBookingError');
     }
