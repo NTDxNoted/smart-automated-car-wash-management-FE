@@ -121,7 +121,7 @@ const translations = {
     bookingSuccessToast: "Đặt lịch thành công! Mã hóa đơn: {id}",
     quotaExceeded: "Bạn đã có lịch đặt đang chờ. Vui lòng hoàn thành trước khi đặt lịch mới.",
     slotUnavailable: "Khung giờ này hiện tại đã có người đặt trước. Vui lòng chọn khung giờ khác.",
-    bufferViolation: "Xe này đã có lịch hẹn được đặt trong vòng 120 phút. Vui lòng đổi giờ.",
+    bufferViolation: "Biển số xe này đã có lịch hẹn trùng hoặc quá gần thời gian này. Vui lòng chọn giờ khác.",
     bookingSuspended: "Tài khoản của bạn đang bị tạm khóa tính năng đặt lịch. Liên hệ Admin.",
     genericBookingError: "Đã xảy ra lỗi hệ thống khi đặt lịch. Vui lòng thử lại.",
 
@@ -342,7 +342,7 @@ const translations = {
     bookingSuccessToast: "Booking successful! Invoice Code: {id}",
     quotaExceeded: "You have a pending booking. Please complete it before placing a new one.",
     slotUnavailable: "This slot is already booked. Please choose another time.",
-    bufferViolation: "This vehicle has a booking within 120 minutes. Please change the time.",
+    bufferViolation: "This vehicle already has a booking around this time. Please choose another time.",
     bookingSuspended: "Your account is temporarily suspended from booking. Please contact Admin.",
     genericBookingError: "A system error occurred. Please try again.",
 
