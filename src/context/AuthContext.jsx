@@ -59,6 +59,12 @@ export const AuthContext = createContext({
   isGuest: true,
 });
 
+// Sanitize string data before writing to browser storage to prevent Persistent XSS & Storage Poisoning
+function sanitizeStorageString(val) {
+  if (val === null || val === undefined) return '';
+  return String(val).replace(/[<>'"]/g, '').trim();
+}
+
 export function AuthProvider({ children }) {
   const [auth, setAuthState] = useState(loadFromStorage);
 
@@ -69,18 +75,22 @@ export function AuthProvider({ children }) {
         .then(profile => {
           if (profile) {
             const effectiveTier = resolveEffectiveTier(profile.tier, profile.totalSpending);
+            const safeFullName = sanitizeStorageString(profile.fullName || auth.fullName);
+            const safeTier = sanitizeStorageString(effectiveTier);
+            const safeSpending = Number(profile.totalSpending ?? auth.totalSpending ?? 0);
+
             const updated = {
               ...auth,
-              fullName: profile.fullName || auth.fullName,
-              tier: effectiveTier,
-              totalSpending: profile.totalSpending ?? auth.totalSpending ?? 0,
+              fullName: safeFullName,
+              tier: safeTier,
+              totalSpending: safeSpending,
             };
             setAuthState(updated);
             localStorage.setItem("member_user", JSON.stringify({
               customerId: auth.customerId,
-              fullName: updated.fullName,
-              tier: updated.tier,
-              totalSpending: updated.totalSpending,
+              fullName: safeFullName,
+              tier: safeTier,
+              totalSpending: safeSpending,
               suspendedUntil: auth.suspendedUntil,
               role: "MEMBER",
             }));

@@ -205,11 +205,15 @@ export default function LoginPage() {
         }
       } catch (_) {}
 
+      const safeFullName = String(fullName || '').replace(/[<>'"]/g, '').trim();
+      const safeTier = String(effectiveTier || '').replace(/[<>'"]/g, '').trim();
+      const safeSpending = Number(totalSpending) || 0;
+
       const memberUserPayload = {
         customerId: data.customerId,
-        fullName: fullName,
-        tier: effectiveTier,
-        totalSpending: totalSpending,
+        fullName: safeFullName,
+        tier: safeTier,
+        totalSpending: safeSpending,
         suspendedUntil: data.suspendedUntil ?? null,
         role: "MEMBER",
       };
