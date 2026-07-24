@@ -78,8 +78,9 @@ const PromotionManagementPage = () => {
     const mappedTierId = form.minTier ? (tierMap[form.minTier.toUpperCase()] || null) : null;
 
     const payload = {
-      title: form.title,
-      promoCode: form.promoCode,
+      title: form.title ? form.title.trim() : '',
+      promoCode: form.promoCode ? form.promoCode.trim().toUpperCase() : '',
+      PromoCode: form.promoCode ? form.promoCode.trim().toUpperCase() : '',
       minTierId: mappedTierId,
       minTierID: mappedTierId,
       discountValue: Number(form.value),

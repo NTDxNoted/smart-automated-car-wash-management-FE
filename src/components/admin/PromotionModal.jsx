@@ -45,9 +45,10 @@ const PromotionModal = ({
   if (!open) return null;
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [name]: name === 'promoCode' ? value.toUpperCase() : value,
     });
   };
 
@@ -79,6 +80,7 @@ const PromotionModal = ({
 
     onSubmit({
       ...form,
+      promoCode: form.promoCode ? form.promoCode.trim().toUpperCase() : '',
       value,
       maxUsage,
     });

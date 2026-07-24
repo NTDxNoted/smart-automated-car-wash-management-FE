@@ -33,7 +33,7 @@ export default function StatusUpdateDropdown({
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Không thể cập nhật trạng thái"
+        "Không thể cập nhật trạng thái"
       );
     } finally {
       setLoading(false);
@@ -45,7 +45,6 @@ export default function StatusUpdateDropdown({
       <select
         disabled={disabled || loading}
         onChange={handleChange}
-        value=""
         className="booking-drawer-select"
       >
         <option value="">
