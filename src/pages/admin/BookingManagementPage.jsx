@@ -94,10 +94,10 @@ export default function BookingManagementPage() {
 
   return (
     <div className="admin-booking-page-container">
-      
+
       {/* Filters and Search Row */}
       <div className="booking-filters-row">
-        
+
         {/* Status Dropdown */}
         <div className="booking-select-wrapper">
           <select

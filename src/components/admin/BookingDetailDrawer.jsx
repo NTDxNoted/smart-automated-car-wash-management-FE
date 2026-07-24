@@ -128,11 +128,17 @@ export default function BookingDetailDrawer({
 
   const formattedPaymentTime = currentDetails.paymentAt
     ? new Date(currentDetails.paymentAt).toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }) + " " + new Date(currentDetails.paymentAt).toLocaleDateString("vi-VN")
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }) + " " + new Date(currentDetails.paymentAt).toLocaleDateString("vi-VN")
     : "";
+
+  const finalAmt = currentDetails.finalAmount ?? currentDetails.totalAmount ?? currentDetails.totalPrice ?? 0;
+  const discountAppliedAmt = currentDetails.discountApplied ?? 0;
+  const baseAmt = (currentDetails.baseAmount !== undefined && currentDetails.baseAmount !== null && currentDetails.baseAmount > 0)
+    ? currentDetails.baseAmount
+    : (currentDetails.basePrice ?? (finalAmt + discountAppliedAmt));
 
   return (
     <div className="booking-drawer-overlay" onClick={onClose}>
@@ -206,13 +212,13 @@ export default function BookingDetailDrawer({
                   <div className="booking-drawer-row">
                     <span className="booking-drawer-label">Giá cơ bản:</span>
                     <span className="booking-drawer-value">
-                      {(currentDetails.baseAmount ?? 0).toLocaleString()}đ
+                      {baseAmt.toLocaleString()}đ
                     </span>
                   </div>
                   <div className="booking-drawer-row">
                     <span className="booking-drawer-label">Giảm giá:</span>
                     <span className="booking-drawer-value" style={{ color: '#BA1A1A' }}>
-                      -{(currentDetails.discountApplied ?? 0).toLocaleString()}đ
+                      -{discountAppliedAmt.toLocaleString()}đ
                     </span>
                   </div>
                   {currentDetails.pointsEarned > 0 && (
@@ -227,7 +233,7 @@ export default function BookingDetailDrawer({
                   <div className="booking-drawer-total-row">
                     <span className="booking-drawer-total-label">Tổng thanh toán:</span>
                     <span className="booking-drawer-total-value">
-                      {(currentDetails.finalAmount ?? currentDetails.totalAmount ?? currentDetails.totalPrice ?? 0).toLocaleString()}đ
+                      {finalAmt.toLocaleString()}đ
                     </span>
                   </div>
                 </div>
@@ -239,7 +245,7 @@ export default function BookingDetailDrawer({
                   <div className="booking-drawer-noshow-banner">
                     {/* SVG warning icon */}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#BA1A1A"/>
+                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#BA1A1A" />
                     </svg>
                     <span>Ghi nhận xe không đến (No-show)</span>
                   </div>
@@ -247,7 +253,7 @@ export default function BookingDetailDrawer({
                   <div className="booking-drawer-checkin-banner">
                     {/* SVG check icon */}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#006B5F"/>
+                      <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#006B5F" />
                     </svg>
                     <span>Xe đã check-in lúc {new Date(checkInTimeVal).toLocaleTimeString("vi-VN")} {new Date(checkInTimeVal).toLocaleDateString("vi-VN")}</span>
                   </div>
@@ -301,7 +307,7 @@ export default function BookingDetailDrawer({
           >
             {!isPaid && isPending && !isNoShow && (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }}>
-                <path d="M9 16.2L4.8 12L3.4 13.4L9 19L21 7L19.6 5.6L9 16.2Z" fill="#FFFFFF"/>
+                <path d="M9 16.2L4.8 12L3.4 13.4L9 19L21 7L19.6 5.6L9 16.2Z" fill="#FFFFFF" />
               </svg>
             )}
             <span>
