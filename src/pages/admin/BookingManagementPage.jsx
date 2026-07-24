@@ -109,7 +109,6 @@ export default function BookingManagementPage() {
           >
             <option value="">All status</option>
             <option value="PENDING">Pending</option>
-            <option value="CONFIRMED">Confirmed</option>
             <option value="FAILED">Failed</option>
             <option value="COMPLETED">Completed</option>
             <option value="CANCELLED">Cancelled</option>
