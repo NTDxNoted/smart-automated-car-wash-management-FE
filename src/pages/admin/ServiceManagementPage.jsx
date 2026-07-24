@@ -97,12 +97,37 @@ const ServiceManagementPage = () => {
       if (selectedService.status !== newStatus) {
         await adminServiceService.toggleStatus(selectedService.id);
       }
+
+      setServices(prev => prev.map(s => {
+        if (s.id === selectedService.id) {
+          return {
+            ...s,
+            name: form.name,
+            category: form.category,
+            price: Number(form.price),
+            duration: Number(form.duration),
+            description: form.description,
+            status: newStatus,
+          };
+        }
+        return s;
+      }));
     } else {
-      await adminServiceService.createService(payload);
+      const createdRes = await adminServiceService.createService(payload);
+      const createdData = createdRes.data?.data || createdRes.data || createdRes;
+      const newServiceObj = {
+        id: createdData.serviceId ?? createdData.serviceID ?? createdData.id ?? Date.now(),
+        name: createdData.serviceName ?? createdData.name ?? form.name,
+        category: createdData.serviceCategory ?? createdData.category ?? form.category,
+        price: Number(createdData.price ?? form.price),
+        duration: Number(createdData.duration ?? form.duration),
+        description: createdData.description ?? form.description,
+        status: createdData.status || form.status || 'Active',
+      };
+      setServices(prev => [newServiceObj, ...prev]);
     }
 
     setOpenModal(false);
-    await fetchServices();
   };
 
   return (
