@@ -45,7 +45,8 @@ const ServiceManagementPage = () => {
   const handleToggleStatus = async (item) => {
     try {
       await adminServiceService.toggleStatus(item.id);
-      await fetchServices();
+      const nextStatus = item.status === 'Active' ? 'Inactive' : 'Active';
+      setServices(prev => prev.map(s => s.id === item.id ? { ...s, status: nextStatus } : s));
     } catch (err) {
       console.error("Error toggling service status:", err);
     }
@@ -57,8 +58,8 @@ const ServiceManagementPage = () => {
     try {
       if (item.status === 'Active') {
         await adminServiceService.toggleStatus(item.id);
+        setServices(prev => prev.map(s => s.id === item.id ? { ...s, status: 'Inactive' } : s));
       }
-      await fetchServices();
     } catch (err) {
       console.error("Error deactivating service:", err);
     }
