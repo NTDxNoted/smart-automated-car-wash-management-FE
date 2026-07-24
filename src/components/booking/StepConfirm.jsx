@@ -287,6 +287,15 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                       keyboard_arrow_down
                     </span>
                   </div>
+
+                  {selectedReward && rawRewardDiscount > Math.floor(baseAmount * 0.50) && (
+                    <p className="text-[11px] text-purple-800 bg-purple-50/80 border border-purple-200/80 p-2.5 rounded-xl font-medium flex items-center gap-1.5 mt-2.5">
+                      <span className="material-symbols-outlined text-sm text-purple-600">info</span>
+                      {locale === 'en'
+                        ? 'Note: Reward points discount is capped at 50% of base service price (BR-60).'
+                        : 'Lưu ý: Giảm giá từ đổi điểm thưởng áp dụng trần tối đa 50% giá gốc dịch vụ (BR-60).'}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
