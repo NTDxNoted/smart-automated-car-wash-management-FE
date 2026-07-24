@@ -59,6 +59,8 @@ export const AuthContext = createContext({
   isGuest: true,
 });
 
+const ALLOWED_TIERS = ["MEMBER", "SILVER", "GOLD", "PLATINUM"];
+
 // Sanitize string data before writing to browser storage to prevent Persistent XSS & Storage Poisoning
 function sanitizeStorageString(val) {
   if (val === null || val === undefined) return '';
@@ -74,9 +76,11 @@ export function AuthProvider({ children }) {
       profileService.getProfile()
         .then(profile => {
           if (profile) {
-            const effectiveTier = resolveEffectiveTier(profile.tier, profile.totalSpending);
+            const computedTier = resolveEffectiveTier(profile.tier, profile.totalSpending);
             const safeFullName = sanitizeStorageString(profile.fullName || auth.fullName);
-            const safeTier = sanitizeStorageString(effectiveTier);
+            const safeTier = ALLOWED_TIERS.includes(String(computedTier).toUpperCase())
+              ? String(computedTier).toUpperCase()
+              : "MEMBER";
             const safeSpending = Number(profile.totalSpending ?? auth.totalSpending ?? 0);
 
             const updated = {

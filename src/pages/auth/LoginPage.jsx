@@ -205,8 +205,10 @@ export default function LoginPage() {
         }
       } catch (_) {}
 
+      const ALLOWED_TIERS = ["MEMBER", "SILVER", "GOLD", "PLATINUM"];
       const safeFullName = String(fullName || '').replace(/[<>'"]/g, '').trim();
-      const safeTier = String(effectiveTier || '').replace(/[<>'"]/g, '').trim();
+      const rawTierStr = String(effectiveTier || '').toUpperCase().trim();
+      const safeTier = ALLOWED_TIERS.includes(rawTierStr) ? rawTierStr : "MEMBER";
       const safeSpending = Number(totalSpending) || 0;
 
       const memberUserPayload = {
