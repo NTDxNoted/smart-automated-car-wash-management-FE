@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import adminBookingService from "../../services/adminBookingService";
 
 export default function StatusUpdateDropdown({
@@ -45,10 +45,15 @@ export default function StatusUpdateDropdown({
       <select
         disabled={disabled || loading}
         onChange={handleChange}
+        value=""
         className="booking-drawer-select"
       >
         <option value="">
           Cập nhật trạng thái...
+        </option>
+
+        <option value="NOSHOW">
+          No-show (Khách không đến)
         </option>
 
         <option value="FAILED">
