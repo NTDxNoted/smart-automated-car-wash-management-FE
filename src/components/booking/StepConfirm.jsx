@@ -55,7 +55,8 @@ export default function StepConfirm({ bookingData, onBack, user }) {
       rawRewardDiscount = val;
     }
   }
-  let rewardDiscount = Math.min(rawRewardDiscount, baseAmount);
+  // BR-60: Điểm thưởng chỉ được dùng để thanh toán tối đa 50% giá trị hóa đơn.
+  let rewardDiscount = Math.min(rawRewardDiscount, Math.floor(baseAmount * 0.50));
 
   const finalAmount = Math.max(0, baseAmount - tierDiscount - promotionDiscount - rewardDiscount);
   const invoice = { baseAmount, tierDiscount, promotionDiscount, rewardDiscount, finalAmount };

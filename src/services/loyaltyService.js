@@ -54,7 +54,9 @@ export const loyaltyService = {
       name: r.rewardName || r.name,
       description: r.description,
       pointsRequired: r.pointsRequired,
+      discountType: r.discountType || r.discounttype || 'Fixed_Amount',
       discountValue: r.discountAmount !== undefined ? r.discountAmount : r.discountValue,
+      discountAmount: r.discountAmount !== undefined ? r.discountAmount : r.discountValue,
       isActive: r.isActive
     }));
   },
