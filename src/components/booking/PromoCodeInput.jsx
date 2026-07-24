@@ -16,13 +16,16 @@ export default function PromoCodeInput({ onValidateSuccess }) {
     setSuccessMsg('');
     try {
       const res = await bookingService.validatePromo(code.trim().toUpperCase());
-      if (res.isValid) {
+      if (res && (res.isValid || res.promotionId || res.id)) {
         onValidateSuccess(res);
+        const typeStr = String(res.discountType || res.DiscountType || '').toLowerCase();
+        const val = Number(res.discountValue ?? res.DiscountValue ?? res.value ?? 0);
+        const isPercent = typeStr.includes('percent');
         setSuccessMsg(
           `${t('promoSuccess')} ${
-            res.discountType === 'PERCENT'
-              ? res.discountValue + '%'
-              : res.discountValue.toLocaleString('vi-VN') + (locale === 'en' ? ' VND' : 'đ')
+            isPercent
+              ? val + '%'
+              : val.toLocaleString('vi-VN') + (locale === 'en' ? ' VND' : 'đ')
           }`
         );
       }

@@ -232,13 +232,13 @@ const PromotionManagementPage = () => {
 
                     <td className="promo-td type">
                       <span className="promo-type-text">
-                        {item.discountType === 'PERCENT' ? 'Phần trăm' : 'Tiền mặt'}
+                        {String(item.discountType || '').toUpperCase().includes('PERCENT') ? 'Phần trăm' : 'Tiền mặt'}
                       </span>
                     </td>
 
                     <td className="promo-td value">
                       <span className="promo-value-text">
-                        {item.discountType === 'PERCENT' ? `${item.value}%` : `${item.value?.toLocaleString()}đ`}
+                        {String(item.discountType || '').toUpperCase().includes('PERCENT') ? `${item.value}%` : `${item.value?.toLocaleString()}đ`}
                       </span>
                     </td>
 
