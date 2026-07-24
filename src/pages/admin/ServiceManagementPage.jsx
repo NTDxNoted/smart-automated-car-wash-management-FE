@@ -44,16 +44,7 @@ const ServiceManagementPage = () => {
 
   const handleToggleStatus = async (item) => {
     try {
-      const newStatus = item.status === 'Active' ? 'Inactive' : 'Active';
-      const updatedPayload = {
-        serviceName: item.name,
-        serviceCategory: item.category,
-        price: Number(item.price),
-        duration: Number(item.duration),
-        description: item.description,
-        status: newStatus
-      };
-      await adminServiceService.updateService(item.id, updatedPayload);
+      await adminServiceService.toggleStatus(item.id);
       await fetchServices();
     } catch (err) {
       console.error("Error toggling service status:", err);
@@ -64,15 +55,9 @@ const ServiceManagementPage = () => {
     const confirmed = window.confirm(`Bạn có chắc chắn muốn ngưng hoạt động dịch vụ "${item.name}" không?`);
     if (!confirmed) return;
     try {
-      const updatedPayload = {
-        serviceName: item.name,
-        serviceCategory: item.category,
-        price: Number(item.price),
-        duration: Number(item.duration),
-        description: item.description,
-        status: 'Inactive'
-      };
-      await adminServiceService.updateService(item.id, updatedPayload);
+      if (item.status === 'Active') {
+        await adminServiceService.toggleStatus(item.id);
+      }
       await fetchServices();
     } catch (err) {
       console.error("Error deactivating service:", err);
@@ -86,7 +71,6 @@ const ServiceManagementPage = () => {
       price: Number(form.price),
       duration: Number(form.duration),
       description: form.description,
-      status: form.status || 'Active',
     };
 
     if (selectedService) {
@@ -107,6 +91,11 @@ const ServiceManagementPage = () => {
       }
 
       await adminServiceService.updateService(selectedService.id, payload);
+
+      const newStatus = form.status || 'Active';
+      if (selectedService.status !== newStatus) {
+        await adminServiceService.toggleStatus(selectedService.id);
+      }
     } else {
       await adminServiceService.createService(payload);
     }

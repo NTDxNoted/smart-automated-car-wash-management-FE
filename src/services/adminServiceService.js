@@ -10,6 +10,9 @@ const adminServiceService = {
   updateService(id, data) {
     return adminAxiosInstance.put(`/admin/services/${id}`, data);
   },
+  toggleStatus(id) {
+    return adminAxiosInstance.patch(`/admin/services/${id}/status`);
+  },
 };
 
 export default adminServiceService;
