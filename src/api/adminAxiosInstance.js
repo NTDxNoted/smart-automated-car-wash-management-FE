@@ -18,7 +18,7 @@ adminAxiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle errors (specifically 401 Unauthorized / 403 Forbidden)
+// Response interceptor to handle errors (specifically 401 Unauthorized / 403 Forbidden for Single Session Lock)
 adminAxiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -26,8 +26,10 @@ adminAxiosInstance.interceptors.response.use(
       // Clear token and user info from localStorage
       localStorage.removeItem("admin_token");
       localStorage.removeItem("admin_user");
-      // Redirect to login page
-      window.location.href = '/login';
+      // Redirect to login page if not already on login page
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login?expired=true';
+      }
     }
     return Promise.reject(error);
   }

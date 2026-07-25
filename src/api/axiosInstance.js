@@ -21,7 +21,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle errors (specifically 401 Unauthorized)
+// Response interceptor to handle errors (specifically 401 Unauthorized for Single Session Lock)
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -29,8 +29,10 @@ axiosInstance.interceptors.response.use(
       // Clear token and user info from localStorage
       localStorage.removeItem("member_token");
       localStorage.removeItem("member_user");
-      // Redirect to login page
-      window.location.href = '/login';
+      // Redirect to login page if not already on login page
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login?expired=true';
+      }
     }
     return Promise.reject(error);
   }

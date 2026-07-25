@@ -127,6 +127,11 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("expired") === "true") {
+      toast.error("Phiên đăng nhập đã hết hạn do tài khoản được đăng nhập từ một thiết bị khác.", { id: 'session-expired' });
+    }
+
     if (auth.role === "ADMIN" && localStorage.getItem("admin_token")) {
       navigate("/admin/dashboard", { replace: true });
     }
