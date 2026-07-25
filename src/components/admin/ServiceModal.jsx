@@ -40,7 +40,7 @@ const ServiceModal = ({
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const price = Number(form.price);
     const duration = Number(form.duration);
 
@@ -54,6 +54,11 @@ const ServiceModal = ({
       return;
     }
 
+    if (!form.description?.trim()) {
+      setError('Mô tả dịch vụ không được để trống.');
+      return;
+    }
+
     if (!Number.isFinite(price) || price < 0) {
       setError('Đơn giá phải là số nguyên dương hợp lệ.');
       return;
@@ -64,11 +69,17 @@ const ServiceModal = ({
       return;
     }
 
-    onSubmit({
-      ...form,
-      price,
-      duration,
-    });
+    try {
+      setError('');
+      await onSubmit({
+        ...form,
+        price,
+        duration,
+      });
+    } catch (err) {
+      const serverMsg = err?.response?.data?.message || err?.message;
+      setError(serverMsg || 'Không thể lưu dịch vụ. Vui lòng thử lại.');
+    }
   };
 
   return (
@@ -112,9 +123,10 @@ const ServiceModal = ({
                     className="service-modal-select"
                   >
                     <option value="">Chọn phân loại...</option>
-                    <option value="Rửa xe">Rửa xe</option>
-                    <option value="Chăm sóc">Chăm sóc</option>
-                    <option value="Khác">Khác</option>
+                    <option value="Basic">Rửa cơ bản (Basic)</option>
+                    <option value="Premium">Rửa nâng cao (Premium)</option>
+                    <option value="Detail">Chăm sóc chi tiết (Detail)</option>
+                    <option value="AddOn">Dịch vụ bổ sung (AddOn)</option>
                   </select>
                   <svg className="service-modal-select-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />

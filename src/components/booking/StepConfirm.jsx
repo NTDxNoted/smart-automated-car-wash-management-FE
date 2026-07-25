@@ -37,10 +37,12 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
   let promotionDiscount = 0;
   if (appliedPromo) {
-    if (appliedPromo.discountType === 'PERCENT') {
-      promotionDiscount = Math.floor(baseAmount * (appliedPromo.discountValue / 100));
-    } else if (appliedPromo.discountType === 'FIXED') {
-      promotionDiscount = appliedPromo.discountValue;
+    const typeStr = String(appliedPromo.discountType || appliedPromo.DiscountType || '').toLowerCase();
+    const val = Number(appliedPromo.discountValue ?? appliedPromo.DiscountValue ?? appliedPromo.value ?? 0);
+    if (typeStr.includes('percent')) {
+      promotionDiscount = Math.floor(baseAmount * (val / 100));
+    } else {
+      promotionDiscount = val;
     }
   }
 
@@ -82,7 +84,8 @@ export default function StepConfirm({ bookingData, onBack, user }) {
       licensePlate:     bookingData.licensePlate || null,
       vehicleId:        bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
       scheduledTime:    bookingData.scheduledTime,
-      promotionId:      appliedPromo?.promotionId || null,
+      promoCode:        appliedPromo?.promoCode || appliedPromo?.code || null,
+      promotionId:      appliedPromo?.promotionId || appliedPromo?.id || null,
       rewardId:         selectedReward ? Number(selectedReward.id) : null,
       rewardPointsUsed: selectedReward ? selectedReward.pointsRequired : 0,
     };

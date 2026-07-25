@@ -103,13 +103,6 @@ const TierConfigPage = () => {
         {/* Card Header */}
         <div className="tier-card-header">
           <h3 className="tier-card-title">Cấu hình hạng thành viên</h3>
-
-          <button
-            onClick={() => alert("Tính năng này hiện tại được cấu hình tự động thông qua hệ thống phân hạng mặc định.")}
-            className="tier-add-btn"
-          >
-            <span>+</span> Thêm hạng mới
-          </button>
         </div>
 
         {/* Card Body / Table Wrapper */}

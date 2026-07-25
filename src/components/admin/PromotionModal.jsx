@@ -32,6 +32,7 @@ const PromotionModal = ({
       setForm({
         ...defaultForm,
         ...initialData,
+        maxUsage: initialData.maxUsage !== null && initialData.maxUsage !== undefined ? initialData.maxUsage : '',
         startDate: formatDateForInput(initialData.startDate),
         endDate: formatDateForInput(initialData.endDate),
         isActive: initialData.isActive !== undefined ? initialData.isActive : true,
@@ -45,15 +46,17 @@ const PromotionModal = ({
   if (!open) return null;
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [name]: name === 'promoCode' ? value.toUpperCase() : value,
     });
   };
 
   const handleSubmit = () => {
     const value = Number(form.value);
-    const maxUsage = Number(form.maxUsage);
+    const hasMaxUsage = form.maxUsage !== '' && form.maxUsage !== null && form.maxUsage !== undefined;
+    const maxUsage = hasMaxUsage ? Number(form.maxUsage) : null;
 
     if (form.startDate && form.endDate && form.endDate < form.startDate) {
       setError('EndDate không được nhỏ hơn StartDate.');
@@ -70,7 +73,7 @@ const PromotionModal = ({
       return;
     }
 
-    if (form.maxUsage !== '' && form.maxUsage !== null && form.maxUsage !== undefined) {
+    if (hasMaxUsage) {
       if (!Number.isFinite(maxUsage) || maxUsage < 0) {
         setError('Giới hạn phải là số không âm.');
         return;
@@ -79,6 +82,7 @@ const PromotionModal = ({
 
     onSubmit({
       ...form,
+      promoCode: form.promoCode ? form.promoCode.trim().toUpperCase() : '',
       value,
       maxUsage,
     });

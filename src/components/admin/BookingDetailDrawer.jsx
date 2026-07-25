@@ -327,6 +327,7 @@ export default function BookingDetailDrawer({
 
           <EmergencyStopButton
             bookingId={booking.id}
+            disabled={!checkInTimeVal || !isPending}
             onRefresh={() => {
               onRefresh?.(booking.id, "EMERGENCY_STOP");
               fetchDetail();

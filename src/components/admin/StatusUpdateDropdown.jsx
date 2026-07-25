@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import adminBookingService from "../../services/adminBookingService";
 
 export default function StatusUpdateDropdown({
@@ -33,7 +33,7 @@ export default function StatusUpdateDropdown({
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Không thể cập nhật trạng thái"
+        "Không thể cập nhật trạng thái"
       );
     } finally {
       setLoading(false);
@@ -49,6 +49,10 @@ export default function StatusUpdateDropdown({
       >
         <option value="">
           Cập nhật trạng thái...
+        </option>
+
+        <option value="NOSHOW">
+          No-show (Khách không đến)
         </option>
 
         <option value="FAILED">

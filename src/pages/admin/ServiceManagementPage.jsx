@@ -44,38 +44,24 @@ const ServiceManagementPage = () => {
 
   const handleToggleStatus = async (item) => {
     try {
-      const newStatus = item.status === 'Active' ? 'Inactive' : 'Active';
-      const updatedPayload = {
-        serviceName: item.name,
-        serviceCategory: item.category,
-        price: Number(item.price),
-        duration: Number(item.duration),
-        description: item.description,
-        status: newStatus
-      };
-      await adminServiceService.updateService(item.id, updatedPayload);
-      await fetchServices();
+      await adminServiceService.toggleStatus(item.id);
+      const nextStatus = item.status === 'Active' ? 'Inactive' : 'Active';
+      setServices(prev => prev.map(s => s.id === item.id ? { ...s, status: nextStatus } : s));
     } catch (err) {
       console.error("Error toggling service status:", err);
     }
   };
 
   const handleDelete = async (item) => {
-    const confirmed = window.confirm(`Bạn có chắc chắn muốn ngưng hoạt động dịch vụ "${item.name}" không?`);
+    const confirmed = window.confirm(`Bạn có chắc chắn muốn xóa dịch vụ "${item.name}" khỏi danh sách hiển thị không?`);
     if (!confirmed) return;
     try {
-      const updatedPayload = {
-        serviceName: item.name,
-        serviceCategory: item.category,
-        price: Number(item.price),
-        duration: Number(item.duration),
-        description: item.description,
-        status: 'Inactive'
-      };
-      await adminServiceService.updateService(item.id, updatedPayload);
-      await fetchServices();
+      if (item.status === 'Active') {
+        await adminServiceService.toggleStatus(item.id);
+      }
+      setServices(prev => prev.filter(s => s.id !== item.id));
     } catch (err) {
-      console.error("Error deactivating service:", err);
+      console.error("Error deleting/hiding service:", err);
     }
   };
 
@@ -86,7 +72,6 @@ const ServiceManagementPage = () => {
       price: Number(form.price),
       duration: Number(form.duration),
       description: form.description,
-      status: form.status || 'Active',
     };
 
     if (selectedService) {
@@ -107,12 +92,42 @@ const ServiceManagementPage = () => {
       }
 
       await adminServiceService.updateService(selectedService.id, payload);
+
+      const newStatus = form.status || 'Active';
+      if (selectedService.status !== newStatus) {
+        await adminServiceService.toggleStatus(selectedService.id);
+      }
+
+      setServices(prev => prev.map(s => {
+        if (s.id === selectedService.id) {
+          return {
+            ...s,
+            name: form.name,
+            category: form.category,
+            price: Number(form.price),
+            duration: Number(form.duration),
+            description: form.description,
+            status: newStatus,
+          };
+        }
+        return s;
+      }));
     } else {
-      await adminServiceService.createService(payload);
+      const createdRes = await adminServiceService.createService(payload);
+      const createdData = createdRes.data?.data || createdRes.data || createdRes;
+      const newServiceObj = {
+        id: createdData.serviceId ?? createdData.serviceID ?? createdData.id ?? Date.now(),
+        name: createdData.serviceName ?? createdData.name ?? form.name,
+        category: createdData.serviceCategory ?? createdData.category ?? form.category,
+        price: Number(createdData.price ?? form.price),
+        duration: Number(createdData.duration ?? form.duration),
+        description: createdData.description ?? form.description,
+        status: createdData.status || form.status || 'Active',
+      };
+      setServices(prev => [newServiceObj, ...prev]);
     }
 
     setOpenModal(false);
-    await fetchServices();
   };
 
   return (

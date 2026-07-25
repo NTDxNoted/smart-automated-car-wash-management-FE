@@ -78,8 +78,9 @@ const PromotionManagementPage = () => {
     const mappedTierId = form.minTier ? (tierMap[form.minTier.toUpperCase()] || null) : null;
 
     const payload = {
-      title: form.title,
-      promoCode: form.promoCode,
+      title: form.title ? form.title.trim() : '',
+      promoCode: form.promoCode ? form.promoCode.trim().toUpperCase() : '',
+      PromoCode: form.promoCode ? form.promoCode.trim().toUpperCase() : '',
       minTierId: mappedTierId,
       minTierID: mappedTierId,
       discountValue: Number(form.value),
@@ -232,19 +233,19 @@ const PromotionManagementPage = () => {
 
                     <td className="promo-td type">
                       <span className="promo-type-text">
-                        {item.discountType === 'PERCENT' ? 'Phần trăm' : 'Tiền mặt'}
+                        {String(item.discountType || '').toUpperCase().includes('PERCENT') ? 'Phần trăm' : 'Tiền mặt'}
                       </span>
                     </td>
 
                     <td className="promo-td value">
                       <span className="promo-value-text">
-                        {item.discountType === 'PERCENT' ? `${item.value}%` : `${item.value?.toLocaleString()}đ`}
+                        {String(item.discountType || '').toUpperCase().includes('PERCENT') ? `${item.value}%` : `${item.value?.toLocaleString()}đ`}
                       </span>
                     </td>
 
                     <td className="promo-td limit">
                       <span className="promo-limit-text">
-                        {item.maxUsage?.toLocaleString() || 'Không giới hạn'}
+                        {item.maxUsage !== null && item.maxUsage !== undefined ? item.maxUsage.toLocaleString() : 'Không giới hạn'}
                       </span>
                     </td>
 
