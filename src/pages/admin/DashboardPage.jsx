@@ -713,8 +713,8 @@ export default function DashboardPage() {
 
             <div className="modern-lpr-body">
               {/* Đang xử lý */}
-              <div 
-                className="modern-lpr-item-processing" 
+              <div
+                className="modern-lpr-item-processing"
                 onClick={() => processingCars.length > 0 && setSelectedBooking(processingCars[0])}
                 style={{ cursor: processingCars.length > 0 ? 'pointer' : 'default' }}
               >
@@ -735,7 +735,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Đang chờ */}
-              <div 
+              <div
                 className="modern-lpr-item-waiting"
                 onClick={() => waitingCars.length > 0 && setSelectedBooking(waitingCars[0])}
                 style={{ cursor: waitingCars.length > 0 ? 'pointer' : 'default' }}
@@ -760,7 +760,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Chưa Check-in */}
-              <div 
+              <div
                 className="modern-lpr-item-checkin"
                 onClick={() => needCheckinCars.length > 0 && setSelectedBooking(needCheckinCars[0])}
                 style={{ cursor: needCheckinCars.length > 0 ? 'pointer' : 'default' }}

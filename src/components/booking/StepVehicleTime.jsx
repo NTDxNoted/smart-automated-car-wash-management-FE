@@ -11,15 +11,6 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(true);
-  const [useCustomLicensePlate, setUseCustomLicensePlate] = useState(false);
-  const [debouncedLicensePlate, setDebouncedLicensePlate] = useState(bookingData.licensePlate);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedLicensePlate(bookingData.licensePlate);
-    }, 500);
-    return () => clearTimeout(handler);
-  }, [bookingData.licensePlate]);
 
   const getBookingWindowDays = (tier) => {
     const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
@@ -44,20 +35,11 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       bookingService.getVehicles()
         .then(data => {
           setVehicles(data);
-          if (data.length > 0) {
-            setUseCustomLicensePlate(false);
-            if (!bookingData.selectedVehicleId) {
-              setBookingData(prev => ({
-                ...prev,
-                selectedVehicleId: data[0].id,
-                licensePlate: data[0].licensePlate,
-              }));
-            }
-          } else {
-            setUseCustomLicensePlate(true);
+          if (data.length > 0 && !bookingData.selectedVehicleId) {
             setBookingData(prev => ({
               ...prev,
-              selectedVehicleId: '',
+              selectedVehicleId: data[0].id,
+              licensePlate: data[0].licensePlate,
             }));
           }
         })
@@ -102,7 +84,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     if (!selectedDate) return;
 
     setLoadingSlots(true);
-    bookingService.getAvailableSlots(selectedDate, debouncedLicensePlate)
+    bookingService.getAvailableSlots(selectedDate, bookingData.licensePlate)
       .then(slotsData => {
         setAvailableDays(prevDays => {
           return prevDays.map(day => {
@@ -153,7 +135,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         console.error('Lỗi fetch slot giờ trống:', err);
         setLoadingSlots(false);
       });
-  }, [selectedDate, debouncedLicensePlate, bookingData.service?.id]);
+  }, [selectedDate, bookingData.licensePlate, bookingData.service?.id]);
 
   const handleSelectSlot = (dateStr, timeStr) => {
     setSelectedDate(dateStr);
@@ -170,29 +152,11 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     }));
   };
 
-  const VIETNAMESE_PLATE_REGEX = /^[0-9]{2}[A-Z0-9]{1,3}[-.\s]?[0-9]{3,5}(?:[.\s][0-9]{2})?$/i;
-
   const validate = () => {
     const errs = {};
-    const cleanPhone = (bookingData.phone || '').trim();
-    if (!cleanPhone) {
-      errs.phone = t('phoneRequired');
-    } else if (!/^0\d{9}$/.test(cleanPhone)) {
-      errs.phone = locale === 'en' ? 'Phone number must be 10 digits starting with 0' : 'Số điện thoại phải gồm 10 chữ số bắt đầu bằng số 0';
-    }
-
-    const cleanPlate = (bookingData.licensePlate || '').trim();
-    if (!cleanPlate) {
-      errs.licensePlate = t('licensePlateRequired');
-    } else if (!VIETNAMESE_PLATE_REGEX.test(cleanPlate)) {
-      errs.licensePlate = locale === 'en'
-        ? 'Invalid license plate format (e.g., 30F-123.45, 51F12345)'
-        : 'Biển số xe không hợp lệ (Ví dụ: 30F-123.45, 51F12345)';
-    }
-
-    if (!selectedDate || !selectedTime) {
-      errs.scheduledTime = t('selectSlotRequired');
-    }
+    if (!bookingData.phone.trim()) errs.phone = t('phoneRequired');
+    if (!bookingData.licensePlate.trim()) errs.licensePlate = t('licensePlateRequired');
+    if (!selectedDate || !selectedTime) errs.scheduledTime = t('selectSlotRequired');
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -203,7 +167,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
   return (
     <section>
-      <h2 
+      <h2
         className="text-xl font-bold text-slate-800 flex items-center gap-2"
         style={{ marginBottom: '24px' }}
       >
@@ -212,7 +176,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       </h2>
 
       {/* Phone + Vehicle */}
-      <div 
+      <div
         className="grid grid-cols-1 gap-6 sm:grid-cols-2"
         style={{ gap: '24px', marginBottom: '32px' }}
       >
@@ -220,7 +184,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           <>
             {/* Phone (Editable) */}
             <label className="block">
-              <span 
+              <span
                 className="block text-sm font-bold text-slate-700 tracking-wide"
                 style={{ marginBottom: '8px' }}
               >
@@ -240,118 +204,44 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
               {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.phone}</p>}
             </label>
 
-            {/* Segmented Switch for Vehicle Choice */}
-            <div className="flex flex-col justify-end">
-              <span 
+            {/* Vehicle select */}
+            <label className="block">
+              <span
                 className="block text-sm font-bold text-slate-700 tracking-wide"
                 style={{ marginBottom: '8px' }}
               >
-                {t('vehicleSelectionMode') || 'Phương thức chọn xe'}
+                {t('selectVehicleLabel')}
               </span>
-              <div className="flex p-1.5 bg-slate-100/90 rounded-2xl w-full border border-slate-200/60" style={{ minHeight: '52px' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUseCustomLicensePlate(false);
-                    if (vehicles.length > 0) {
-                      setBookingData(prev => ({
-                        ...prev,
-                        selectedVehicleId: vehicles[0].id,
-                        licensePlate: vehicles[0].licensePlate,
-                      }));
-                    }
-                  }}
-                  className={`flex-1 px-4 py-2.5 rounded-xl font-extrabold text-sm transition-all duration-200 cursor-pointer ${
-                    !useCustomLicensePlate
-                      ? 'bg-white text-cyan-600 shadow-md border border-slate-200/50'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  🚗 {t('selectSavedVehicle')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUseCustomLicensePlate(true);
-                    setBookingData(prev => ({
-                      ...prev,
-                      selectedVehicleId: '',
-                      licensePlate: '',
-                    }));
-                  }}
-                  className={`flex-1 px-4 py-2.5 rounded-xl font-extrabold text-sm transition-all duration-200 cursor-pointer ${
-                    useCustomLicensePlate
-                      ? 'bg-white text-cyan-600 shadow-md border border-slate-200/50'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  ✏️ {t('inputLicensePlate')}
-                </button>
-              </div>
-            </div>
-
-            {/* Conditional input based on switch */}
-            {!useCustomLicensePlate ? (
-              /* Vehicle select */
-              <label className="block sm:col-span-2">
-                <span 
-                  className="block text-sm font-bold text-slate-700 tracking-wide"
-                  style={{ marginBottom: '8px' }}
-                >
-                  {t('selectVehicleLabel')}
-                </span>
-                {vehicles.length > 0 ? (
-                  <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
-                    <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
-                    <select
-                      value={bookingData.selectedVehicleId}
-                      onChange={e => handleVehicleChange(e.target.value)}
-                      className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none cursor-pointer"
-                    >
-                      {vehicles.map(v => (
-                        <option key={v.id} value={v.id} className="bg-white">
-                          {v.model} ({v.licensePlate})
-                        </option>
-                      ))}
-                    </select>
-                  </span>
-                ) : (
-                  <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                    ⚠️ {t('profileNoVehicles') || 'Chưa có xe nào được đăng ký.'} 
-                    <a href="/profile" className="ml-2 font-bold underline hover:text-amber-950">
-                      {t('btnAddVehicle') || 'Thêm xe mới'}
-                    </a>
-                  </div>
-                )}
-              </label>
-            ) : (
-              /* Custom license plate input */
-              <label className="block sm:col-span-2">
-                <span 
-                  className="block text-sm font-bold text-slate-700 tracking-wide"
-                  style={{ marginBottom: '8px' }}
-                >
-                  {t('licensePlateLabel')}
-                </span>
+              {vehicles.length > 0 ? (
                 <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
                   <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
-                  <input
-                    type="text"
-                    value={bookingData.licensePlate}
-                    onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
-                    placeholder={t('licensePlatePlaceholder')}
-                    className="w-full bg-transparent text-base font-semibold uppercase text-slate-800 placeholder:text-slate-400 outline-none"
-                  />
+                  <select
+                    value={bookingData.selectedVehicleId}
+                    onChange={e => handleVehicleChange(e.target.value)}
+                    className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none cursor-pointer"
+                  >
+                    {vehicles.map(v => (
+                      <option key={v.id} value={v.id} className="bg-white">
+                        {v.model} ({v.licensePlate})
+                      </option>
+                    ))}
+                  </select>
                 </span>
-                {errors.licensePlate && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.licensePlate}</p>}
-              </label>
-            )}
+              ) : (
+                <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                  ⚠️ {t('profileNoVehicles') || 'Chưa có xe nào được đăng ký.'}
+                  <a href="/profile" className="ml-2 font-bold underline hover:text-amber-950">
+                    {t('btnAddVehicle') || 'Thêm xe mới'}
+                  </a>
+                </div>
+              )}
+            </label>
           </>
         ) : (
           <>
             {/* Phone input */}
             <label className="block">
-              <span 
+              <span
                 className="block text-sm font-bold text-slate-700 tracking-wide"
                 style={{ marginBottom: '8px' }}
               >
@@ -373,7 +263,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
             {/* License plate input */}
             <label className="block">
-              <span 
+              <span
                 className="block text-sm font-bold text-slate-700 tracking-wide"
                 style={{ marginBottom: '8px' }}
               >
@@ -397,7 +287,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
       {/* Date + Time grid */}
       <div style={{ marginBottom: '32px' }}>
-        <p 
+        <p
           className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2"
           style={{ marginBottom: '16px' }}
         >
@@ -422,11 +312,10 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                   key={day.dateStr}
                   type="button"
                   onClick={() => { setSelectedDate(day.dateStr); setSelectedTime(''); }}
-                  className={`flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition-all duration-200 cursor-pointer ${
-                    isSelected
-                      ? 'border-cyan-500 bg-cyan-50/50 text-cyan-700 shadow-md shadow-cyan-100/50 scale-[1.03] ring-2 ring-cyan-200/30'
-                      : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-400 hover:bg-slate-50/50 hover:-translate-y-0.5 shadow-xs'
-                  }`}
+                  className={`flex flex-col items-center justify-center rounded-2xl border-2 p-3 transition-all duration-200 cursor-pointer ${isSelected
+                    ? 'border-cyan-500 bg-cyan-50/50 text-cyan-700 shadow-md shadow-cyan-100/50 scale-[1.03] ring-2 ring-cyan-200/30'
+                    : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-400 hover:bg-slate-50/50 hover:-translate-y-0.5 shadow-xs'
+                    }`}
                 >
                   <span className={`text-[10px] font-extrabold uppercase tracking-wider mb-1 transition-colors duration-200 ${isSelected ? 'text-cyan-600' : 'text-slate-400'}`}>
                     {day.dayOfWeek}
@@ -442,7 +331,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       {/* Time slots */}
       {!loadingSlots && (
         <div style={{ marginBottom: '32px' }}>
-          <p 
+          <p
             className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2"
             style={{ marginBottom: '16px' }}
           >
@@ -470,7 +359,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         </div>
       )}
 
-      <div 
+      <div
         className="flex justify-between items-center border-t border-slate-100"
         style={{ marginTop: '40px', paddingTop: '24px' }}
       >
