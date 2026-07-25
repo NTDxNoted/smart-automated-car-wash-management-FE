@@ -245,7 +245,7 @@ const PromotionManagementPage = () => {
 
                     <td className="promo-td limit">
                       <span className="promo-limit-text">
-                        {item.maxUsage?.toLocaleString() || 'Không giới hạn'}
+                        {item.maxUsage !== null && item.maxUsage !== undefined ? item.maxUsage.toLocaleString() : 'Không giới hạn'}
                       </span>
                     </td>
 
