@@ -106,6 +106,18 @@ function formatTimeAgo(timeString) {
   return `${diffDays} ngày trước`;
 }
 
+function generateSecureId(prefix = 'id') {
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+    return `${prefix}-${window.crypto.randomUUID()}`;
+  }
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+    const array = new Uint32Array(2);
+    window.crypto.getRandomValues(array);
+    return `${prefix}-${Date.now()}-${array[0].toString(36)}-${array[1].toString(36)}`;
+  }
+  return `${prefix}-${Date.now()}`;
+}
+
 export default function AdminLayout() {
   const { auth, logout } = useAuth();
   const user = auth;
@@ -154,7 +166,7 @@ export default function AdminLayout() {
           if (!prev) {
             // New booking
             const notif = {
-              id: `new-${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              id: generateSecureId(`new-${id}`),
               bookingId: id,
               title: "Lịch đặt mới! 📅",
               description: `Khách hàng ${customerName} (${licensePlate}) đã đặt lịch mới cho dịch vụ ${serviceName}.`,
@@ -167,7 +179,7 @@ export default function AdminLayout() {
           } else if (prev.status !== status) {
             // Status changed
             const notif = {
-              id: `status-${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              id: generateSecureId(`status-${id}`),
               bookingId: id,
               title: "Cập nhật trạng thái lịch đặt 🔄",
               description: `Đơn đặt lịch của ${customerName} (${licensePlate}) đã chuyển trạng thái từ "${prev.status}" sang "${status}".`,
@@ -201,7 +213,7 @@ export default function AdminLayout() {
             if (!prevCust) {
               // New customer registered!
               const notif = {
-                id: `cust-${cid}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                id: generateSecureId(`cust-${cid}`),
                 customerId: cid,
                 title: "Khách hàng mới đăng ký! 👤",
                 description: `Khách hàng ${fullName} (${phone}) vừa tạo tài khoản thành viên mới.`,
@@ -265,7 +277,7 @@ export default function AdminLayout() {
     }
 
     const notif = {
-      id: `admin-${bookingId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: generateSecureId(`admin-${bookingId}`),
       bookingId,
       title: actionTitle,
       description: actionDesc,
@@ -297,7 +309,7 @@ export default function AdminLayout() {
 
       if (event === "NewBooking") {
         const notif = {
-          id: `new-${data.bookingId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateSecureId(`new-${data.bookingId}`),
           bookingId: data.bookingId,
           title: "Lịch đặt mới! 📅",
           description: `Khách hàng ${data.customerName} (${data.licensePlate}) đã đặt lịch mới cho dịch vụ ${data.serviceName}.`,
@@ -317,7 +329,7 @@ export default function AdminLayout() {
         };
       } else if (event === "BookingStatusChanged") {
         const notif = {
-          id: `status-${data.bookingId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateSecureId(`status-${data.bookingId}`),
           bookingId: data.bookingId,
           title: "Cập nhật trạng thái lịch đặt 🔄",
           description: `Đơn đặt lịch của ${data.customerName} (${data.licensePlate}) đã chuyển trạng thái từ "${data.oldStatus}" sang "${data.newStatus}".`,
@@ -341,7 +353,7 @@ export default function AdminLayout() {
         }
       } else if (event === "NewCustomer") {
         const notif = {
-          id: `cust-${data.customerId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateSecureId(`cust-${data.customerId}`),
           customerId: data.customerId,
           title: "Khách hàng mới đăng ký! 👤",
           description: `Khách hàng ${data.fullName} (${data.phone}) vừa tạo tài khoản thành viên mới.`,

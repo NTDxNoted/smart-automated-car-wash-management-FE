@@ -202,8 +202,13 @@ export const bookingService = {
     createBooking: async (bookingData) => {
         if (USE_MOCK_DATA) {
             await delay(1000);
+            const randArray = new Uint32Array(1);
+            if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+                window.crypto.getRandomValues(randArray);
+            }
+            const randNum = (randArray[0] % 90000) + 10000;
             return {
-                bookingId: 'BK-' + Math.floor(Math.random() * 90000 + 10000),
+                bookingId: 'BK-' + randNum,
                 scheduledTime: bookingData.scheduledTime,
                 status: 'Pending',
                 invoice: {
