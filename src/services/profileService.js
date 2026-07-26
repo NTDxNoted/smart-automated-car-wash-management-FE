@@ -34,6 +34,15 @@ export function resolveEffectiveTier(rawTier, totalSpending = 0) {
   return tierOrder[calculated] > tierOrder[explicit] ? calculated : explicit;
 }
 
+// Helper to resolve user-friendly tier display name
+export function getTierDisplayName(tier) {
+  const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
+  if (tStr === '4' || tStr === 'PLATINUM') return 'Platinum';
+  if (tStr === '3' || tStr === 'GOLD') return 'Gold';
+  if (tStr === '2' || tStr === 'SILVER') return 'Silver';
+  return 'Member';
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 🔧 HELPER
 // ─────────────────────────────────────────────────────────────────────────────

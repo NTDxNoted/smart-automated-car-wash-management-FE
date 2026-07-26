@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { profileService, resolveEffectiveTier } from '../../services/profileService';
+import { profileService, resolveEffectiveTier, getTierDisplayName } from '../../services/profileService';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import TierBadge from '../../components/profile/TierBadge';
@@ -19,13 +19,7 @@ export default function ProfilePage() {
   const formatVND = (amount) =>
     new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
-  const getTierName = (tier) => {
-    const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
-    if (tStr === '4' || tStr === 'PLATINUM') return 'Platinum';
-    if (tStr === '3' || tStr === 'GOLD') return 'Gold';
-    if (tStr === '2' || tStr === 'SILVER') return 'Silver';
-    return 'Member';
-  };
+  const getTierName = (tier) => getTierDisplayName(tier);
 
   // Profile state
   const [profile, setProfile] = useState(null);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { bookingService } from '../../services/bookingService';
+import { profileService, getTierDisplayName } from '../../services/profileService';
 import { useLanguage } from '../../context/LanguageContext';
 import TimeSlotGrid from './TimeSlotGrid';
 
@@ -20,13 +21,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     return 7;
   };
 
-  const getTierName = (tier) => {
-    const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
-    if (tStr === '4' || tStr === 'PLATINUM') return 'Platinum';
-    if (tStr === '3' || tStr === 'GOLD') return 'Gold';
-    if (tStr === '2' || tStr === 'SILVER') return 'Silver';
-    return 'Member';
-  };
+  const getTierName = (tier) => getTierDisplayName(tier);
 
   const bookingWindowDays = getBookingWindowDays(user?.tier);
 
