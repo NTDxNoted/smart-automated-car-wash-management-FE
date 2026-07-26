@@ -1,26 +1,10 @@
 import { useState, useEffect } from 'react';
-import { profileService } from '../../services/profileService';
+import { profileService, resolveEffectiveTier } from '../../services/profileService';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import TierBadge from '../../components/profile/TierBadge';
 import TierProgressBar from '../../components/profile/TierProgressBar';
 import VehicleList from '../../components/profile/VehicleList';
-
-export function resolveEffectiveTier(rawTier, totalSpending = 0) {
-  let calculated = 'MEMBER';
-  if (totalSpending >= 3000000) calculated = 'PLATINUM';
-  else if (totalSpending >= 1500000) calculated = 'GOLD';
-  else if (totalSpending >= 500000) calculated = 'SILVER';
-
-  const tStr = String(rawTier !== undefined && rawTier !== null ? rawTier : '').trim().toUpperCase();
-  let explicit = 'MEMBER';
-  if (tStr === '4' || tStr === 'PLATINUM') explicit = 'PLATINUM';
-  else if (tStr === '3' || tStr === 'GOLD') explicit = 'GOLD';
-  else if (tStr === '2' || tStr === 'SILVER') explicit = 'SILVER';
-
-  const tierOrder = { MEMBER: 1, SILVER: 2, GOLD: 3, PLATINUM: 4 };
-  return tierOrder[calculated] > tierOrder[explicit] ? calculated : explicit;
-}
 
 export default function ProfilePage() {
   const { auth, setAuth } = useAuth();
