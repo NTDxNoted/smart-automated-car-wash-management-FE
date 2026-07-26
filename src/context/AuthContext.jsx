@@ -128,7 +128,6 @@ export function AuthProvider({ children }) {
               ...safeDataToStore,
             };
             setAuthState(updated);
-            localStorage.setItem("member_user", JSON.stringify(safeDataToStore));
           }
         })
         .catch(() => {});
