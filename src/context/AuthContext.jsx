@@ -34,7 +34,10 @@ const ALLOWED_ROLES = ["ADMIN", "MEMBER"];
 // Sanitize string data before writing to or reading from browser storage to prevent Persistent XSS & Storage Poisoning
 function sanitizeStorageString(val) {
   if (val === null || val === undefined) return '';
-  return String(val).replace(/[<>'"]/g, '').trim();
+  return String(val)
+    .replace(/[^\p{L}\p{N}\s.-]/gu, '')
+    .substring(0, 100)
+    .trim();
 }
 
 function sanitizeUserData(userObj, defaultRole = "MEMBER") {
