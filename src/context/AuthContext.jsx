@@ -28,14 +28,47 @@ const DEFAULT_AUTH = {
   role: null,
 };
 
+const ALLOWED_TIERS = ["MEMBER", "SILVER", "GOLD", "PLATINUM"];
+const ALLOWED_ROLES = ["ADMIN", "MEMBER"];
+
+// Sanitize string data before writing to or reading from browser storage to prevent Persistent XSS & Storage Poisoning
+function sanitizeStorageString(val) {
+  if (val === null || val === undefined) return '';
+  return String(val).replace(/[<>'"]/g, '').trim();
+}
+
+function sanitizeUserData(userObj, defaultRole = "MEMBER") {
+  if (!userObj || typeof userObj !== "object") return null;
+
+  const rawRole = String(userObj.role || defaultRole).toUpperCase();
+  const role = ALLOWED_ROLES.includes(rawRole) ? rawRole : defaultRole;
+
+  const rawTier = String(userObj.tier || "MEMBER").toUpperCase();
+  const tier = ALLOWED_TIERS.includes(rawTier) ? rawTier : "MEMBER";
+
+  return {
+    customerId: userObj.customerId ? sanitizeStorageString(userObj.customerId) : null,
+    adminId: userObj.adminId ? sanitizeStorageString(userObj.adminId) : null,
+    fullName: sanitizeStorageString(userObj.fullName || ''),
+    phone: userObj.phone ? sanitizeStorageString(userObj.phone) : null,
+    role,
+    tier,
+    totalSpending: Number(userObj.totalSpending || 0),
+    suspendedUntil: userObj.suspendedUntil ? sanitizeStorageString(userObj.suspendedUntil) : null,
+  };
+}
+
 // Rehydrate from localStorage on app boot
 function loadFromStorage() {
   try {
-     const adminToken = localStorage.getItem("admin_token");
+    const adminToken = localStorage.getItem("admin_token");
     const adminRaw = localStorage.getItem("admin_user");
 
     if (adminToken && adminRaw) {
-      return { token: adminToken, ...JSON.parse(adminRaw) };
+      const sanitizedAdmin = sanitizeUserData(JSON.parse(adminRaw), "ADMIN");
+      if (sanitizedAdmin) {
+        return { token: adminToken, ...sanitizedAdmin };
+      }
     }
 
     const memberToken = localStorage.getItem("member_token");
@@ -43,8 +76,11 @@ function loadFromStorage() {
 
     if (memberToken && memberRaw) {
       const parsed = JSON.parse(memberRaw);
-      const effectiveTier = resolveEffectiveTier(parsed.tier, parsed.totalSpending || 0);
-      return { token: memberToken, ...parsed, tier: effectiveTier };
+      const sanitizedMember = sanitizeUserData(parsed, "MEMBER");
+      if (sanitizedMember) {
+        const effectiveTier = resolveEffectiveTier(sanitizedMember.tier, sanitizedMember.totalSpending || 0);
+        return { token: memberToken, ...sanitizedMember, tier: effectiveTier };
+      }
     }
   } catch (_) {}
   return DEFAULT_AUTH;
@@ -58,14 +94,6 @@ export const AuthContext = createContext({
   isMember: false,
   isGuest: true,
 });
-
-const ALLOWED_TIERS = ["MEMBER", "SILVER", "GOLD", "PLATINUM"];
-
-// Sanitize string data before writing to browser storage to prevent Persistent XSS & Storage Poisoning
-function sanitizeStorageString(val) {
-  if (val === null || val === undefined) return '';
-  return String(val).replace(/[<>'"]/g, '').trim();
-}
 
 export function AuthProvider({ children }) {
   const [auth, setAuthState] = useState(loadFromStorage);
@@ -83,21 +111,21 @@ export function AuthProvider({ children }) {
               : "MEMBER";
             const safeSpending = Number(profile.totalSpending ?? auth.totalSpending ?? 0);
 
-            const updated = {
-              ...auth,
-              fullName: safeFullName,
-              tier: safeTier,
-              totalSpending: safeSpending,
-            };
-            setAuthState(updated);
-            localStorage.setItem("member_user", JSON.stringify({
+            const safeDataToStore = sanitizeUserData({
               customerId: auth.customerId,
               fullName: safeFullName,
               tier: safeTier,
               totalSpending: safeSpending,
               suspendedUntil: auth.suspendedUntil,
               role: "MEMBER",
-            }));
+            }, "MEMBER");
+
+            const updated = {
+              ...auth,
+              ...safeDataToStore,
+            };
+            setAuthState(updated);
+            localStorage.setItem("member_user", JSON.stringify(safeDataToStore));
           }
         })
         .catch(() => {});
