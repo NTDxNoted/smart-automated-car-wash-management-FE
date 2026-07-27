@@ -322,10 +322,11 @@ export default function CustomerLayout() {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="inline-flex items-center justify-center text-xs font-bold text-slate-500 hover:text-red-500 border border-slate-200 hover:border-red-200 hover:bg-red-50/30 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer active:scale-95"
-                    style={{ fontFamily: "'Archivo', sans-serif" }}
+                    title={t('navLogout')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-200/80 bg-rose-50/60 hover:bg-rose-600 text-rose-600 hover:text-white text-xs font-bold transition-all duration-200 shadow-2xs hover:shadow-md hover:shadow-rose-500/20 active:scale-95 cursor-pointer whitespace-nowrap"
                   >
-                    {t('navLogout')}
+                    <span className="material-symbols-outlined text-[15px] leading-none">logout</span>
+                    <span>{t('navLogout')}</span>
                   </button>
                 </div>
               ) : (
