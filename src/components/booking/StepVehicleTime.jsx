@@ -139,12 +139,20 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
   };
 
   const handleVehicleChange = (vehicleId) => {
-    const selected = vehicles.find(v => v.id === vehicleId);
-    setBookingData(prev => ({
-      ...prev,
-      selectedVehicleId: vehicleId,
-      licensePlate: selected ? selected.licensePlate : '',
-    }));
+    if (vehicleId === 'new') {
+      setBookingData(prev => ({
+        ...prev,
+        selectedVehicleId: 'new',
+        licensePlate: '',
+      }));
+    } else {
+      const selected = vehicles.find(v => v.id === vehicleId);
+      setBookingData(prev => ({
+        ...prev,
+        selectedVehicleId: vehicleId,
+        licensePlate: selected ? selected.licensePlate : '',
+      }));
+    }
   };
 
   const validate = () => {
@@ -199,7 +207,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
               {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.phone}</p>}
             </label>
 
-            {/* Vehicle select */}
+            {/* Vehicle select dropdown with option to enter new license plate */}
             <label className="block">
               <span
                 className="block text-sm font-bold text-slate-700 tracking-wide"
@@ -207,30 +215,52 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
               >
                 {t('selectVehicleLabel')}
               </span>
-              {vehicles.length > 0 ? (
-                <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
-                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
-                  <select
-                    value={bookingData.selectedVehicleId}
-                    onChange={e => handleVehicleChange(e.target.value)}
-                    className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none cursor-pointer"
-                  >
-                    {vehicles.map(v => (
-                      <option key={v.id} value={v.id} className="bg-white">
-                        {v.model} ({v.licensePlate})
-                      </option>
-                    ))}
-                  </select>
-                </span>
-              ) : (
-                <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                  ⚠️ {t('profileNoVehicles') || 'Chưa có xe nào được đăng ký.'}
-                  <a href="/profile" className="ml-2 font-bold underline hover:text-amber-950">
-                    {t('btnAddVehicle') || 'Thêm xe mới'}
-                  </a>
-                </div>
-              )}
+              <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
+                <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
+                <select
+                  value={bookingData.selectedVehicleId || 'new'}
+                  onChange={e => handleVehicleChange(e.target.value)}
+                  className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none cursor-pointer"
+                >
+                  {vehicles.map(v => (
+                    <option key={v.id} value={v.id} className="bg-white">
+                      🚗 {v.model} ({v.licensePlate})
+                    </option>
+                  ))}
+                  <option value="new" className="bg-white font-bold text-cyan-600">
+                    ➕ {t('newVehicleOption') || 'Nhập biển số xe mới...'}
+                  </option>
+                </select>
+              </span>
             </label>
+
+            {/* If selectedVehicleId === 'new' or vehicles is empty: show custom license plate input */}
+            {(bookingData.selectedVehicleId === 'new' || vehicles.length === 0) && (
+              <label className="block sm:col-span-2">
+                <span
+                  className="block text-sm font-bold text-slate-700 tracking-wide"
+                  style={{ marginBottom: '8px' }}
+                >
+                  {t('licensePlateLabel') || 'Biển số xe mới'}
+                </span>
+                <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
+                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">badge</span>
+                  <input
+                    type="text"
+                    value={bookingData.licensePlate}
+                    onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
+                    placeholder={t('licensePlatePlaceholder') || 'VD: 30F-123.45 hoặc 51F12345'}
+                    className="w-full bg-transparent text-base font-semibold uppercase text-slate-800 placeholder:text-slate-400 outline-none"
+                  />
+                </span>
+                {errors.licensePlate && (
+                  <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                    <span className="material-symbols-outlined text-xs">error</span>
+                    {errors.licensePlate}
+                  </p>
+                )}
+              </label>
+            )}
           </>
         ) : (
           <>
