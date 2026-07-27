@@ -59,7 +59,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
 
   return (
     <section>
-      <h2 
+      <h2
         className="text-xl font-bold text-slate-800 flex items-center gap-2"
         style={{ marginTop: '10px', marginBottom: '25px' }}
       >
@@ -67,15 +67,15 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
         {t('step1Title') || 'Bước 1: Chọn dịch vụ chăm sóc xe'}
       </h2>
 
-      <div 
-        className="custom-booking-scrollbar" 
-        style={{ 
-          maxHeight: '460px', 
-          overflowY: 'auto', 
-          overflowX: 'hidden', 
-          paddingLeft: '16px', 
-          paddingRight: '16px', 
-          paddingTop: '20px', 
+      <div
+        className="custom-booking-scrollbar"
+        style={{
+          maxHeight: '460px',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          paddingLeft: '16px',
+          paddingRight: '16px',
+          paddingTop: '20px',
           paddingBottom: '12px',
           marginTop: '10px'
         }}
@@ -96,7 +96,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                   : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-400 hover:shadow-lg hover:-translate-y-1'
                   }`}
               >
-                <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '4px' }}>
+                <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '6px' }}>
                   {/* Upper row: Icon & Badge/Checkmark */}
                   <div className="flex items-center justify-between w-full">
                     <div
