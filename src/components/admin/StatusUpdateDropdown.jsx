@@ -57,9 +57,11 @@ export default function StatusUpdateDropdown({
           </option>
         )}
 
-        <option value="COMPLETED">
-          Completed (Đã hoàn thành)
-        </option>
+        {disabled && currentStatus === "COMPLETED" && (
+          <option value="COMPLETED">
+            Completed (Đã hoàn thành)
+          </option>
+        )}
 
         <option value="NOSHOW">
           No-show (Khách không đến)
