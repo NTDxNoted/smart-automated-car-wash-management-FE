@@ -1,6 +1,8 @@
 import { createContext, useState, useCallback, useContext, useEffect } from "react";
 import { logout as logoutService } from "../services/authService";
 import { profileService, resolveEffectiveTier } from "../services/profileService";
+import axiosInstance from "../api/axiosInstance";
+import adminAxiosInstance from "../api/adminAxiosInstance";
 
 /**
  * AuthContext — global auth state.
@@ -138,18 +140,20 @@ export function AuthProvider({ children }) {
     setAuthState(payload ?? DEFAULT_AUTH);
   }, []);
 
-  const logout = useCallback(() => {
-    if (auth.role === "ADMIN") {
-    localStorage.removeItem("admin_token");
-    localStorage.removeItem("admin_user");
-  }
-
-  if (auth.role === "MEMBER") {
-    localStorage.removeItem("member_token");
-    localStorage.removeItem("member_user");
-  }
-    //logoutService(); // clears localStorage
-    setAuthState(DEFAULT_AUTH);
+  const logout = useCallback(async () => {
+    try {
+      if (auth.role === "ADMIN") {
+        await adminAxiosInstance.post("/admin/auth/logout").catch(() => {});
+      } else if (auth.role === "MEMBER") {
+        await axiosInstance.post("/auth/logout").catch(() => {});
+      }
+    } finally {
+      localStorage.removeItem("admin_token");
+      localStorage.removeItem("admin_user");
+      localStorage.removeItem("member_token");
+      localStorage.removeItem("member_user");
+      setAuthState(DEFAULT_AUTH);
+    }
   }, [auth.role]);
 
   const isAdmin = !!auth.token && auth.role === "ADMIN";
