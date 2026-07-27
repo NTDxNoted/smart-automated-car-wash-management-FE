@@ -27,7 +27,7 @@ adminAxiosInstance.interceptors.response.use(
       toast.error(
         "Phiên đăng nhập đã hết hạn hoặc bị đăng nhập ở thiết bị khác.",
       );
-      window.location.href = "/login";
+      window.location.href = "/admin/login";
     }
     return Promise.reject(error);
   },
