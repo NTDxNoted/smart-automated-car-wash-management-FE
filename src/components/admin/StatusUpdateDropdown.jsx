@@ -6,16 +6,19 @@ export default function StatusUpdateDropdown({
   booking,
   onSuccess,
 }) {
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const disabled =
-    booking.status?.toUpperCase() !== "PENDING";
+  const disabled = booking?.status?.toUpperCase() !== "PENDING";
+
+  let currentStatus = booking?.status?.toUpperCase() || "";
+  if (currentStatus === "NO_SHOW") currentStatus = "NOSHOW";
+
+  const selectedValue = currentStatus === "PENDING" ? "" : currentStatus;
 
   const handleChange = async (e) => {
     const status = e.target.value;
 
-    if (!status) return;
+    if (!status || status === currentStatus) return;
 
     try {
       setLoading(true);
@@ -45,10 +48,17 @@ export default function StatusUpdateDropdown({
       <select
         disabled={disabled || loading}
         onChange={handleChange}
+        value={selectedValue}
         className="booking-drawer-select"
       >
-        <option value="">
-          Cập nhật trạng thái...
+        {!disabled && (
+          <option value="" disabled>
+            Cập nhật trạng thái...
+          </option>
+        )}
+
+        <option value="COMPLETED">
+          Completed (Đã hoàn thành)
         </option>
 
         <option value="NOSHOW">
