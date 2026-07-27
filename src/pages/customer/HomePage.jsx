@@ -103,10 +103,6 @@ export default function HomePage() {
                 {isVi ? 'Không trầy xước' : 'Zero scratches'}
               </li>
               <li className="flex items-center gap-2 text-sm font-medium text-slate-500">
-                <span className="material-symbols-outlined text-cyan-500 text-[18px]">smart_toy</span>
-                {isVi ? 'Robot AI' : 'AI robotics'}
-              </li>
-              <li className="flex items-center gap-2 text-sm font-medium text-slate-500">
                 <span className="material-symbols-outlined text-cyan-500 text-[18px]">workspace_premium</span>
                 {isVi ? 'Bảo vệ sơn xe' : 'Paint protection'}
               </li>
