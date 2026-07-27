@@ -31,7 +31,7 @@ const translations = {
     heroSubtitle: "HỆ THỐNG RỬA XE TỰ ĐỘNG CHẤT LƯỢNG CAO",
     heroTitleMain: "Tương Lai Của",
     heroTitleAccent: "Chăm Sóc Xe",
-    heroDesc: "Trải nghiệm công nghệ rửa xe tự động thông minh bằng robot AI. Không chạm, không trầy xước, bảo vệ sơn xe tối ưu và nhận xe đúng giờ.",
+    heroDesc: "Trải nghiệm công nghệ rửa xe tự động thông minh và hiện đại. Không chạm, không trầy xước, bảo vệ sơn xe tối ưu và nhận xe đúng giờ.",
     heroCtaBook: "ĐẶT LỊCH NGAY",
     heroCtaServices: "XEM DỊCH VỤ ↓",
 
@@ -253,7 +253,7 @@ const translations = {
     heroSubtitle: "PRECISION AUTOMATED CLEANING",
     heroTitleMain: "The Future of",
     heroTitleAccent: "Automotive Care",
-    heroDesc: "Experience premium contactless automated cleaning driven by smart AI robotics. Medical-grade precision, zero scratches, optimal paint protection.",
+    heroDesc: "Experience premium contactless automated car wash technology. High precision, zero scratches, optimal paint protection, and guaranteed on-time pickup.",
     heroCtaBook: "BOOK YOUR WASH",
     heroCtaServices: "VIEW SERVICES ↓",
 
