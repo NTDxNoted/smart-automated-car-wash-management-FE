@@ -88,7 +88,7 @@
   flex-direction: column;
   align-items: flex-start;
   padding: 0px;
-  width: 910px;
+  width: calc(100% - 48px);
   margin: 24px 24px 0;
   border: 1px solid #E2E8F0;
   border-radius: 8px;
@@ -133,31 +133,34 @@
 }
 
 .promo-th.code {
-  width: 13%;
-  flex: 0 0 13%;
+  width: 16%;
+  flex: 0 0 16%;
   min-width: 0;
-  overflow: hidden;
+  padding: 16px 10px;
 }
 
 .promo-th.tier {
-  width: 12%;
-  flex: 0 0 12%;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.promo-th.type {
-  width: 12%;
-  flex: 0 0 12%;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.promo-th.value {
   width: 10%;
   flex: 0 0 10%;
   min-width: 0;
   overflow: hidden;
+  padding: 16px 8px;
+}
+
+.promo-th.type {
+  width: 11%;
+  flex: 0 0 11%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 16px 8px;
+}
+
+.promo-th.value {
+  width: 11%;
+  flex: 0 0 11%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 16px 8px;
 }
 
 .promo-th.limit {
@@ -170,21 +173,22 @@
 }
 
 .promo-th.status {
-  width: 11%;
-  flex: 0 0 11%;
+  width: 12%;
+  flex: 0 0 12%;
   min-width: 0;
   overflow: hidden;
+  padding: 16px 8px;
 }
 
 .promo-th.action {
-  width: 10%;
-  flex: 0 0 10%;
+  width: 8%;
+  flex: 0 0 8%;
   align-items: center;
   justify-content: center;
   text-align: center;
   min-width: 0;
   overflow: hidden;
-  padding: 16px 8px;
+  padding: 16px 4px;
 }
 
 /* Empty State / Placeholder Row */
@@ -283,10 +287,10 @@
 }
 
 .promo-td.code {
-  width: 13%;
-  flex: 0 0 13%;
+  width: 16%;
+  flex: 0 0 16%;
   min-width: 0;
-  overflow: hidden;
+  padding: 16px 10px;
 }
 
 .promo-code-badge {
@@ -304,10 +308,10 @@
 }
 
 .promo-td.tier {
-  width: 12%;
-  flex: 0 0 12%;
+  width: 10%;
+  flex: 0 0 10%;
   min-width: 0;
-  overflow: hidden;
+  padding: 16px 8px;
 }
 
 /* Custom Tier Badges */
@@ -346,10 +350,10 @@
 }
 
 .promo-td.type {
-  width: 12%;
-  flex: 0 0 12%;
+  width: 11%;
+  flex: 0 0 11%;
   min-width: 0;
-  overflow: hidden;
+  padding: 16px 8px;
 }
 
 .promo-type-text {
@@ -364,10 +368,10 @@
 }
 
 .promo-td.value {
-  width: 10%;
-  flex: 0 0 10%;
+  width: 11%;
+  flex: 0 0 11%;
   min-width: 0;
-  overflow: hidden;
+  padding: 16px 8px;
 }
 
 .promo-value-text {
@@ -383,9 +387,7 @@
   width: 12%;
   flex: 0 0 12%;
   min-width: 0;
-  overflow: hidden;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding: 16px 8px;
 }
 
 .promo-limit-text {
@@ -398,10 +400,10 @@
 }
 
 .promo-td.status {
-  width: 11%;
-  flex: 0 0 11%;
+  width: 12%;
+  flex: 0 0 12%;
   min-width: 0;
-  overflow: hidden;
+  padding: 16px 8px;
 }
 
 .promo-status-capsule {
@@ -431,13 +433,12 @@
 }
 
 .promo-td.action {
-  width: 10%;
-  flex: 0 0 10%;
+  width: 8%;
+  flex: 0 0 8%;
   align-items: center;
   justify-content: center;
   min-width: 0;
-  overflow: hidden;
-  padding: 16px 8px;
+  padding: 16px 4px;
 }
 
 .promo-action-btn {
