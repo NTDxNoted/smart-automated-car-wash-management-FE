@@ -164,57 +164,6 @@
   pointer-events: none;
 }
 
-/* Status Checkbox block */
-.promo-modal-status-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0px;
-  gap: 12px;
-  width: 100%;
-}
-
-.promo-modal-status-label {
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  color: #334155;
-}
-
-.promo-modal-checkbox-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.promo-modal-checkbox-input {
-  box-sizing: border-box;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  accent-color: #0088FF;
-  cursor: pointer;
-}
-
-.promo-modal-status-text {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 20px;
-}
-
-.promo-modal-status-text.active {
-  color: #34C759;
-}
-
-.promo-modal-status-text.inactive {
-  color: #EF4444;
-}
-
 /* Footer Actions */
 .promo-modal-actions {
   box-sizing: border-box;

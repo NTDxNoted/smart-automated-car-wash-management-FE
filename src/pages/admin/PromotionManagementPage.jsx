@@ -88,8 +88,8 @@ const PromotionManagementPage = () => {
       maxUsage: form.maxUsage !== '' && form.maxUsage !== null && form.maxUsage !== undefined ? Number(form.maxUsage) : null,
       startDate: form.startDate,
       endDate: form.endDate,
-      isActive: form.isActive !== undefined ? form.isActive : true,
-      IsActive: form.isActive !== undefined ? form.isActive : true,
+      isActive: selectedPromotion ? (selectedPromotion.isActive !== undefined ? selectedPromotion.isActive : true) : true,
+      IsActive: selectedPromotion ? (selectedPromotion.isActive !== undefined ? selectedPromotion.isActive : true) : true,
       minOrderValue: 0,
       MinOrderValue: 0,
     };

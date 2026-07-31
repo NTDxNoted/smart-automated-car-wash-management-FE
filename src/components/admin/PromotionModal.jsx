@@ -10,7 +10,6 @@ const defaultForm = {
   maxUsage: '',
   startDate: '',
   endDate: '',
-  isActive: true,
 };
 
 const formatDateForInput = (dateStr) => {
@@ -35,7 +34,6 @@ const PromotionModal = ({
         maxUsage: initialData.maxUsage !== null && initialData.maxUsage !== undefined ? initialData.maxUsage : '',
         startDate: formatDateForInput(initialData.startDate),
         endDate: formatDateForInput(initialData.endDate),
-        isActive: initialData.isActive !== undefined ? initialData.isActive : true,
       });
     } else {
       setForm(defaultForm);
@@ -231,22 +229,6 @@ const PromotionModal = ({
                   required
                 />
               </div>
-            </div>
-
-            {/* Status Checkbox Toggler */}
-            <div className="promo-modal-status-row">
-              <span className="promo-modal-status-label">Trạng thái hoạt động:</span>
-              <label className="promo-modal-checkbox-wrapper">
-                <input
-                  type="checkbox"
-                  checked={form.isActive}
-                  onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-                  className="promo-modal-checkbox-input"
-                />
-                <span className={`promo-modal-status-text ${form.isActive ? 'active' : 'inactive'}`}>
-                  {form.isActive ? 'Đang hoạt động' : 'Ngưng hoạt động'}
-                </span>
-              </label>
             </div>
 
             {/* Error Message */}
