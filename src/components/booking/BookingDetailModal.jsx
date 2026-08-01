@@ -14,13 +14,18 @@ function formatVND(amount, locale) {
 }
 
 function formatDateTime(iso, locale) {
-  return new Date(iso).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN', {
+  if (!iso) return '—';
+  const cleanIso = typeof iso === 'string' ? iso.replace(/Z$/i, '') : iso;
+  const d = new Date(cleanIso);
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN', {
     weekday: 'long',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hour12: false,
   });
 }
 

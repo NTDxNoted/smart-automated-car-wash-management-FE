@@ -59,7 +59,8 @@ export default function BookingTable({
 
   const formatScheduledTime = (timeStr) => {
     if (!timeStr) return "-";
-    const dateObj = new Date(timeStr);
+    const cleanStr = typeof timeStr === 'string' ? timeStr.replace(/Z$/i, '') : timeStr;
+    const dateObj = new Date(cleanStr);
     
     const today = new Date();
     const tomorrow = new Date();
