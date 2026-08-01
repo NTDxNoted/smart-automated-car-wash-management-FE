@@ -224,10 +224,6 @@ export const bookingService = {
 
     // ── FE-ISSUE-05: Lấy danh sách booking của member ────────────────────────
     // GET /api/bookings?status=xxx&page=x
-    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
-    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
-    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
-    // ── FE-ISSUE-05: Lấy danh sách lịch sử đặt lịch của tôi ──────────────────
     getMyBookings: async ({ status, page = 1, pageSize = 5 }) => {
         // 🚀 LUỒNG 1: CHẠY MOCK DATA (Tối ưu hiệu năng, sạch sẽ)
         if (USE_MOCK_DATA) {
