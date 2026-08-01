@@ -1,3 +1,5 @@
+import { formatScheduledTime } from '../../utils/datetime';
+
 export default function BookingTable({
   bookings = [],
   onRowClick,
@@ -57,37 +59,7 @@ export default function BookingTable({
     }
   };
 
-  const formatScheduledTime = (timeStr) => {
-    if (!timeStr) return "-";
-    const cleanStr = typeof timeStr === 'string' ? timeStr.replace(/Z$/i, '') : timeStr;
-    const dateObj = new Date(cleanStr);
-    
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-    
-    const isToday = dateObj.toDateString() === today.toDateString();
-    const isTomorrow = dateObj.toDateString() === tomorrow.toDateString();
-    
-    const timeFormatted = dateObj.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
-    
-    if (isToday) {
-      return `Hôm nay ${timeFormatted}`;
-    } else if (isTomorrow) {
-      return `Ngày mai ${timeFormatted}`;
-    } else {
-      const dateFormatted = dateObj.toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-      });
-      return `${dateFormatted} ${timeFormatted}`;
-    }
-  };
+
 
   const renderServices = (booking) => {
     if (!booking.services) return '-';
