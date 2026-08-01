@@ -53,15 +53,13 @@ const ServiceManagementPage = () => {
   };
 
   const handleDelete = async (item) => {
-    const confirmed = window.confirm(`Bạn có chắc chắn muốn xóa dịch vụ "${item.name}" khỏi danh sách hiển thị không?`);
+    const confirmed = window.confirm(`Bạn có chắc chắn muốn xóa dịch vụ "${item.name}" khỏi hệ thống không?`);
     if (!confirmed) return;
     try {
-      if (item.status === 'Active') {
-        await adminServiceService.toggleStatus(item.id);
-      }
+      await adminServiceService.deleteService(item.id);
       setServices(prev => prev.filter(s => s.id !== item.id));
     } catch (err) {
-      console.error("Error deleting/hiding service:", err);
+      console.error("Error deleting service:", err);
     }
   };
 

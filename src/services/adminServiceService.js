@@ -2,7 +2,7 @@ import adminAxiosInstance from '../api/adminAxiosInstance';
 
 const adminServiceService = {
   getAdminServices() {
-    return adminAxiosInstance.get('/services');
+    return adminAxiosInstance.get('/admin/services');
   },
   createService(data) {
     return adminAxiosInstance.post('/admin/services', data);
@@ -12,6 +12,9 @@ const adminServiceService = {
   },
   toggleStatus(id) {
     return adminAxiosInstance.patch(`/admin/services/${id}/status`);
+  },
+  deleteService(id) {
+    return adminAxiosInstance.delete(`/admin/services/${id}`);
   },
 };
 
