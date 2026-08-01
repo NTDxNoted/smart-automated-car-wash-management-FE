@@ -28,10 +28,10 @@ const translations = {
     optimal: "TỐI ƯU",
 
     // Home Page Hero
-    heroSubtitle: "HỆ THỐNG RỬA XE TỰ ĐỘNG CHẤT LƯỢNG CAO",
-    heroTitleMain: "Tương Lai Của",
-    heroTitleAccent: "Chăm Sóc Xe",
-    heroDesc: "Trải nghiệm công nghệ rửa xe tự động thông minh và hiện đại. Không chạm, không trầy xước, bảo vệ sơn xe tối ưu và nhận xe đúng giờ.",
+    heroSubtitle: "HỆ THỐNG RỬA XE TỰ ĐỘNG",
+    heroTitleMain: "Dịch Vụ Rửa Xe",
+    heroTitleAccent: "Tự Động & Tiện Lợi",
+    heroDesc: "Trải nghiệm dịch vụ rửa xe tự động hiện đại. Đặt lịch online nhanh chóng, không trầy xước, bảo vệ sơn xe và tiết kiệm thời gian.",
     heroCtaBook: "ĐẶT LỊCH NGAY",
     heroCtaServices: "XEM DỊCH VỤ ↓",
 
@@ -50,7 +50,7 @@ const translations = {
     retryBtn: "Tải lại",
 
     // Footer
-    footerBrandDesc: "Định nghĩa lại dịch vụ chăm sóc xe hơi bằng công nghệ tự động hóa tích hợp trí tuệ nhân tạo và tiêu chuẩn dịch vụ hạng sang.",
+    footerBrandDesc: "Hệ thống đặt lịch rửa xe tự động tiện lợi, giúp khách hàng đặt hẹn nhanh chóng và quản lý dịch vụ chăm sóc xe hiệu quả.",
     footerPlatform: "Nền tảng",
     footerHowItWorks: "Cách thức hoạt động",
     footerServicesMenu: "Danh mục dịch vụ",
@@ -63,7 +63,7 @@ const translations = {
     footerRights: "AutoWash Pro · FPT University — SWP391 Project. Bảo lưu mọi quyền.",
 
     // Booking Section
-    bookingTitle: "ĐẶT LỊCH DỊCH VỤ LUXURY",
+    bookingTitle: "ĐẶT LỊCH DỊCH VỤ RỬA XE",
     bookingStep1: "Chọn Dịch Vụ",
     bookingStep2: "Thông Tin Đặt Lịch",
     bookingStep3: "Xác Nhận & Hoá Đơn",
@@ -250,10 +250,10 @@ const translations = {
     optimal: "OPTIMAL",
 
     // Home Page Hero
-    heroSubtitle: "PRECISION AUTOMATED CLEANING",
-    heroTitleMain: "The Future of",
-    heroTitleAccent: "Automotive Care",
-    heroDesc: "Experience premium contactless automated car wash technology. High precision, zero scratches, optimal paint protection, and guaranteed on-time pickup.",
+    heroSubtitle: "AUTOMATED CAR WASH SYSTEM",
+    heroTitleMain: "Automated Car Wash",
+    heroTitleAccent: "& Easy Booking",
+    heroDesc: "Experience modern automated car wash service. Quick online booking, safe paint care, and time-saving convenience.",
     heroCtaBook: "BOOK YOUR WASH",
     heroCtaServices: "VIEW SERVICES ↓",
 
@@ -272,7 +272,7 @@ const translations = {
     retryBtn: "Retry",
 
     // Footer
-    footerBrandDesc: "Redefining automotive care through AI-integrated automation and luxury service standards.",
+    footerBrandDesc: "Convenient automated car wash booking system, helping customers schedule appointments and manage car care efficiently.",
     footerPlatform: "Platform",
     footerHowItWorks: "How it works",
     footerServicesMenu: "Service Menu",
@@ -285,7 +285,7 @@ const translations = {
     footerRights: "AutoWash Pro · FPT University — SWP391 Project. All rights reserved.",
 
     // Booking Section
-    bookingTitle: "BOOK LUXURY SERVICES",
+    bookingTitle: "CAR WASH SERVICE BOOKING",
     bookingStep1: "Select Service",
     bookingStep2: "Booking Info",
     bookingStep3: "Confirm & Invoice",

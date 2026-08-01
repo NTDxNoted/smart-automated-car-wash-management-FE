@@ -113,7 +113,7 @@ export default function HomePage() {
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-cyan-500/5">
               <img
                 src={heroCar}
-                alt="Luxury car being cleaned by an automated AI robotics car wash system"
+                alt="Automated car wash system"
                 className="aspect-[4/3] w-full object-cover object-right scale-140 origin-right transition-transform duration-700 hover:scale-145"
               />
             </div>
