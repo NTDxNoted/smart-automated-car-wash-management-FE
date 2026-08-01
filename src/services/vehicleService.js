@@ -87,20 +87,16 @@ export const vehicleService = {
       MOCK_VEHICLES.push(newVehicle);
       return newVehicle;
     }
-    const response = await axiosInstance.post('/vehicles', { licensePlate, otp });
+    const response = await axiosInstance.post('/vehicles', { licensePlate });
     return response.data;
   },
 
   // PUT /api/vehicles/{id}
-  // body: { licensePlate, otp }
+  // body: { licensePlate }
   // → { id, licensePlate, model, isActive }
-  // BR-10: OTP flow tương tự addVehicle — bước 1 gửi OTP, bước 2 xác nhận
-  updateVehicle: async (id, { licensePlate, otp }) => {
+  updateVehicle: async (id, { licensePlate }) => {
     if (USE_MOCK_DATA) {
       await delay(800);
-      if (otp !== MOCK_OTP) {
-        throw { response: { data: { code: 'OTP_INVALID', message: 'Mã OTP không đúng hoặc đã hết hạn' } } };
-      }
       const vehicle = MOCK_VEHICLES.find(v => v.id === id);
       if (!vehicle) {
         throw { response: { data: { code: 'VEHICLE_NOT_FOUND', message: 'Không tìm thấy xe' } } };
@@ -114,7 +110,7 @@ export const vehicleService = {
       vehicle.licensePlate = licensePlate.toUpperCase();
       return { ...vehicle };
     }
-    const response = await axiosInstance.put(`/vehicles/${id}`, { licensePlate, otp });
+    const response = await axiosInstance.put(`/vehicles/${id}`, { licensePlate });
     return response.data;
   },
 

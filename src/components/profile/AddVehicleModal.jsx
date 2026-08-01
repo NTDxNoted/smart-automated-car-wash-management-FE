@@ -44,13 +44,11 @@ export default function AddVehicleModal({ mode = 'add', vehicle = null, onSucces
       let result;
       if (isEdit) {
         result = await vehicleService.updateVehicle(vehicle.id, { 
-          licensePlate: licensePlate.trim().toUpperCase(), 
-          otp: '123456' 
+          licensePlate: licensePlate.trim().toUpperCase()
         });
       } else {
         result = await vehicleService.addVehicle({ 
-          licensePlate: licensePlate.trim().toUpperCase(), 
-          otp: '123456' 
+          licensePlate: licensePlate.trim().toUpperCase()
         });
       }
       onSuccess(result);
