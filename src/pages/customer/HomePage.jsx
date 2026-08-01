@@ -82,14 +82,14 @@ export default function HomePage() {
             <div className="mt-8 flex flex-wrap items-center justify-start gap-4">
               <Link
                 to="/booking"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-white font-extrabold text-base px-8 py-3.5 shadow-lg shadow-cyan-500/30 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                className="hero__cta"
               >
                 <span>{isVi ? 'Đặt Lịch Ngay' : 'Book a Wash'}</span>
                 <span className="material-symbols-outlined text-[20px]">arrow_downward</span>
               </Link>
               <a
                 href="#services"
-                className="inline-flex items-center justify-center rounded-full border-2 border-slate-200 bg-white hover:bg-slate-50 hover:border-cyan-500 hover:text-cyan-600 text-slate-800 font-extrabold text-base px-8 py-3.5 transition-all cursor-pointer shadow-xs"
+                className="hero__cta hero__cta--secondary"
               >
                 {isVi ? 'Xem Dịch Vụ' : 'View Services'}
               </a>
