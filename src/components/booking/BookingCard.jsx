@@ -1,6 +1,7 @@
 import React from 'react';
 import BookingStatusBadge from './BookingStatusBadge';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDateTime } from '../../utils/datetime';
 
 function canCancel(booking) {
   return booking.status === 'Pending' && (new Date(booking.scheduledTime) - new Date()) >= 7200 * 1000;
@@ -11,16 +12,6 @@ function formatVND(amount, locale) {
     style: 'currency',
     currency: 'VND',
   }).format(amount);
-}
-
-function formatDateTime(iso, locale) {
-  return new Date(iso).toLocaleString(locale === 'en' ? 'en-US' : 'vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 export default function BookingCard({ booking, onOpenDetail, onCancel }) {
