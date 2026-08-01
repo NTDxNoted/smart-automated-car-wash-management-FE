@@ -378,7 +378,7 @@ body {
 }
 
 .service-card__name {
-  font-family: var(--font-head);
+  font-family: 'Be Vietnam Pro', sans-serif !important;
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--clr-text);

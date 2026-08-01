@@ -25,8 +25,12 @@ const ServiceCard = memo(function ServiceCard({ service }) {
 
       {/* Content */}
       <div className="service-card__body">
-        <h3 className="service-card__name">{serviceName}</h3>
-        <p className="service-card__desc">{description}</p>
+        <h3 className="service-card__name" style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontWeight: 700 }}>
+          {serviceName}
+        </h3>
+        <p className="service-card__desc" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
+          {description}
+        </p>
       </div>
 
       {/* Meta */}
