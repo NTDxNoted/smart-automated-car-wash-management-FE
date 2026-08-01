@@ -29,8 +29,8 @@ const translations = {
 
     // Home Page Hero
     heroSubtitle: "HỆ THỐNG RỬA XE TỰ ĐỘNG",
-    heroTitleMain: "Dịch Vụ Rửa Xe",
-    heroTitleAccent: "Tự Động & Tiện Lợi",
+    heroTitleMain: "Rửa Xe Tự Động",
+    heroTitleAccent: "Nhanh Chóng & Tiện Lợi",
     heroDesc: "Trải nghiệm dịch vụ rửa xe tự động hiện đại. Đặt lịch online nhanh chóng, không trầy xước, bảo vệ sơn xe và tiết kiệm thời gian.",
     heroCtaBook: "ĐẶT LỊCH NGAY",
     heroCtaServices: "XEM DỊCH VỤ ↓",

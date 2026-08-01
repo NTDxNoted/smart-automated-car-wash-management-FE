@@ -70,28 +70,26 @@ export default function HomePage() {
               {t('heroSubtitle')}
             </span>
 
-            <h1 className="mt-6 font-heading text-4xl sm:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-extrabold leading-[1.05] tracking-tight text-slate-900">
+            <h1 className="mt-6 font-sans text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight text-slate-900">
               {t('heroTitleMain')}{" "}
               <span className="bg-gradient-to-r from-cyan-600 to-cyan-400 bg-clip-text text-transparent">{t('heroTitleAccent')}</span>
             </h1>
 
-            <p className="mt-6 max-w-md text-base sm:text-lg leading-relaxed text-slate-500">
+            <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-slate-500">
               {t('heroDesc')}
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row items-start justify-start gap-5">
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-4">
               <Link
                 to="/booking"
-                className="group inline-flex items-center justify-center rounded-full bg-cyan-600 py-[18px] text-lg font-bold text-white shadow-lg shadow-cyan-600/30 hover:bg-cyan-500 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
-                style={{ paddingLeft: '32px', paddingRight: '32px' }}
+                className="group inline-flex items-center justify-center rounded-full bg-cyan-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-cyan-600/25 hover:bg-cyan-500 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
               >
                 {isVi ? 'Đặt Lịch Ngay' : 'Book a Wash'}
                 <span className="material-symbols-outlined ml-2 text-[20px] transition-transform group-hover:translate-y-0.5">arrow_downward</span>
               </Link>
               <Link
                 to="/#services"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white py-[18px] text-lg font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
-                style={{ paddingLeft: '32px', paddingRight: '32px' }}
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-8 py-4 text-base font-bold text-slate-700 hover:bg-slate-50 hover:text-cyan-600 transition-all cursor-pointer shadow-xs"
               >
                 {isVi ? 'Xem Dịch Vụ' : 'View Services'}
               </Link>
