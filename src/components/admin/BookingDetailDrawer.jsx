@@ -122,8 +122,9 @@ export default function BookingDetailDrawer({
 
   // No-show detection (overdue checkin by 15 mins or explicit status)
   const isNoShowStatus = currentDetails.status?.toUpperCase() === "NOSHOW" || currentDetails.status?.toUpperCase() === "NO_SHOW" || currentDetails.status?.toUpperCase() === "NO-SHOW";
-  const cleanScheduledTime = typeof currentDetails.scheduledTime === 'string' ? currentDetails.scheduledTime.replace(/Z$/i, '') : currentDetails.scheduledTime;
-  const scheduledDate = cleanScheduledTime ? new Date(cleanScheduledTime) : null;
+  // API always emits scheduledTime as a proper UTC ISO string (with Z) — parse it as-is so
+  // `new Date()` converts it to the browser's local time correctly instead of shifting it.
+  const scheduledDate = currentDetails.scheduledTime ? new Date(currentDetails.scheduledTime) : null;
   const isTimeOverdue = scheduledDate && !checkInTimeVal && (new Date() - scheduledDate) > 15 * 60 * 1000;
   const isNoShow = isNoShowStatus || (isPending && isTimeOverdue);
 

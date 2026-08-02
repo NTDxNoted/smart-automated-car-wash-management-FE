@@ -400,6 +400,36 @@
   pointer-events: none;
 }
 
+.booking-drawer-noshow-override-btn {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 16px;
+  background: #FFF7ED;
+  border: 1px solid #C2410C;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #C2410C;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.booking-drawer-noshow-override-btn:hover {
+  background-color: #FFEDD5;
+}
+
+.booking-drawer-noshow-override-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Payment fields */
 .booking-drawer-payment-fieldset {
   border: none;
