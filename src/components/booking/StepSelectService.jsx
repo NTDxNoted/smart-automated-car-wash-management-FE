@@ -4,13 +4,19 @@ import { useLanguage } from '../../context/LanguageContext';
 export default function StepSelectService({ bookingData, setBookingData, onNext, servicesList }) {
   const { t, locale } = useLanguage();
 
+  const getServiceDuration = (service) => {
+    if (service?.duration !== undefined && service?.duration !== null && service?.duration > 0) {
+      return `${service.duration} ${locale === 'en' ? 'mins' : 'phút'}`;
+    }
+    return locale === 'en' ? '30 mins' : '30 phút';
+  };
+
   const getServiceMeta = (name) => {
     const n = name?.toLowerCase() || '';
     const isVi = locale === 'vi';
     if (n.includes('cơ bản') || n.includes('basic')) {
       return {
         icon: 'local_car_wash',
-        duration: isVi ? '30 - 45 phút' : '30-45 mins',
         badge: isVi ? 'Phổ biến' : 'Popular',
         badgeClass: 'bg-slate-100 text-slate-700 border border-slate-200',
         selectedBadgeClass: 'bg-white/20 text-white border border-white/20'
@@ -19,7 +25,6 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
     if (n.includes('cao cấp') || n.includes('premium')) {
       return {
         icon: 'auto_awesome',
-        duration: isVi ? '45 - 60 phút' : '45-60 mins',
         badge: isVi ? 'Bán chạy' : 'Best Seller',
         badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
         selectedBadgeClass: 'bg-white/20 text-white border border-white/20'
@@ -28,7 +33,6 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
     if (n.includes('hút bụi') || n.includes('nội thất') || n.includes('vacuum')) {
       return {
         icon: 'cleaning_services',
-        duration: isVi ? '60 - 75 phút' : '60-75 mins',
         badge: isVi ? 'Khuyên dùng' : 'Recommended',
         badgeClass: 'bg-purple-50 text-purple-700 border border-purple-200',
         selectedBadgeClass: 'bg-white/20 text-white border border-white/20'
@@ -37,7 +41,6 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
     if (n.includes('chi tiết') || n.includes('detailing') || n.includes('toàn bộ')) {
       return {
         icon: 'build_circle',
-        duration: isVi ? '90 - 120 phút' : '90-120 mins',
         badge: isVi ? 'Chuyên sâu' : 'Detailing',
         badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200',
         selectedBadgeClass: 'bg-white/20 text-white border border-white/20'
@@ -46,7 +49,6 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
     // Default
     return {
       icon: 'shield',
-      duration: isVi ? '45 phút' : '45 mins',
       badge: isVi ? 'Tiêu chuẩn' : 'Standard',
       badgeClass: 'bg-cyan-50 text-cyan-700 border border-cyan-200',
       selectedBadgeClass: 'bg-white/20 text-white border border-white/20'
@@ -73,10 +75,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
           maxHeight: '460px',
           overflowY: 'auto',
           overflowX: 'hidden',
-          paddingLeft: '16px',
-          paddingRight: '16px',
-          paddingTop: '20px',
-          paddingBottom: '12px',
+          paddingRight: '6px',
           marginTop: '10px'
         }}
       >
@@ -143,7 +142,7 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                   >
                     <div className={`flex items-center gap-1.5 text-xs ${isSelected ? 'text-cyan-600' : 'text-slate-400'}`}>
                       <span className="material-symbols-outlined text-[16px]">schedule</span>
-                      <span className="font-medium">{meta.duration}</span>
+                      <span className="font-medium">{getServiceDuration(service)}</span>
                     </div>
                     <span className="text-lg font-extrabold font-sans tracking-tight text-cyan-600">
                       {formatPrice(service.price)}
