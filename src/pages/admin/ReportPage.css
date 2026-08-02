@@ -281,6 +281,29 @@
   box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.15);
   border-radius: 12px;
   flex: 1 1 220px;
+  position: relative;
+}
+
+.report-stat-card-detail-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  padding: 3px 9px;
+  background: #FFFFFF;
+  border: 1px solid #00677F;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  color: #00677F;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.report-stat-card-detail-btn:hover {
+  background: #00677F;
+  color: #FFFFFF;
 }
 
 .report-stat-card-header {

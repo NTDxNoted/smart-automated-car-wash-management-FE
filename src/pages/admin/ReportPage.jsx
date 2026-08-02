@@ -5,12 +5,14 @@ import RfmTable from "../../components/admin/RfmTable";
 import TierDistributionChart from "../../components/admin/TierDistributionChart";
 import LoyaltyStatsPanel from "../../components/admin/LoyaltyStatsPanel";
 import BookingStatusPieChart from "../../components/admin/BookingStatusPieChart";
+import RevenueDetailModal from "../../components/admin/RevenueDetailModal";
 
 import {
   getOverviewReport,
   getRfmReport,
   getTierDistribution,
   getLoyaltyStats,
+  getRevenueDetail,
 } from "../../services/adminReportService";
 import adminBookingService from "../../services/adminBookingService";
 import "./ReportPage.css";
@@ -33,6 +35,14 @@ export default function ReportPage() {
   // RFM segment filter from cards
   const [selectedRfmSegment, setSelectedRfmSegment] = useState("");
   const [activeTab, setActiveTab] = useState("overview_rfm");
+
+  // Revenue detail modal
+  const [revenueDetailOpen, setRevenueDetailOpen] = useState(false);
+
+  // "Tổng doanh thu" tile — lấy từ cùng API/công thức với popup Chi tiết doanh thu (Completed +
+  // Transaction Paid, mốc ngày lệch múi giờ VN ở backend) thay vì tự cộng finalAmount theo
+  // scheduledTime ở client, để 2 con số trên cùng màn hình không bao giờ lệch nhau.
+  const [apiRevenue, setApiRevenue] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -82,6 +92,38 @@ export default function ReportPage() {
     return () => {
       isMounted = false;
       controller.abort();
+    };
+  }, []);
+
+  // "Doanh thu tháng này" — CỐ ĐỊNH đầu tháng hiện tại đến hôm nay, KHÔNG phụ thuộc bộ lọc
+  // thời gian của trang (dateRangeType) — thẻ này luôn phải là doanh thu tháng, không phải toàn
+  // bộ hệ thống hay theo bộ lọc khác. Poll định kỳ để tự cập nhật khi có hóa đơn mới hoặc khi
+  // hệ thống bước sang tháng mới (đầu tháng được tính lại mỗi lần fetch, không cache).
+  useEffect(() => {
+    const toIsoDate = (date) => date.toLocaleDateString('en-CA');
+
+    const fetchMonthRevenue = (signal) => {
+      const today = new Date();
+      const start = new Date(today.getFullYear(), today.getMonth(), 1);
+      const range = { startDate: toIsoDate(start), endDate: toIsoDate(today) };
+
+      getRevenueDetail(range.startDate, range.endDate, "all", { signal })
+        .then((result) => setApiRevenue(result.netRevenue))
+        .catch((err) => {
+          if (err.name !== "AbortError" && err.name !== "CanceledError") {
+            console.error("Lỗi tải Doanh thu tháng này:", err);
+          }
+        });
+    };
+
+    const controller = new AbortController();
+    fetchMonthRevenue(controller.signal);
+
+    const intervalId = setInterval(() => fetchMonthRevenue(controller.signal), 60000);
+
+    return () => {
+      controller.abort();
+      clearInterval(intervalId);
     };
   }, []);
 
@@ -401,10 +443,11 @@ export default function ReportPage() {
           {/* Row 1 KPI Cards (4 cards) */}
           <div className="report-stats-grid-row1">
             <SummaryCard
-              title="Tổng doanh thu"
-              value={`${kpis.revenue.toLocaleString()}đ`}
-              subtitle="Doanh thu thực nhận"
+              title="Doanh thu tháng này"
+              value={`${apiRevenue.toLocaleString('vi-VN')}đ`}
+              subtitle="Doanh thu thực nhận trong tháng"
               cardClass="row1"
+              onDetailClick={() => setRevenueDetailOpen(true)}
             />
             <SummaryCard
               title="Tổng bookings"
@@ -540,11 +583,17 @@ export default function ReportPage() {
           <LoyaltyStatsPanel stats={loyalty} customers={rfm} />
         </div>
       )}
+
+      <RevenueDetailModal
+        open={revenueDetailOpen}
+        onClose={() => setRevenueDetailOpen(false)}
+        initialDateRangeType="month"
+      />
     </div>
   );
 }
 
-function SummaryCard({ title, value, subtitle, cardClass }) {
+function SummaryCard({ title, value, subtitle, cardClass, onDetailClick }) {
   if (cardClass === "row1") {
     let emoji = "📊";
     if (title.toLowerCase().includes("thu")) emoji = "💰";
@@ -567,6 +616,15 @@ function SummaryCard({ title, value, subtitle, cardClass }) {
           <div className="report-stat-card-subtitle-container">
             <span className="report-stat-card-subtitle">{subtitle}</span>
           </div>
+        )}
+        {onDetailClick && (
+          <button
+            type="button"
+            className="report-stat-card-detail-btn"
+            onClick={onDetailClick}
+          >
+            Chi tiết
+          </button>
         )}
       </div>
     );
