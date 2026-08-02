@@ -64,7 +64,7 @@
   padding: 20px;
   position: relative;
   overflow: hidden;
-  height: 155px;
+  min-height: 155px;
   background: #F9F9FF;
   border-width: 2px 1px 1px 1px;
   border-style: solid;
@@ -132,6 +132,56 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 8px;
+}
+
+/* (i) tooltip icon next to the card title */
+.metric-card-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1px solid #94A3B8;
+  color: #64748B;
+  font-size: 9px;
+  font-style: italic;
+  font-weight: 700;
+  font-family: Georgia, serif;
+  cursor: help;
+  flex-shrink: 0;
+}
+
+/* Small caption right under the big amount, e.g. "Đã thu hôm nay" */
+.metric-card-value-caption {
+  font-family: 'Geist', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+/* Chưa thanh toán / Đã giảm giá — phụ, nhỏ, không cạnh tranh với số tiền chính */
+.metric-card-extra-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-card-extra-line {
+  font-family: 'Geist', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.metric-card-extra-line.unpaid {
+  color: #B45309;
+}
+
+.metric-card-extra-line.discount {
+  color: #DC2626;
 }
 
 /* Icons styling */

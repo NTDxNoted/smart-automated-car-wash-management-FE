@@ -117,3 +117,30 @@ export const getPromotionsRoi = async (startDate, endDate, { signal } = {}) => {
     promotions,
   };
 };
+
+export const getRevenueDetail = async (startDate, endDate, paymentMethod, { signal } = {}) => {
+  const { data } = await adminAxiosInstance.get('/admin/reports/revenue-detail', {
+    params: { startDate, endDate, paymentMethod },
+    signal
+  });
+
+  const items = data.transactions ?? data.Transactions ?? [];
+
+  return {
+    grossRevenue: Number(data.grossRevenue ?? data.GrossRevenue ?? 0),
+    totalDiscount: Number(data.totalDiscount ?? data.TotalDiscount ?? 0),
+    netRevenue: Number(data.netRevenue ?? data.NetRevenue ?? 0),
+    cashRevenue: Number(data.cashRevenue ?? data.CashRevenue ?? 0),
+    transferRevenue: Number(data.transferRevenue ?? data.TransferRevenue ?? 0),
+    transactions: items.map(item => ({
+      invoiceCode: item.invoiceCode ?? item.InvoiceCode ?? '',
+      customerName: item.customerName ?? item.CustomerName ?? 'Khách vãng lai',
+      serviceName: item.serviceName ?? item.ServiceName ?? 'Dịch vụ không xác định',
+      paymentMethod: item.paymentMethod ?? item.PaymentMethod ?? '',
+      promotionApplied: item.promotionApplied ?? item.PromotionApplied ?? null,
+      discountAmount: Number(item.discountAmount ?? item.DiscountAmount ?? 0),
+      amount: Number(item.amount ?? item.Amount ?? 0),
+      paidAt: item.paidAt ?? item.PaidAt ?? null,
+    })),
+  };
+};

@@ -1,0 +1,341 @@
+/* RevenueDetailModal.css */
+
+.revenue-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background-color: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.revenue-modal-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1080px;
+  height: 88vh;
+  max-height: 88vh;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.revenue-modal-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  width: 100%;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  flex-shrink: 0;
+}
+
+.revenue-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: #1E293B;
+}
+
+.revenue-modal-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #64748B;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.revenue-modal-close-btn:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+}
+
+/* Sticky top: filters + summary bar — never scrolls, always visible */
+.revenue-modal-sticky-top {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 20px;
+  border-bottom: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+/* Filters */
+.revenue-modal-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.revenue-modal-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.revenue-modal-filter-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: #475569;
+}
+
+.revenue-modal-select-wrapper {
+  position: relative;
+}
+
+.revenue-modal-select {
+  box-sizing: border-box;
+  padding: 6px 30px 6px 10px;
+  height: 32px;
+  min-width: 150px;
+  background: #FFFFFF;
+  border: 1px solid #C6C6C8;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+.revenue-modal-select:focus {
+  border-color: #0EA5E9;
+}
+
+.revenue-modal-custom-dates {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.revenue-modal-date-input {
+  box-sizing: border-box;
+  padding: 6px 10px;
+  height: 32px;
+  background: #FFFFFF;
+  border: 1px solid #C6C6C8;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+}
+
+.revenue-modal-date-divider {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #64748B;
+}
+
+/* Compact summary bar — single row, replaces the old tall stacked panel */
+.revenue-summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 8px 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+}
+
+.revenue-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 16px;
+  border-right: 1px solid #E2E8F0;
+  flex: 1 1 0;
+  min-width: 110px;
+}
+
+.revenue-summary-item:first-child {
+  padding-left: 4px;
+}
+
+.revenue-summary-item:last-child {
+  border-right: none;
+}
+
+.revenue-summary-item-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.revenue-summary-item-value {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1E293B;
+  white-space: nowrap;
+}
+
+.revenue-summary-item.discount .revenue-summary-item-value {
+  color: #DC2626;
+}
+
+.revenue-summary-item.net .revenue-summary-item-value {
+  color: #00677F;
+  font-size: 15px;
+}
+
+/* Table section — takes the remaining height, only this area scrolls */
+.revenue-modal-table-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px 16px;
+  overflow: hidden;
+}
+
+.revenue-modal-table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+}
+
+.revenue-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.revenue-modal-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: #475569;
+  background: #F1F5F9;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.revenue-modal-table td {
+  padding: 8px 14px;
+  color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.revenue-modal-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.revenue-modal-table tbody tr:hover {
+  background: #F8FAFC;
+}
+
+.revenue-modal-table-amount {
+  font-weight: 600;
+  color: #00677F;
+}
+
+.revenue-modal-table-discount {
+  display: block;
+  font-weight: 600;
+  color: #DC2626;
+}
+
+.revenue-modal-table-discount.none {
+  font-weight: 400;
+  color: #94A3B8;
+}
+
+.revenue-modal-table-promo-name {
+  display: block;
+  font-size: 11px;
+  color: #64748B;
+  white-space: normal;
+}
+
+/* Loading / error / empty states fill the table section */
+.revenue-modal-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #64748B;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+.revenue-modal-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E2E8F0;
+  border-top-color: #00677F;
+  border-radius: 50%;
+  animation: revenue-modal-spin 0.8s linear infinite;
+}
+
+@keyframes revenue-modal-spin {
+  to { transform: rotate(360deg); }
+}
+
+.revenue-modal-error {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  color: #B91C1C;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  text-align: center;
+}
+
+.revenue-modal-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .revenue-summary-item {
+    flex: 1 1 45%;
+    border-right: none;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 6px;
+  }
+}

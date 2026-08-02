@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import adminBookingService from '../../services/adminBookingService';
-import { getTierDistribution, getLoyaltyStats } from '../../services/adminReportService';
+import { getTierDistribution, getLoyaltyStats, getRevenueDetail } from '../../services/adminReportService';
 import { getCustomers } from '../../services/adminCustomerService';
 import BookingDetailDrawer from '../../components/admin/BookingDetailDrawer';
 import {
@@ -83,7 +83,7 @@ function CheckCircleIcon({ className }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎛️ CUSTOM METRIC CARD COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-function MetricCard({ title, value, subtitle, trend, icon: Icon, type, onClick }) {
+function MetricCard({ title, value, valueTooltip, valueCaption, subtitle, trend, icon: Icon, type, onClick, infoTooltip, unpaidLabel, discountLabel }) {
   const isWarning = type === 'no-shows';
   return (
     <div className={`metric-card-custom ${type} ${onClick ? 'cursor-pointer animate-fade-in' : ''}`} onClick={onClick}>
@@ -91,8 +91,25 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, type, onClick }
       <div className="card-content-wrapper">
         <div className="flex items-start justify-between w-full">
           <div className="flex-1">
-            <p className="text-xs font-semibold text-[#3D494D] uppercase tracking-wider">{title}</p>
-            <p className="text-4xl font-extrabold text-[#111C2C] mt-2.5 tracking-tighter" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>{value}</p>
+            <p className="text-xs font-semibold text-[#3D494D] uppercase tracking-wider flex items-center gap-1">
+              {title}
+              {infoTooltip && (
+                <span className="metric-card-info-icon" title={infoTooltip} aria-label={infoTooltip}>
+                  i
+                </span>
+              )}
+            </p>
+            {/* Số tiền: thành phần nổi bật nhất — font lớn, đậm, căn trái, không dùng màu xanh (chỉ dành cho phần tăng trưởng bên dưới). */}
+            <p
+              className="text-4xl font-extrabold text-[#111C2C] mt-2.5 tracking-tighter text-left"
+              style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}
+              title={valueTooltip || undefined}
+            >
+              {value}
+            </p>
+            {valueCaption && (
+              <p className="metric-card-value-caption">{valueCaption}</p>
+            )}
           </div>
           <div className="metric-icon-bg">
             <Icon className="w-5.5 h-5.5" />
@@ -112,6 +129,12 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, type, onClick }
             </span>
           </div>
         )}
+        {(unpaidLabel || discountLabel) && (
+          <div className="metric-card-extra-lines">
+            {unpaidLabel && <p className="metric-card-extra-line unpaid">{unpaidLabel}</p>}
+            {discountLabel && <p className="metric-card-extra-line discount">{discountLabel}</p>}
+          </div>
+        )}
         {isWarning && (
           <div className="mt-auto flex items-center gap-1 text-[#BA1A1A] text-[11px] font-bold uppercase tracking-wider" style={{ fontFamily: 'Geist, sans-serif', letterSpacing: '0.6px' }}>
             <AlertTriangleIcon className="w-3.5 h-3.5 text-[#BA1A1A]" />
@@ -123,6 +146,24 @@ function MetricCard({ title, value, subtitle, trend, icon: Icon, type, onClick }
   );
 }
 
+// Định dạng đầy đủ theo chuẩn VN (dấu chấm ngăn hàng nghìn) — dùng cho tooltip và các số phụ
+// (chưa thanh toán/đã giảm giá) để không bao giờ rút gọn nhầm gây hiểu sai số tiền.
+const formatVndFull = (amount) => `${Math.round(amount || 0).toLocaleString('vi-VN')} ₫`;
+
+// Chỉ rút gọn khi vượt 100 triệu; dưới ngưỡng này luôn hiển thị số đầy đủ để tránh nhầm giữa
+// "1.7M" (1,7 triệu) và các đơn vị khác.
+const formatVndDisplay = (amount) => {
+  const value = amount || 0;
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000_000) {
+    return `${(value / 1_000_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tỷ ₫`;
+  }
+  if (abs > 100_000_000) {
+    return `${(value / 1_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} triệu ₫`;
+  }
+  return formatVndFull(value);
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 📈 MAIN PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
@@ -132,7 +173,10 @@ export default function DashboardPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [bookingsToday, setBookingsToday] = useState(0);
-  const [revenueTodayStr, setRevenueTodayStr] = useState('0đ');
+  const [revenueTodayStr, setRevenueTodayStr] = useState('0 ₫');
+  const [revenueTodayFull, setRevenueTodayFull] = useState('0 ₫');
+  const [revenueDiscountToday, setRevenueDiscountToday] = useState(null);
+  const [revenueUnpaidToday, setRevenueUnpaidToday] = useState(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [noShowCount, setNoShowCount] = useState(0);
   const [processingCount, setProcessingCount] = useState(0);
@@ -201,6 +245,20 @@ export default function DashboardPage() {
         console.error("Lỗi tải thông tin Loyalty trong Dashboard:", loyaltyErr);
       }
 
+      // Doanh thu hôm nay: dùng chung API/cách tính với popup "Chi tiết doanh thu" (chỉ tính
+      // booking Completed có Transaction Paid, mốc "hôm nay" lệch múi giờ VN ở backend) — trước đây
+      // Dashboard tự cộng finalAmount theo scheduledTime ở client nên lệch số với popup.
+      try {
+        const todayIso = new Date().toLocaleDateString('en-CA');
+        const revenueDetail = await getRevenueDetail(todayIso, todayIso, 'all');
+        const netToday = revenueDetail.netRevenue;
+        setRevenueTodayStr(formatVndDisplay(netToday));
+        setRevenueTodayFull(formatVndFull(netToday));
+        setRevenueDiscountToday(revenueDetail.totalDiscount > 0 ? formatVndFull(revenueDetail.totalDiscount) : null);
+      } catch (revenueErr) {
+        console.error("Lỗi tải doanh thu hôm nay trong Dashboard:", revenueErr);
+      }
+
       const res = await adminBookingService.getAll({ pageSize: 1000 });
       const list = res.data?.data || res.data || [];
       if (list.length > 0) {
@@ -210,10 +268,10 @@ export default function DashboardPage() {
         const now = targetTodayDate;
 
         let bToday = 0;
-        let rToday = 0;
         let pCount = 0;
         let nsCount = 0;
         let prCount = 0;
+        let unpaidToday = 0;
 
         // LPR Lists
         const procList = [];
@@ -264,14 +322,11 @@ export default function DashboardPage() {
           if (isBToday) {
             bToday++;
 
-            // 1. Doanh thu hôm nay: chỉ tính COMPLETED
-            if (bStatus === 'COMPLETED') {
-              rToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice ?? 0);
-            }
-
             // 2. Trạng thái tức thời
             if (bStatus === 'PENDING') {
               pCount++;
+              // Đơn đang chờ (chưa Completed/chưa có Transaction Paid) = doanh thu chưa thu được hôm nay.
+              unpaidToday += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice ?? 0);
               const checkinTimeVal = b.checkInTime || b.checkinTime || b.CheckInTime;
               if (checkinTimeVal) {
                 waitList.push(mappedObj);
@@ -316,16 +371,12 @@ export default function DashboardPage() {
         setPendingCount(pCount);
         setNoShowCount(nsCount);
         setProcessingCount(prCount);
+        setRevenueUnpaidToday(unpaidToday > 0 ? formatVndFull(unpaidToday) : null);
 
         setProcessingCars(procList);
         setWaitingCars(waitList);
         setNeedCheckinCars(nCheckinList);
         setWarnings(warningList);
-
-        let formattedRevenue = rToday >= 1000000
-          ? `${(rToday / 1000000).toFixed(1)}M`
-          : `${rToday.toLocaleString()}đ`;
-        setRevenueTodayStr(formattedRevenue);
 
         // Sort last7Days by dayIndex so T2 (Monday, dayIndex=1) is first and CN (Sunday, dayIndex=7) is last
         const sorted7Days = [...last7Days].sort((a, b) => a.dayIndex - b.dayIndex);
@@ -467,7 +518,12 @@ export default function DashboardPage() {
         <MetricCard
           title="Doanh thu hôm nay"
           value={revenueTodayStr}
-          trend="+8.2% vs hôm qua"
+          valueTooltip={revenueTodayFull}
+          valueCaption="Đã thu hôm nay"
+          infoTooltip="Doanh thu chỉ tính các hóa đơn đã thanh toán trong ngày."
+          trend="+8.2% so với hôm qua"
+          unpaidLabel={revenueUnpaidToday ? `Chưa thanh toán: ${revenueUnpaidToday}` : null}
+          discountLabel={revenueDiscountToday ? `Đã giảm giá: ${revenueDiscountToday}` : null}
           icon={BriefcaseIcon}
           type="revenue"
           onClick={() => navigate('/admin/bookings')}
