@@ -68,6 +68,7 @@ export default function BookingPage() {
           id: s.serviceId || s.ServiceID || s.id,
           name: s.serviceName || s.ServiceName || s.name,
           price: s.price || s.Price,
+          duration: s.duration || s.Duration || s.durationMinutes || s.DurationMinutes,
           description: s.description || s.Description || 'Dịch vụ chăm sóc xe chuẩn cao cấp'
         }));
         setServices(normalized);
