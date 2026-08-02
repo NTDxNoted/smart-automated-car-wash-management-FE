@@ -163,15 +163,6 @@ export default function CustomerLayout() {
           </Link>
 
           <Link
-            to="/#services"
-            onClick={() => handleHashLinkClick('#services')}
-            className={getLinkClass('/', '#services')}
-          >
-            <span className="material-symbols-outlined">auto_awesome</span>
-            <span className="text-sm font-medium">{t('navServices')}</span>
-          </Link>
-
-          <Link
             to="/#results"
             onClick={() => handleHashLinkClick('#results')}
             className={getLinkClass('/', '#results')}
@@ -187,6 +178,15 @@ export default function CustomerLayout() {
           >
             <span className="material-symbols-outlined">workspace_premium</span>
             <span className="text-sm font-medium">{t('navMembership')}</span>
+          </Link>
+
+          <Link
+            to="/#services"
+            onClick={() => handleHashLinkClick('#services')}
+            className={getLinkClass('/', '#services')}
+          >
+            <span className="material-symbols-outlined">auto_awesome</span>
+            <span className="text-sm font-medium">{t('navServices')}</span>
           </Link>
 
           {isAuthenticated && (
