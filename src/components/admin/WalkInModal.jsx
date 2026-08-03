@@ -11,13 +11,6 @@ const getTodayDateStr = () => {
   return `${year}-${month}-${day}`;
 };
 
-const getCurrentTimeStr = () => {
-  const d = new Date();
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-};
-
 const DEFAULT_SLOTS = [
   '07:30', '08:30', '09:30', '10:30', '11:30', '12:30',
   '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30'
@@ -63,16 +56,30 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
     setLoadingSlots(true);
     bookingService.getAvailableSlots(form.bookingDate, form.plate)
       .then(slotsData => {
+        let finalSlots = [];
         if (Array.isArray(slotsData) && slotsData.length > 0) {
-          setSlotsList(slotsData);
+          finalSlots = slotsData;
         } else {
-          // Fallback to default operating slots if empty
-          setSlotsList(DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 4, available: true })));
+          finalSlots = DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 4, available: true }));
         }
+        setSlotsList(finalSlots);
+
+        // Auto select first available slot
+        const firstAvail = finalSlots.find(s => (s.availableCount > 0 || s.available !== false));
+        const defaultTime = firstAvail
+          ? (typeof firstAvail === 'string' ? firstAvail : firstAvail.time)
+          : (finalSlots[0] ? (typeof finalSlots[0] === 'string' ? finalSlots[0] : finalSlots[0].time) : '');
+
+        setForm(prev => ({
+          ...prev,
+          bookingTime: prev.bookingTime && finalSlots.some(s => (typeof s === 'string' ? s : s.time) === prev.bookingTime) ? prev.bookingTime : defaultTime
+        }));
       })
       .catch(err => {
         console.error('Lỗi lấy danh sách slot:', err);
-        setSlotsList(DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 4, available: true })));
+        const fallback = DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 4, available: true }));
+        setSlotsList(fallback);
+        setForm(prev => ({ ...prev, bookingTime: fallback[0].time }));
       })
       .finally(() => setLoadingSlots(false));
   }, [open, form.bookingDate, form.plate]);
@@ -80,22 +87,33 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
   if (!open) return null;
 
   const handleReset = () => {
+    const defaultTime = slotsList.length > 0
+      ? (typeof slotsList[0] === 'string' ? slotsList[0] : slotsList[0].time)
+      : '';
+
     setForm({
       customerName: '',
       phone: '',
       plate: '',
       serviceId: services.length > 0 ? String(services[0].serviceId || services[0].id) : '',
       bookingDate: getTodayDateStr(),
-      bookingTime: '',
+      bookingTime: defaultTime,
     });
     setError('');
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let formattedValue = value;
+    if (name === 'phone') {
+      formattedValue = value.replace(/\D/g, '');
+    } else if (name === 'plate') {
+      formattedValue = value.toUpperCase();
+    }
+
     setForm(prev => ({
       ...prev,
-      [name]: name === 'plate' ? value.toUpperCase() : value,
+      [name]: formattedValue,
     }));
     setError('');
   };
@@ -109,21 +127,26 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
       return;
     }
 
-    // 2. Validate SĐT (10-11 số)
+    // 2. Validate SĐT (chuẩn SĐT Việt Nam)
     const phoneTrimmed = form.phone.trim();
     if (!phoneTrimmed) {
       setError('Số điện thoại không được để trống.');
       return;
     }
-    if (!/^[0-9]{10,11}$/.test(phoneTrimmed)) {
-      setError('Số điện thoại phải bao gồm 10–11 chữ số.');
+    if (!/^0[3|5|7|8|9][0-9]{8}$/.test(phoneTrimmed)) {
+      setError('Số điện thoại không đúng chuẩn (gồm 10-11 chữ số).');
       return;
     }
 
-    // 3. Validate Biển số xe
+    // 3. Validate Biển số xe (chuẩn biển số Việt Nam: Ví dụ 59A-12345, 30F-123.45)
     const plateTrimmed = form.plate.trim().toUpperCase();
     if (!plateTrimmed) {
       setError('Biển số xe không được để trống.');
+      return;
+    }
+    const cleanedPlate = plateTrimmed.replace(/[^A-Z0-9]/g, '');
+    if (!/^[0-9]{2}[A-Z0-9]{1,2}[0-9]{4,5}$/.test(cleanedPlate)) {
+      setError('Biển số xe không nhập đúng chuẩn (Ví dụ hợp lệ: 59A-12345, 30F-123.45).');
       return;
     }
 
@@ -151,7 +174,7 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
     }
 
     // 7. Validate Slot KÍN (Hết slot)
-    const selectedSlotObj = slotsList.find(s => s.time === form.bookingTime);
+    const selectedSlotObj = slotsList.find(s => (typeof s === 'string' ? s : s.time) === form.bookingTime);
     if (selectedSlotObj && (selectedSlotObj.availableCount === 0 || selectedSlotObj.available === false)) {
       setError('Khung giờ này đã KÍN (hết slot). Vui lòng chọn khung giờ khác.');
       return;
@@ -209,7 +232,7 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
   return (
     <div className="walkin-modal-overlay">
       <div className="walkin-modal-container">
-        
+
         {/* Header */}
         <div className="walkin-modal-header">
           <div className="flex items-center gap-2">
@@ -232,7 +255,7 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
         {/* Body */}
         <div className="walkin-modal-body">
           <form className="walkin-modal-form" onSubmit={(e) => e.preventDefault()}>
-            
+
             {/* Họ tên khách */}
             <div className="walkin-form-group">
               <label className="walkin-label">
@@ -341,7 +364,6 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
                     disabled={loadingSlots}
                     required
                   >
-                    <option value="">🕒 Chọn giờ</option>
                     {slotsList.map(slot => {
                       const timeStr = typeof slot === 'string' ? slot : slot.time;
                       const count = typeof slot === 'object' && slot.availableCount !== undefined ? slot.availableCount : (slot.available ? 4 : 0);

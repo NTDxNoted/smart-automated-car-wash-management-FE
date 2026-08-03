@@ -229,10 +229,9 @@ export default function BookingManagementPage() {
         <button
           type="button"
           onClick={() => setOpenWalkInModal(true)}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white text-sm font-extrabold rounded-xl shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+          className="booking-add-walkin-btn"
         >
-          <span className="material-symbols-outlined text-lg">add_circle</span>
-          <span>+ Đặt lịch khách vãng lai</span>
+          <span>+</span> Đặt lịch khách vãng lai
         </button>
       </div>
 
