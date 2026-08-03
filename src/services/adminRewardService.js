@@ -20,6 +20,9 @@ const adminRewardService = {
   },
   toggleReward: (id) => {
     return adminAxiosInstance.patch(`/admin/rewards/${id}/toggle`);
+  },
+  deleteReward: (id) => {
+    return adminAxiosInstance.delete(`/admin/rewards/${id}`);
   }
 };
 

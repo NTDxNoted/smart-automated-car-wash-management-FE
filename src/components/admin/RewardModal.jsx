@@ -3,7 +3,6 @@ import './RewardModal.css';
 
 const defaultForm = {
   rewardName: '',
-  description: '',
   pointsRequired: '',
   discountType: 'Fixed_Amount',
   discountAmount: '',
@@ -26,7 +25,6 @@ const RewardModal = ({
 
       setForm({
         rewardName: initialData.rewardName || initialData.RewardName || initialData.name || '',
-        description: initialData.description || initialData.Description || '',
         pointsRequired: initialData.pointsRequired !== undefined && initialData.pointsRequired !== null ? initialData.pointsRequired : '',
         discountType: dType,
         discountAmount: initialData.discountAmount !== undefined && initialData.discountAmount !== null
@@ -51,12 +49,7 @@ const RewardModal = ({
 
   const handleSubmit = () => {
     if (!form.rewardName.trim()) {
-      setError('Vui lòng nhập tên phần thưởng / voucher.');
-      return;
-    }
-
-    if (!form.description.trim()) {
-      setError('Vui lòng nhập mô tả phần thưởng.');
+      setError('Vui lòng nhập tên voucher.');
       return;
     }
 
@@ -79,7 +72,7 @@ const RewardModal = ({
 
     onSubmit({
       rewardName: form.rewardName.trim(),
-      description: form.description.trim(),
+      description: form.rewardName.trim(), // Gán tự động theo tên voucher
       pointsRequired: Math.floor(pts),
       discountType: form.discountType,
       discountAmount: amt,
@@ -104,7 +97,7 @@ const RewardModal = ({
             {/* Grid 1: Reward Name & Points Required */}
             <div className="reward-modal-grid">
               <div className="reward-modal-field">
-                <label className="reward-modal-label">Tên voucher / Phần thưởng</label>
+                <label className="reward-modal-label">Tên voucher</label>
                 <input
                   name="rewardName"
                   placeholder="Ví dụ: Gói giảm giá 50K"
@@ -130,20 +123,7 @@ const RewardModal = ({
               </div>
             </div>
 
-            {/* Grid 2: Description (Full width) */}
-            <div className="reward-modal-field">
-              <label className="reward-modal-label">Mô tả quà tặng / Điều kiện áp dụng</label>
-              <input
-                name="description"
-                placeholder="Ví dụ: Đổi 50 điểm lấy voucher giảm 50.000đ khi thanh toán đơn rửa xe"
-                value={form.description}
-                onChange={handleChange}
-                className="reward-modal-input"
-                required
-              />
-            </div>
-
-            {/* Grid 3: Discount Type & Discount Amount */}
+            {/* Grid 2: Discount Type & Discount Amount */}
             <div className="reward-modal-grid">
               <div className="reward-modal-field">
                 <label className="reward-modal-label">Loại giảm giá</label>

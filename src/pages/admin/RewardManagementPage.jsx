@@ -9,7 +9,7 @@ const RewardManagementPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
   const [togglingIds, setTogglingIds] = useState([]);
-  const [notice, setNotice] = useState('');
+  const [deletingIds, setDeletingIds] = useState([]);
 
   const fetchRewards = async () => {
     setLoading(true);
@@ -78,7 +78,7 @@ const RewardManagementPage = () => {
       await fetchRewards();
     } catch (err) {
       console.error("Lỗi khi lưu voucher đổi điểm:", err);
-      alert(err?.response?.data?.message || "Không thể lưu voucher đổi điểm. Vui lòng kiểm tra lại kết nối Backend.");
+      alert(err?.response?.data?.message || "Không thể lưu voucher đổi điểm. Vui lòng kiểm tra kết nối Backend.");
     }
   };
 
@@ -98,11 +98,33 @@ const RewardManagementPage = () => {
     }
   };
 
+  const handleDelete = async (reward) => {
+    const confirmed = window.confirm(`Bạn có chắc chắn muốn xóa voucher "${reward.rewardName}" không?`);
+    if (!confirmed) return;
+
+    if (deletingIds.includes(reward.id)) return;
+    setDeletingIds((prev) => [...prev, reward.id]);
+
+    try {
+      await adminRewardService.deleteReward(reward.id);
+      await fetchRewards();
+    } catch (err) {
+      console.error("Lỗi khi xóa voucher:", err);
+      if (err?.response?.status === 404 || err?.response?.status === 405) {
+        alert("API Backend hiện tại chưa hỗ trợ phương thức Xóa voucher (DELETE /api/admin/rewards/{id}). Yêu cầu đã được lưu vào hệ thống vấn đề Backend.");
+      } else {
+        alert(err?.response?.data?.message || "Không thể xóa voucher đổi điểm.");
+      }
+    } finally {
+      setDeletingIds((prev) => prev.filter((id) => id !== reward.id));
+    }
+  };
+
   return (
     <div className="reward-page-container">
       {/* Subtitle / Description */}
       <div className="reward-page-subtitle">
-        Quản lý danh mục các gói Voucher & Phần thưởng đổi bằng điểm tích lũy thành viên của khách hàng.
+        Quản lý danh mục các gói Voucher đổi điểm tích lũy thành viên của khách hàng.
       </div>
 
       {/* Rewards List Card */}
@@ -125,7 +147,6 @@ const RewardManagementPage = () => {
             <thead>
               <tr className="reward-thead-row">
                 <th className="reward-th name">Tên voucher</th>
-                <th className="reward-th desc">Mô tả quà tặng</th>
                 <th className="reward-th points">Điểm cần đổi</th>
                 <th className="reward-th type">Loại giảm</th>
                 <th className="reward-th value">Mức giảm</th>
@@ -137,7 +158,7 @@ const RewardManagementPage = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="p-0 border-none">
+                  <td colSpan={6} className="p-0 border-none">
                     <div className="reward-empty-row">
                       <div className="reward-empty-container">
                         <span className="text-slate-400 font-medium">Đang tải danh sách voucher đổi điểm...</span>
@@ -147,7 +168,7 @@ const RewardManagementPage = () => {
                 </tr>
               ) : rewards.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-0 border-none">
+                  <td colSpan={6} className="p-0 border-none">
                     <div className="reward-empty-row">
                       <div className="reward-empty-container">
                         <svg className="reward-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -170,10 +191,6 @@ const RewardManagementPage = () => {
                     <tr key={item.id} className="reward-tbody-row">
                       <td className="reward-td name">
                         <span className="reward-name-text" title={item.rewardName}>{item.rewardName}</span>
-                      </td>
-
-                      <td className="reward-td desc">
-                        <span className="reward-desc-text" title={item.description}>{item.description}</span>
                       </td>
 
                       <td className="reward-td points">
@@ -205,12 +222,21 @@ const RewardManagementPage = () => {
                       </td>
 
                       <td className="reward-td action">
-                        <button
-                          onClick={() => handleEdit(item)}
-                          className="reward-action-btn edit"
-                        >
-                          Sửa
-                        </button>
+                        <div className="reward-action-group">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="reward-action-btn edit"
+                          >
+                            Sửa
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item)}
+                            disabled={deletingIds.includes(item.id)}
+                            className="reward-action-btn delete"
+                          >
+                            Xóa
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
