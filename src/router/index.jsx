@@ -32,6 +32,7 @@ const CustomerListPage = lazy(() => import('../pages/admin/CustomerListPage'));
 const CustomerDetailPage = lazy(() => import('../pages/admin/CustomerDetailPage'));
 const ServiceManagementPage = lazy(() => import('../pages/admin/ServiceManagementPage'));
 const PromotionManagementPage = lazy(() => import('../pages/admin/PromotionManagementPage'));
+const RewardManagementPage = lazy(() => import('../pages/admin/RewardManagementPage'));
 const TierConfigPage = lazy(() => import('../pages/admin/TierConfigPage'));
 const ReportPage = lazy(() => import('../pages/admin/ReportPage'));
 const PopularServicesReportPage = lazy(() => import('../pages/admin/PopularServicesReportPage'));
@@ -116,6 +117,7 @@ export const router = createBrowserRouter([
       },
       { path: 'services', element: <ServiceManagementPage /> },
       { path: 'promotions', element: <PromotionManagementPage /> },
+      { path: 'rewards', element: <RewardManagementPage /> },
       { path: 'tiers', element: <TierConfigPage /> },
       { path: 'reports', element: <ReportPage /> },
       { path: 'reports/services', element: <PopularServicesReportPage /> },
