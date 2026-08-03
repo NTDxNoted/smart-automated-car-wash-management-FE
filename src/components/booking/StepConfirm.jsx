@@ -65,12 +65,12 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
   const handleErrorResponse = (errCode, serverMessage) => {
     switch (errCode) {
-      case 'PENDING_QUOTA_EXCEEDED':    return t('quotaExceeded');
-      case 'SLOT_NOT_AVAILABLE':        return t('slotUnavailable');
-      case 'VEHICLE_BUFFER_VIOLATION':  return t('bufferViolation');
-      case 'BOOKING_WINDOW_VIOLATION':  return t('bookingWindowViolation');
-      case 'BOOKING_SUSPENDED':         return t('bookingSuspended');
-      default:                          return serverMessage || t('genericBookingError');
+      case 'PENDING_QUOTA_EXCEEDED': return t('quotaExceeded');
+      case 'SLOT_NOT_AVAILABLE': return t('slotUnavailable');
+      case 'VEHICLE_BUFFER_VIOLATION': return t('bufferViolation');
+      case 'BOOKING_WINDOW_VIOLATION': return t('bookingWindowViolation');
+      case 'BOOKING_SUSPENDED': return t('bookingSuspended');
+      default: return serverMessage || t('genericBookingError');
     }
   };
 
@@ -79,14 +79,14 @@ export default function StepConfirm({ bookingData, onBack, user }) {
     setSubmitError('');
 
     const payload = {
-      serviceId:        bookingData.service.id,
-      phone:            bookingData.phone || null,
-      licensePlate:     bookingData.licensePlate || null,
-      vehicleId:        bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
-      scheduledTime:    bookingData.scheduledTime,
-      promoCode:        appliedPromo?.promoCode || appliedPromo?.code || null,
-      promotionId:      appliedPromo?.promotionId || appliedPromo?.id || null,
-      rewardId:         selectedReward ? Number(selectedReward.id) : null,
+      serviceId: bookingData.service.id,
+      phone: bookingData.phone || null,
+      licensePlate: bookingData.licensePlate || null,
+      vehicleId: bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
+      scheduledTime: bookingData.scheduledTime,
+      promoCode: appliedPromo?.promoCode || appliedPromo?.code || null,
+      promotionId: appliedPromo?.promotionId || appliedPromo?.id || null,
+      rewardId: selectedReward ? Number(selectedReward.id) : null,
       rewardPointsUsed: selectedReward ? selectedReward.pointsRequired : 0,
     };
 
@@ -115,7 +115,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
         </div>
       )}
 
-      <h2 
+      <h2
         className="text-xl font-bold text-slate-800 flex items-center gap-2"
         style={{ marginBottom: '24px' }}
       >
@@ -123,25 +123,25 @@ export default function StepConfirm({ bookingData, onBack, user }) {
         {t('step3Title') || 'Bước 3: Kiểm tra hoá đơn & Xác nhận'}
       </h2>
 
-      <div 
+      <div
         className="grid grid-cols-1 lg:grid-cols-2 items-start"
         style={{ gap: '24px', marginBottom: '24px' }}
       >
         {/* Left column */}
         <div className="flex flex-col" style={{ gap: '20px' }}>
           {/* Booking details */}
-          <div 
+          <div
             className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-4"
             style={{ marginBottom: '20px' }}
           >
-            <h3 
+            <h3
               className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2"
               style={{ marginBottom: '16px' }}
             >
               <span className="material-symbols-outlined text-slate-500">info</span>
               {locale === 'en' ? 'Booking Details' : 'Thông tin chi tiết'}
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" style={{ gap: '20px' }}>
               {/* Service block */}
               <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors duration-300 border border-slate-100/50">
@@ -210,11 +210,11 @@ export default function StepConfirm({ bookingData, onBack, user }) {
           </div>
 
           {/* Offers & Discounts Card */}
-          <div 
+          <div
             className="rounded-2xl border-2 border-slate-100 bg-white p-6 shadow-sm space-y-5"
             style={{ marginBottom: '20px' }}
           >
-            <h3 
+            <h3
               className="text-sm font-bold uppercase tracking-wider text-slate-750 pb-3 border-b border-slate-100 flex items-center gap-2"
               style={{ marginBottom: '20px' }}
             >
@@ -228,7 +228,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
             </div>
 
             {/* Reward points */}
-            <div 
+            <div
               className="border-t border-slate-100"
               style={{ paddingTop: '20px' }}
             >
@@ -259,8 +259,8 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                       {user.points} PTS
                     </span>
                   </div>
-                  
-                  <div 
+
+                  <div
                     className="relative flex items-center bg-slate-50/50 border-2 border-slate-100 rounded-2xl focus-within:bg-white focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-100/40 transition-all duration-350"
                     style={{ padding: '8px' }}
                   >
@@ -295,8 +295,8 @@ export default function StepConfirm({ bookingData, onBack, user }) {
                     <p className="text-[11px] text-purple-800 bg-purple-50/80 border border-purple-200/80 p-2.5 rounded-xl font-medium flex items-center gap-1.5 mt-2.5">
                       <span className="material-symbols-outlined text-sm text-purple-600">info</span>
                       {locale === 'en'
-                        ? 'Note: Reward points discount is capped at 50% of base service price (BR-60).'
-                        : 'Lưu ý: Giảm giá từ đổi điểm thưởng áp dụng trần tối đa 50% giá gốc dịch vụ (BR-60).'}
+                        ? 'Note: Reward points discount is capped at 50% of base service price.'
+                        : 'Lưu ý: Giảm giá từ đổi điểm thưởng áp dụng trần tối đa 50% giá gốc dịch vụ.'}
                     </p>
                   )}
                 </div>
@@ -311,7 +311,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
       {/* Error */}
       {submitError && (
-        <div 
+        <div
           className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium"
           style={{ marginBottom: '24px' }}
         >
@@ -320,7 +320,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
         </div>
       )}
 
-      <div 
+      <div
         className="flex justify-between items-center border-t border-slate-100"
         style={{ marginTop: '40px', paddingTop: '24px' }}
       >
