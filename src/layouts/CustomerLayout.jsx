@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useState, useEffect } from 'react';
 import NotificationBell from '../components/common/NotificationBell';
+import SupportModal from '../components/common/SupportModal';
 
 export default function CustomerLayout() {
   const { isMember, auth, logout } = useAuth();
@@ -11,6 +12,8 @@ export default function CustomerLayout() {
   const user = auth;
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   // Track desktop status to prevent zoom resizing from overriding manual sidebar toggle
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
@@ -224,15 +227,16 @@ export default function CustomerLayout() {
           )}
         </nav>
 
-        {/* Gold Upgrade Membership Banner in Sidebar */}
+        {/* Support Hotline Banner in Sidebar */}
         <div className="p-4 mt-auto border-t border-slate-100 space-y-2 bg-slate-50/50 support-container">
-          <a
-            href="tel:19006000"
-            className="flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-sm transition-all"
+          <button
+            type="button"
+            onClick={() => setIsSupportOpen(true)}
+            className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-cyan-600 text-sm transition-all cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center text-slate-400">help</span>
+            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center text-slate-400 group-hover:text-cyan-600">help</span>
             <span className="text-sm font-medium">{t('navSupport')}</span>
-          </a>
+          </button>
         </div>
       </aside>
 
@@ -461,6 +465,9 @@ export default function CustomerLayout() {
           </Link>
         )}
       </nav>
+
+      {/* Support & Hotline Center Modal */}
+      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </div>
   );
 }
