@@ -1,8 +1,10 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 
 /**
  * Hiển thị phần thưởng có thể đổi (nếu điểm >= 50)
+ * Áp dụng Inline CSS chống lỗi Tailwind đè giao diện
  */
 export default function RewardCard({ reward }) {
   const navigate = useNavigate();
@@ -14,80 +16,145 @@ export default function RewardCard({ reward }) {
 
   return (
     <div
-      className="group relative rounded-2xl border border-slate-200/80 p-4 sm:p-5 transition-all duration-300 hover:border-cyan-400 hover:shadow-lg hover:-translate-y-1 bg-white"
+      style={{
+        padding: '16px',
+        borderRadius: '16px',
+        border: '1px solid #e2e8f0',
+        backgroundColor: '#ffffff',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        justify: 'space-between',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+        transition: 'all 0.25s ease',
+        boxSizing: 'border-box',
+      }}
+      className="hover:border-cyan-400 hover:shadow-md hover:-translate-y-0.5"
     >
-      {/* Glow on hover */}
-      <div
-        className="absolute inset-0 rounded-2xl bg-cyan-500/0 group-hover:bg-cyan-500/[0.02] transition-colors duration-300 pointer-events-none"
-      />
-
-      <div className="flex flex-col h-full gap-4 relative z-10">
-        {/* Top section: Title/Value & Icon Box */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h4
-              className="text-2xl font-black text-cyan-600 tracking-tight group-hover:text-cyan-700 transition-colors"
-              style={{ fontFamily: "'Archivo', sans-serif" }}
-            >
-              {reward.name}
-            </h4>
-            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-wider">
-              VOUCHER ƯU ĐÃI
-            </p>
-          </div>
-
-          {/* Icon Box in Top-Right */}
-          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-cyan-50 group-hover:border-cyan-100 transition-all duration-300">
-            <span className="material-symbols-outlined text-slate-400 group-hover:text-cyan-600 transition-colors text-lg">
-              local_activity
-            </span>
-          </div>
-        </div>
-
-        {/* Middle Section: Perfect Dashed Divider with aligned Cutouts */}
-        <div className="relative my-1">
-          {/* Cutout left */}
-          <div className="absolute -left-[24px] sm:-left-[28px] top-1/2 -translate-y-1/2 w-4 h-4 bg-slate-50 border-r border-slate-200/80 rounded-full z-20" />
-          {/* Cutout right */}
-          <div className="absolute -right-[24px] sm:-right-[28px] top-1/2 -translate-y-1/2 w-4 h-4 bg-slate-50 border-l border-slate-200/80 rounded-full z-20" />
-          {/* Dashed line */}
-          <div className="border-t-2 border-dashed border-slate-100" />
-        </div>
-
-        {/* Bottom section: Points Required & Use Now Button */}
-        <div className="flex items-end justify-between mt-1 gap-2">
-          <div className="flex flex-col">
-            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-              CẦN TÍCH LŨY
-            </span>
-            <div className="flex items-baseline gap-1">
-              <span
-                className="text-2xl font-black text-slate-800 leading-none"
-                style={{ fontFamily: "'Archivo', sans-serif" }}
-              >
-                {reward.pointsRequired}
-              </span>
-              <span className="text-xs font-extrabold text-cyan-600 uppercase tracking-wide leading-none">
-                {t('loyaltyPoints')}
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={handleUseReward}
-            className="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white transition-all duration-200 hover:shadow-md hover:brightness-110 active:scale-95 cursor-pointer flex-shrink-0"
+      {/* Top section: Title/Value & Icon Box */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '12px' }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <h4
             style={{
+              fontSize: '18px',
+              fontWeight: 900,
+              color: '#0891b2',
+              margin: 0,
+              lineHeight: 1.25,
               fontFamily: "'Archivo', sans-serif",
-              background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-              boxShadow: '0 4px 12px rgba(6,182,212,0.2)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
             }}
           >
-            {t('btnUseNow')}
-          </button>
+            {reward.name}
+          </h4>
+          <p
+            style={{
+              fontSize: '10px',
+              fontWeight: 900,
+              color: '#94a3b8',
+              marginTop: '4px',
+              marginBottom: 0,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+            }}
+          >
+            VOUCHER ƯU ĐÃI
+          </p>
         </div>
+
+        {/* Icon Box in Top-Right */}
+        <div
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '12px',
+            backgroundColor: '#f8fafc',
+            border: '1px solid #f1f5f9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ color: '#94a3b8', fontSize: '18px' }}>
+            local_activity
+          </span>
+        </div>
+      </div>
+
+      {/* Middle Section: Dashed Divider with Cutouts */}
+      <div style={{ position: 'relative', marginTop: '4px', marginBottom: '12px' }}>
+        <div style={{ borderTop: '2px dashed #f1f5f9' }} />
+      </div>
+
+      {/* Bottom section: Points Required & Use Now Button */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '8px', marginTop: '4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span
+            style={{
+              fontSize: '9px',
+              fontWeight: 800,
+              color: '#94a3b8',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              marginBottom: '2px',
+            }}
+          >
+            CẦN TÍCH LŨY
+          </span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+            <span
+              style={{
+                fontSize: '22px',
+                fontWeight: 900,
+                color: '#0f172a',
+                lineHeight: 1,
+                fontFamily: "'Archivo', sans-serif",
+              }}
+            >
+              {reward.pointsRequired}
+            </span>
+            <span
+              style={{
+                fontSize: '11px',
+                fontWeight: 800,
+                color: '#0891b2',
+                textTransform: 'uppercase',
+                lineHeight: 1,
+              }}
+            >
+              {t('loyaltyPoints') || 'ĐIỂM'}
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleUseReward}
+          style={{
+            padding: '8px 16px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+            color: '#ffffff',
+            fontWeight: 800,
+            fontSize: '12px',
+            border: 'none',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 12px rgba(6, 182, 212, 0.25)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: "'Archivo', sans-serif",
+            transition: 'all 0.2s ease',
+          }}
+          className="hover:brightness-110 active:scale-95"
+        >
+          {t('btnUseNow') || 'Dùng ngay'}
+        </button>
       </div>
     </div>
   );
-
 }
-

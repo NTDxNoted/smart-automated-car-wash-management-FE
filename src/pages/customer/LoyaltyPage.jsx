@@ -136,10 +136,20 @@ export default function LoyaltyPage() {
                   </h3>
                   
                   {wallet?.totalPoints >= 50 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {rewards.map(r => (
-                        <RewardCard key={r.id} reward={r} />
-                      ))}
+                    <div
+                      style={{
+                        maxHeight: '440px',
+                        overflowY: 'auto',
+                        paddingRight: '6px',
+                        boxSizing: 'border-box',
+                      }}
+                      className="custom-booking-scrollbar"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {rewards.map(r => (
+                          <RewardCard key={r.id || r.rewardId} reward={r} />
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     <div 
