@@ -42,11 +42,26 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
       {/* Bottom row: price + buttons */}
       <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
         <span className="text-lg font-bold text-cyan-600">{formatVND(booking.finalAmount, locale)}</span>
-        <div className="flex gap-2">
+        <div className="flex gap-2.5">
           <button
             type="button"
             onClick={e => { e.stopPropagation(); onOpenDetail(booking); }}
-            className="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+            style={{
+              padding: '8px 20px',
+              borderRadius: '9999px',
+              border: '1px solid #cbd5e1',
+              backgroundColor: '#ffffff',
+              color: '#334155',
+              fontWeight: 700,
+              fontSize: '13px',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+            }}
+            className="hover:bg-slate-50 hover:border-slate-400 active:scale-95 shadow-2xs"
           >
             {t('btnDetail') || 'Chi tiết'}
           </button>
@@ -54,9 +69,24 @@ export default function BookingCard({ booking, onOpenDetail, onCancel }) {
             <button
               type="button"
               onClick={e => { e.stopPropagation(); onCancel(booking); }}
-              className="rounded-full border border-red-200 px-4 py-1.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+              style={{
+                padding: '8px 20px',
+                borderRadius: '9999px',
+                border: '1px solid #fecdd3',
+                backgroundColor: '#fff5f5',
+                color: '#dc2626',
+                fontWeight: 700,
+                fontSize: '13px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+              }}
+              className="hover:bg-red-100 hover:border-red-300 active:scale-95 shadow-2xs"
             >
-              {t('btnCancel')}
+              {t('btnCancel') || 'Hủy'}
             </button>
           )}
         </div>
