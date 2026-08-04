@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 // ĐÃ SỬA: Import đúng object bookingService được export từ file service chung của nhóm
 import { bookingService } from "../../services/bookingService";
 import BookingCard from "../../components/booking/BookingCard";
@@ -8,6 +9,7 @@ import { useLanguage } from "../../context/LanguageContext";
 
 export default function BookingHistoryPage() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   // ─── States Quản lý Dữ liệu & UI ──────────────────────────────────────────
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState("Tất cả"); // Tất cả / Pending / Completed...
@@ -25,9 +27,6 @@ export default function BookingHistoryPage() {
     setIsLoading(true);
     setErrorMsg("");
 
-    // 🔍 CHÈN LOG KIỂM TRA LUỒNG:
-    console.log("=== FLOW: Trang Lịch sử bắt đầu gọi API lấy dữ liệu ===");
-
     try {
       const apiStatus = statusFilter === "Tất cả" ? "all" : statusFilter;
       const response = await bookingService.getMyBookings({
@@ -36,7 +35,6 @@ export default function BookingHistoryPage() {
         pageSize: 5
       });
 
-      console.log(" API lấy lịch sử thành công, dữ liệu nhận được:", response);
       setBookings(response?.data || []);
       setPagi({
         page: response?.pagination?.page || pageNum,
@@ -62,22 +60,21 @@ export default function BookingHistoryPage() {
       // Gọi API hủy lịch đặt
       const res = await bookingService.cancelBooking(id);
 
-      // Hiển thị thông báo Toast thành công lấy số điểm hoàn trả thực tế từ API trả về
-      alert(t('cancelSuccessMsg').replace('{points}', res.pointsRefunded));
-
       // Đóng các modal và dialog sau khi xử lý thành công
       setBookingToCancel(null);
       setSelectedBooking(null);
 
-      // KÍCH HOẠT RELOAD DANH SÁCH: Tải lại trang hiện tại để cập nhật trạng thái mới nhất
+      // Chuyển hướng / Tải lại danh sách bookings
       fetchBookings(filter, pagi.page);
+      navigate('/bookings');
     } catch (err) {
       console.error("Lỗi khi hủy đặt lịch:", err);
-      const serverCode = err?.response?.data?.code;
-      if (serverCode === "CANCELLATION_TIME_EXCEEDED") {
-        alert(t('cancelTimeExceeded'));
+      const serverCode = err?.response?.data?.code || err?.response?.data?.error;
+      const serverMsg = err?.response?.data?.message;
+      if (serverCode === "CANCELLATION_TIME_EXCEEDED" || serverCode === "CANCEL_TOO_LATE") {
+        alert(t('cancelTimeExceeded') || 'Đơn hàng chỉ được hủy trước giờ hẹn tối thiểu 1 tiếng.');
       } else {
-        alert(t('cancelGenericError'));
+        alert(serverMsg || t('cancelGenericError') || 'Hủy đơn hàng thất bại.');
       }
     } finally {
       setIsCancelling(false);
