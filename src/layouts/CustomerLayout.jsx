@@ -2,6 +2,7 @@ import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useState, useEffect } from 'react';
+import NotificationBell from '../components/common/NotificationBell';
 
 export default function CustomerLayout() {
   const { isMember, auth, logout } = useAuth();
@@ -288,6 +289,9 @@ export default function CustomerLayout() {
                   EN
                 </button>
               </div>
+
+              {/* Notification Bell Component */}
+              <NotificationBell user={user} />
 
               {isAuthenticated ? (
                 <div className="flex items-center gap-3">
