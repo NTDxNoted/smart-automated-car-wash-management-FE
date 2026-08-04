@@ -108,16 +108,16 @@ export default function NotificationBell({ user }) {
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)',
       }}
     >
-      {/* Modal Top Header - Matching reference design with X close button */}
-      <div className="relative px-6 pt-5 pb-4 border-b border-slate-100 flex items-center justify-center bg-white">
+      {/* Modal Top Header - Flex alignment on exact same horizontal line */}
+      <div className="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between bg-white">
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="absolute left-5 top-5 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
         >
           <span className="material-symbols-outlined text-xl">close</span>
         </button>
-        <h3 className="text-lg font-black text-slate-800 tracking-tight">
+        <h3 className="text-base font-extrabold text-slate-800 tracking-tight text-center flex-1 pr-8">
           {locale === 'en' ? 'Notifications' : 'Thông báo & Ưu đãi'}
         </h3>
       </div>
