@@ -145,7 +145,8 @@
   /* Default transition rules for text inside sidebar */
   .sidebar-panel .logo-text,
   .sidebar-panel nav a span:not(.material-symbols-outlined),
-  .sidebar-panel .support-container a span:not(.material-symbols-outlined) {
+  .sidebar-panel .support-container a span:not(.material-symbols-outlined),
+  .sidebar-panel .support-container button span:not(.material-symbols-outlined) {
     opacity: 1;
     max-width: 220px;
     visibility: visible;
@@ -159,7 +160,8 @@
   /* Animate text content when collapsed */
   .sidebar-panel.collapsed .logo-text,
   .sidebar-panel.collapsed nav a span:not(.material-symbols-outlined),
-  .sidebar-panel.collapsed .support-container a span:not(.material-symbols-outlined) {
+  .sidebar-panel.collapsed .support-container a span:not(.material-symbols-outlined),
+  .sidebar-panel.collapsed .support-container button span:not(.material-symbols-outlined) {
     opacity: 0;
     max-width: 0;
     visibility: hidden;
@@ -171,7 +173,8 @@
   .sidebar-panel.collapsed .logo-container,
   .sidebar-panel.collapsed .logo-container a,
   .sidebar-panel.collapsed .support-container,
-  .sidebar-panel.collapsed .support-container a {
+  .sidebar-panel.collapsed .support-container a,
+  .sidebar-panel.collapsed .support-container button {
     justify-content: center !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -199,7 +202,8 @@
 
   .sidebar-panel.collapsed:hover .logo-text,
   .sidebar-panel.collapsed:hover nav a span:not(.material-symbols-outlined),
-  .sidebar-panel.collapsed:hover .support-container a span:not(.material-symbols-outlined) {
+  .sidebar-panel.collapsed:hover .support-container a span:not(.material-symbols-outlined),
+  .sidebar-panel.collapsed:hover .support-container button span:not(.material-symbols-outlined) {
     opacity: 1 !important;
     max-width: 220px !important;
     visibility: visible !important;
@@ -209,7 +213,8 @@
   .sidebar-panel.collapsed:hover .logo-container,
   .sidebar-panel.collapsed:hover .logo-container a,
   .sidebar-panel.collapsed:hover .support-container,
-  .sidebar-panel.collapsed:hover .support-container a {
+  .sidebar-panel.collapsed:hover .support-container a,
+  .sidebar-panel.collapsed:hover .support-container button {
     justify-content: flex-start !important;
     padding-left: 24px !important;
     padding-right: 24px !important;
@@ -294,7 +299,8 @@
 
 /* ── Sidebar Navigation Links (Premium Button Styling) ── */
 .sidebar-panel nav a,
-.sidebar-panel .mt-auto a {
+.sidebar-panel .mt-auto a,
+.sidebar-panel .mt-auto button {
   padding: 12px 18px !important; /* Comfortable button padding */
   border-radius: 14px !important; /* Premium rounded corners */
   margin-bottom: 8px !important; /* Clean vertical spacing */
@@ -311,7 +317,8 @@
 
 /* Ensure inner span inherits and is larger */
 .sidebar-panel nav a span,
-.sidebar-panel .mt-auto a span {
+.sidebar-panel .mt-auto a span,
+.sidebar-panel .mt-auto button span {
   font-size: 15.5px !important; /* Larger text size as requested */
   font-weight: 600 !important; /* Bold, high-quality look */
   transition: color 0.25s ease !important;
@@ -319,7 +326,8 @@
 
 /* Sidebar Icons styling */
 .sidebar-panel nav a .material-symbols-outlined,
-.sidebar-panel .mt-auto a .material-symbols-outlined {
+.sidebar-panel .mt-auto a .material-symbols-outlined,
+.sidebar-panel .mt-auto button .material-symbols-outlined {
   font-size: 22px !important; /* Marginally larger icons */
   color: #64748b !important; /* Slate-500 icon default */
   transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.25s ease !important;
@@ -327,7 +335,8 @@
 
 /* Inactive Link Hover Effect */
 .sidebar-panel nav a:not(.bg-cyan-50):hover,
-.sidebar-panel .mt-auto a:hover {
+.sidebar-panel .mt-auto a:hover,
+.sidebar-panel .mt-auto button:hover {
   background-color: #ecfeff !important; /* Soft cyan backdrop tint */
   color: #0891b2 !important; /* Cyan-600 active text color */
   border-color: #c5f2f7 !important; /* Subtle cyan border glow */
@@ -336,13 +345,15 @@
 }
 
 .sidebar-panel nav a:not(.bg-cyan-50):hover .material-symbols-outlined,
-.sidebar-panel .mt-auto a:hover .material-symbols-outlined {
+.sidebar-panel .mt-auto a:hover .material-symbols-outlined,
+.sidebar-panel .mt-auto button:hover .material-symbols-outlined {
   color: #0891b2 !important;
   transform: scale(1.15) rotate(-6deg) !important; /* Hover micro-animation */
 }
 
 .sidebar-panel nav a:not(.bg-cyan-50):hover span,
-.sidebar-panel .mt-auto a:hover span {
+.sidebar-panel .mt-auto a:hover span,
+.sidebar-panel .mt-auto button:hover span {
   color: #0891b2 !important;
 }
 
