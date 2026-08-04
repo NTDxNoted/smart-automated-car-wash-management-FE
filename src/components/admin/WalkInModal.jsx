@@ -16,6 +16,8 @@ const DEFAULT_SLOTS = [
   '13:30', '14:30', '15:30', '16:30', '17:30', '18:30', '19:30'
 ];
 
+const formatCurrencyVN = (amount) => `${Number(amount).toLocaleString('vi-VN')} đ`;
+
 export default function WalkInModal({ open, onClose, onSuccess, existingBookings = [] }) {
   const [form, setForm] = useState({
     customerName: '',
@@ -86,6 +88,15 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
 
   if (!open) return null;
 
+  const selectedService = services.find(s => String(s.serviceId || s.id) === String(form.serviceId));
+  const selectedPrice = selectedService?.price;
+  const isPriceMissing = !!selectedService && !(Number(selectedPrice) > 0);
+  const priceDisplayValue = !form.serviceId
+    ? 'Chưa chọn dịch vụ'
+    : isPriceMissing
+      ? ''
+      : formatCurrencyVN(selectedPrice);
+
   const handleReset = () => {
     const defaultTime = slotsList.length > 0
       ? (typeof slotsList[0] === 'string' ? slotsList[0] : slotsList[0].time)
@@ -153,6 +164,10 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
     // 4. Validate Dịch vụ
     if (!form.serviceId) {
       setError('Phải chọn dịch vụ.');
+      return;
+    }
+    if (isPriceMissing) {
+      setError('Dịch vụ này chưa được cấu hình đơn giá.');
       return;
     }
 
@@ -305,31 +320,48 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
               />
             </div>
 
-            {/* Dịch vụ */}
-            <div className="walkin-form-group">
-              <label className="walkin-label">
-                Dịch vụ <span className="walkin-required">*</span>
-              </label>
-              <div className="walkin-select-wrapper">
-                <select
-                  name="serviceId"
-                  value={form.serviceId}
-                  onChange={handleChange}
-                  className="walkin-select"
-                  required
-                >
-                  <option value="">▼ Chọn dịch vụ</option>
-                  {services.map(s => {
-                    const sid = s.serviceId || s.id;
-                    const price = s.price !== undefined ? `${Number(s.price).toLocaleString()}đ` : '';
-                    return (
-                      <option key={sid} value={sid}>
-                        {s.name || s.serviceName} {price ? `(${price})` : ''}
-                      </option>
-                    );
-                  })}
-                </select>
-                <span className="material-symbols-outlined walkin-select-chevron">keyboard_arrow_down</span>
+            {/* Dịch vụ & Đơn giá */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="walkin-form-group">
+                <label className="walkin-label">
+                  Dịch vụ <span className="walkin-required">*</span>
+                </label>
+                <div className="walkin-select-wrapper">
+                  <select
+                    name="serviceId"
+                    value={form.serviceId}
+                    onChange={handleChange}
+                    className="walkin-select"
+                    required
+                  >
+                    <option value="">▼ Chọn dịch vụ</option>
+                    {services.map(s => {
+                      const sid = s.serviceId || s.id;
+                      return (
+                        <option key={sid} value={sid}>
+                          {s.name || s.serviceName}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <span className="material-symbols-outlined walkin-select-chevron">keyboard_arrow_down</span>
+                </div>
+              </div>
+
+              <div className="walkin-form-group">
+                <label className="walkin-label">
+                  Đơn giá <span className="walkin-required">*</span>
+                </label>
+                <input
+                  type="text"
+                  readOnly
+                  disabled
+                  value={priceDisplayValue}
+                  className="walkin-input walkin-input-readonly"
+                />
+                {isPriceMissing && (
+                  <span className="walkin-price-warning">Dịch vụ này chưa được cấu hình đơn giá.</span>
+                )}
               </div>
             </div>
 
