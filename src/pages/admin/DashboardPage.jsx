@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { parseLocalDate } from '../../utils/datetime';
 import adminBookingService from '../../services/adminBookingService';
 import { getTierDistribution, getLoyaltyStats, getRevenueDetail } from '../../services/adminReportService';
 import { getCustomers } from '../../services/adminCustomerService';
@@ -300,9 +301,9 @@ export default function DashboardPage() {
 
         list.forEach(b => {
           const bStatus = b.status?.toUpperCase();
-          const bDateStr = b.scheduledTime ? new Date(b.scheduledTime).toLocaleDateString('en-CA') : '';
+          const bTime = b.scheduledTime ? parseLocalDate(b.scheduledTime) : null;
+          const bDateStr = bTime ? bTime.toLocaleDateString('en-CA') : '';
           const isBToday = bDateStr === todayDateStr;
-          const bTime = b.scheduledTime ? new Date(b.scheduledTime) : null;
 
           const customerName = b.customerName ?? b.phone ?? 'Khách hàng';
           const nameKey = customerName.toLowerCase().trim();
@@ -549,7 +550,7 @@ export default function DashboardPage() {
           value={noShowCount.toString()}
           icon={AlertTriangleIcon}
           type="no-shows"
-          onClick={() => navigate('/admin/bookings?status=NOSHOW')}
+          onClick={() => navigate(`/admin/bookings?status=NOSHOW&date=${new Date().toLocaleDateString('en-CA')}`)}
         />
       </div>
 
