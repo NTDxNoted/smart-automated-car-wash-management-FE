@@ -31,9 +31,12 @@ export default function StepConfirm({ bookingData, onBack, user }) {
     if (tStr === '4' || tStr === 'PLATINUM' || tStr === 'DIAMOND') return 0.15;
     if (tStr === '3' || tStr === 'GOLD') return 0.10;
     if (tStr === '2' || tStr === 'SILVER') return 0.05;
+    if (user) return 0.02; // Logged-in member receives 2% discount
     return 0;
   };
-  const tierDiscount = Math.floor(baseAmount * getTierDiscountRate(user?.tier));
+  const discountRate = getTierDiscountRate(user?.tier);
+  const tierDiscount = Math.floor(baseAmount * discountRate);
+  const memberDiscountRatePct = Math.round(discountRate * 100);
 
   let promotionDiscount = 0;
   if (appliedPromo) {
@@ -61,7 +64,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
   let rewardDiscount = Math.min(rawRewardDiscount, Math.floor(baseAmount * 0.50));
 
   const finalAmount = Math.max(0, baseAmount - tierDiscount - promotionDiscount - rewardDiscount);
-  const invoice = { baseAmount, tierDiscount, promotionDiscount, rewardDiscount, finalAmount };
+  const invoice = { baseAmount, tierDiscount, memberDiscountRatePct, promotionDiscount, rewardDiscount, finalAmount };
 
   const handleErrorResponse = (errCode, serverMessage) => {
     switch (errCode) {

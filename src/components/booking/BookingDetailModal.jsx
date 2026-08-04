@@ -4,7 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { formatDateTime } from '../../utils/datetime';
 
 function canCancel(booking) {
-  return booking.status === 'Pending' && (new Date(booking.scheduledTime) - new Date()) >= 7200 * 1000;
+  return booking.status === 'Pending' && (new Date(booking.scheduledTime) - new Date()) >= 3600 * 1000;
 }
 
 function formatVND(amount, locale) {

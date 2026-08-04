@@ -46,12 +46,16 @@ export default function InvoicePreview({ invoice }) {
           <dd className="font-bold text-slate-800">{formatVND(invoice.baseAmount)}</dd>
         </div>
 
-        {/* Tier Discount */}
+        {/* Tier / Member Discount */}
         {invoice.tierDiscount > 0 && (
           <div className="flex items-center justify-between bg-cyan-50/30 px-2.5 py-1.5 rounded-lg border border-cyan-100/50">
             <dt className="text-cyan-800 font-semibold text-xs flex items-center gap-1">
               <span className="material-symbols-outlined text-sm">workspace_premium</span>
-              {t('invoiceTierDiscount').replace(':', '')}
+              {invoice.memberDiscountRatePct
+                ? (locale === 'en'
+                    ? `Member Discount (${invoice.memberDiscountRatePct}%)`
+                    : `Giảm giá Thành viên (${invoice.memberDiscountRatePct}%)`)
+                : (t('invoiceTierDiscount').replace(':', ''))}
             </dt>
             <dd className="font-extrabold text-cyan-600 text-xs">- {formatVND(invoice.tierDiscount)}</dd>
           </div>

@@ -20,6 +20,20 @@ export const bookingService = {
         return [];
     },
 
+    // ── FE-ISSUE-02: Instant License Plate Validation ─────────────────────────
+    validatePlate: async (licensePlate) => {
+        if (!licensePlate || licensePlate.trim().length < 4) return { isAvailable: true };
+        try {
+            const response = await axiosInstance.get('/bookings/available-slots', {
+                params: { licensePlate: licensePlate.trim() }
+            });
+            return { isAvailable: true };
+        } catch (err) {
+            const errorMsg = err?.response?.data?.message || err?.response?.data?.error || 'Biển số xe này hiện chưa thể đặt lịch (đang có đơn hoặc vừa hoàn thành trong vòng 1 giờ).';
+            return { isAvailable: false, message: errorMsg };
+        }
+    },
+
     // ── FE-ISSUE-04: Lấy danh sách dịch vụ ──────────────────────────────────
     // GET /api/services
     getServices: async () => {
