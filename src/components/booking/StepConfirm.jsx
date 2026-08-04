@@ -26,15 +26,23 @@ export default function StepConfirm({ bookingData, onBack, user }) {
 
   const baseAmount = bookingData.service?.price || 0;
 
-  const getTierDiscountRate = (tier) => {
-    const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
+  const getTierDiscountRate = (u) => {
+    const isMemberUser = !!(u?.token || u?.id || u?.phone || bookingData?.customerType === 'MEMBER');
+    if (!isMemberUser) return 0;
+
+    if (u?.discountRate !== undefined && u?.discountRate !== null && Number(u.discountRate) > 0) {
+      const dr = Number(u.discountRate);
+      return dr > 1 ? dr / 100 : dr;
+    }
+
+    const tStr = String(u?.tier !== undefined && u?.tier !== null ? u?.tier : '').trim().toUpperCase();
     if (tStr === '4' || tStr === 'PLATINUM' || tStr === 'DIAMOND') return 0.15;
     if (tStr === '3' || tStr === 'GOLD') return 0.10;
     if (tStr === '2' || tStr === 'SILVER') return 0.05;
-    if (user) return 0.02; // Logged-in member receives 2% discount
-    return 0;
+
+    return 0.02; // Default 2% member discount
   };
-  const discountRate = getTierDiscountRate(user?.tier);
+  const discountRate = getTierDiscountRate(user);
   const tierDiscount = Math.floor(baseAmount * discountRate);
   const memberDiscountRatePct = Math.round(discountRate * 100);
 
