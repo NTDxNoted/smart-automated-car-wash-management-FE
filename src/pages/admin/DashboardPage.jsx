@@ -282,18 +282,20 @@ export default function DashboardPage() {
         // Operational warnings lists
         const warningList = [];
 
-        // Aggregation for the past 7 days ending today
+        // Aggregation for the past 7 days ending today in chronological order
         const last7Days = [];
         for (let i = 6; i >= 0; i--) {
           const d = new Date(targetTodayDate);
           d.setDate(d.getDate() - i);
           const dateStr = d.toLocaleDateString('en-CA');
           const dayLabel = d.toLocaleDateString('vi-VN', { weekday: 'short' });
+          const formattedDay = dayLabel.replace('Th ', 'T').replace('Thứ ', 'T');
+          const dateDisplay = `${d.getDate()}/${d.getMonth() + 1}`;
           let dayIndex = d.getDay(); // 0 is Sunday, 1 is Monday, etc.
           if (dayIndex === 0) dayIndex = 7; // Map Sunday to 7
           last7Days.push({
             dateStr,
-            day: dayLabel.replace('Th ', 'T').replace('Thứ ', 'T'),
+            day: `${formattedDay} (${dateDisplay})`,
             revenue: 0,
             dayIndex,
           });
@@ -379,11 +381,8 @@ export default function DashboardPage() {
         setNeedCheckinCars(nCheckinList);
         setWarnings(warningList);
 
-        // Sort last7Days by dayIndex so T2 (Monday, dayIndex=1) is first and CN (Sunday, dayIndex=7) is last
-        const sorted7Days = [...last7Days].sort((a, b) => a.dayIndex - b.dayIndex);
-
-        // Update chart dataset
-        setChartData(sorted7Days.map(item => ({
+        // Update chart dataset in chronological order (6 days ago -> today)
+        setChartData(last7Days.map(item => ({
           day: item.day,
           revenue: Number((item.revenue / 1000000).toFixed(2)),
         })));
