@@ -227,15 +227,15 @@ export default function CustomerLayout() {
           )}
         </nav>
 
-        {/* Support Hotline Banner in Sidebar */}
+        {/* Support Banner in Sidebar */}
         <div className="p-4 mt-auto border-t border-slate-100 space-y-2 bg-slate-50/50 support-container">
           <button
             type="button"
             onClick={() => setIsSupportOpen(true)}
-            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-cyan-50/80 hover:bg-cyan-100/80 border border-cyan-200/60 text-cyan-700 font-bold text-sm transition-all duration-200 shadow-xs cursor-pointer group"
+            className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-sm transition-all cursor-pointer"
           >
-            <span className="material-symbols-outlined text-xl text-cyan-600 group-hover:scale-110 transition-transform">help</span>
-            <span className="text-sm font-bold text-cyan-700">{t('navSupport')}</span>
+            <span className="material-symbols-outlined text-[20px] w-6 h-6 flex items-center justify-center text-slate-400">help</span>
+            <span className="text-sm font-medium">{t('navSupport')}</span>
           </button>
         </div>
       </aside>
