@@ -8,219 +8,55 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 999999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(4px)',
-        padding: '16px',
-      }}
+      className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="cancel-dialog-title"
       onClick={onClose}
     >
       <div
-        style={{
-          width: '100%',
-          maxWidth: '440px',
-          backgroundColor: '#ffffff',
-          borderRadius: '24px',
-          padding: '28px 24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
-          border: '1px solid #e2e8f0',
-          textAlign: 'center',
-          boxSizing: 'border-box',
-        }}
+        className="w-full max-w-md bg-white rounded-[28px] p-6 sm:p-7 shadow-2xl border border-slate-100 text-center overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={e => e.stopPropagation()}
       >
-        {/* Warning Icon Container */}
-        <div
-          style={{
-            marginBottom: '16px',
-            width: '60px',
-            height: '60px',
-            borderRadius: '50%',
-            backgroundColor: '#fef2f2',
-            border: '1px solid #fee2e2',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            color: '#ef4444',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '32px' }}>
-            warning
-          </span>
+        {/* Warning Icon Box */}
+        <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 text-rose-500 flex items-center justify-center mx-auto shadow-xs mb-3.5">
+          <span className="material-symbols-outlined text-3xl">warning</span>
         </div>
 
-        {/* Title */}
-        <h2
-          id="cancel-dialog-title"
-          style={{
-            marginBottom: '8px',
-            fontSize: '20px',
-            fontWeight: 800,
-            color: '#0f172a',
-            margin: '0 0 8px 0',
-            lineHeight: 1.3,
-          }}
-        >
+        {/* Title & Warning Message */}
+        <h2 id="cancel-dialog-title" className="text-xl font-black text-slate-800 tracking-tight">
           {t('confirmCancelTitle') || 'Xác nhận hủy lịch hẹn'}
         </h2>
-
-        {/* Subtitle Warning */}
-        <p
-          style={{
-            marginBottom: '20px',
-            fontSize: '13px',
-            color: '#64748b',
-            margin: '0 0 20px 0',
-            lineHeight: 1.5,
-            fontWeight: 500,
-          }}
-        >
+        <p className="mt-1.5 text-xs text-slate-500 font-medium leading-relaxed mb-4">
           {t('confirmCancelWarning') || 'Hành động này không thể hoàn tác sau khi xác nhận.'}
         </p>
 
-        {/* Booking Card Preview Section */}
-        <div
-          style={{
-            marginBottom: '16px',
-            padding: '16px',
-            borderRadius: '16px',
-            backgroundColor: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            textAlign: 'left',
-            boxSizing: 'border-box',
-          }}
-        >
-          <div
-            style={{
-              marginBottom: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'between',
-              width: '100%',
-            }}
-          >
-            <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 900,
-                fontFamily: 'monospace',
-                backgroundColor: '#ecfeff',
-                color: '#0891b2',
-                padding: '4px 10px',
-                borderRadius: '8px',
-                border: '1px solid #c5f2f7',
-                letterSpacing: '0.05em',
-              }}
-            >
+        {/* Booking Info Card */}
+        <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-left shadow-2xs mb-4">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <span className="text-xs font-black font-mono bg-cyan-50 text-cyan-700 px-2.5 py-1 rounded-md border border-cyan-200/70 tracking-wider">
               {booking.vehiclePlate || booking.licensePlate || 'N/A'}
             </span>
-            <div style={{ marginLeft: 'auto' }}>
-              <BookingStatusBadge status={booking.status || "Pending"} size="sm" />
-            </div>
+            <BookingStatusBadge status={booking.status || "Pending"} size="sm" />
           </div>
 
-          <h4
-            style={{
-              marginBottom: '8px',
-              fontSize: '15px',
-              fontWeight: 800,
-              color: '#1e293b',
-              margin: '0 0 8px 0',
-              lineHeight: 1.4,
-            }}
-          >
+          <h4 className="text-sm font-extrabold text-slate-800 leading-snug">
             {booking.serviceName || booking.service?.name || 'Dịch vụ rửa xe'}
           </h4>
 
-          <div
-            style={{
-              marginTop: '10px',
-              paddingTop: '10px',
-              borderTop: '1px solid #e2e8f0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'between',
-              fontSize: '12px',
-              color: '#94a3b8',
-              fontWeight: 600,
-            }}
-          >
+          <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold mt-2.5 pt-2 border-t border-slate-200/60">
             <span>Mã đơn: #{booking.bookingId || booking.id}</span>
-            <span style={{ marginLeft: 'auto' }}>{booking.scheduledTime?.replace('T', ' ') || ''}</span>
+            <span>{booking.scheduledTime?.replace('T', ' ') || ''}</span>
           </div>
         </div>
 
-        {/* Notice Info Banner */}
-        <div
-          style={{
-            marginBottom: '24px',
-            padding: '12px 14px',
-            borderRadius: '12px',
-            backgroundColor: '#fffbeb',
-            border: '1px solid #fef3c7',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            textAlign: 'left',
-          }}
-        >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: '20px', color: '#d97706', flexShrink: 0 }}
-          >
-            info
-          </span>
-          <p
-            style={{
-              fontSize: '12px',
-              color: '#92400e',
-              fontWeight: 600,
-              margin: 0,
-              lineHeight: 1.4,
-            }}
-          >
-            {locale === 'en'
-              ? 'Cancellation is final and cannot be undone once confirmed.'
-              : 'Khi xác nhận hủy, lịch hẹn này sẽ bị hủy bỏ vĩnh viễn.'}
-          </p>
-        </div>
-
         {/* Action Buttons */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '12px',
-            marginTop: '8px',
-          }}
-        >
+        <div className="grid grid-cols-2 gap-3 mt-5">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '13px',
-              borderRadius: '14px',
-              border: '1px solid #cbd5e1',
-              backgroundColor: '#ffffff',
-              color: '#334155',
-              fontWeight: 700,
-              fontSize: '14px',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              boxSizing: 'border-box',
-            }}
+            className="w-full py-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 font-bold text-slate-700 text-xs transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
           >
             {t('btnKeepAppointment') || 'Giữ lịch'}
           </button>
@@ -229,29 +65,11 @@ export default function CancelConfirmDialog({ booking, onConfirm, onClose, isLoa
             type="button"
             onClick={() => onConfirm(booking.bookingId || booking.id)}
             disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '13px',
-              borderRadius: '14px',
-              border: 'none',
-              backgroundColor: '#dc2626',
-              color: '#ffffff',
-              fontWeight: 800,
-              fontSize: '14px',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 14px rgba(220, 38, 38, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              boxSizing: 'border-box',
-            }}
+            className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 font-extrabold text-white text-xs transition-all shadow-md shadow-rose-600/20 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
-                <span className="material-symbols-outlined animate-spin" style={{ fontSize: '18px' }}>
-                  progress_activity
-                </span>
+                <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
                 <span>{t('btnCancelling') || 'Đang hủy...'}</span>
               </>
             ) : (
