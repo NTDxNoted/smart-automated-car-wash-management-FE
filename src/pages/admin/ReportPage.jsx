@@ -6,6 +6,7 @@ import TierDistributionChart from "../../components/admin/TierDistributionChart"
 import LoyaltyStatsPanel from "../../components/admin/LoyaltyStatsPanel";
 import BookingStatusPieChart from "../../components/admin/BookingStatusPieChart";
 import RevenueDetailModal from "../../components/admin/RevenueDetailModal";
+import BookingDetailModal from "../../components/admin/BookingDetailModal";
 
 import {
   getOverviewReport,
@@ -38,6 +39,9 @@ export default function ReportPage() {
 
   // Revenue detail modal
   const [revenueDetailOpen, setRevenueDetailOpen] = useState(false);
+
+  // Booking detail modal
+  const [bookingDetailOpen, setBookingDetailOpen] = useState(false);
 
   // "Tổng doanh thu" tile — lấy từ cùng API/công thức với popup Chi tiết doanh thu (Completed +
   // Transaction Paid, mốc ngày lệch múi giờ VN ở backend) thay vì tự cộng finalAmount theo
@@ -454,6 +458,7 @@ export default function ReportPage() {
               value={kpis.bookings.toLocaleString()}
               subtitle="Lượt đặt dịch vụ"
               cardClass="row1"
+              onDetailClick={() => setBookingDetailOpen(true)}
             />
             <SummaryCard
               title="Tổng khách hàng"
@@ -588,6 +593,11 @@ export default function ReportPage() {
         open={revenueDetailOpen}
         onClose={() => setRevenueDetailOpen(false)}
         initialDateRangeType="month"
+      />
+
+      <BookingDetailModal
+        open={bookingDetailOpen}
+        onClose={() => setBookingDetailOpen(false)}
       />
     </div>
   );
