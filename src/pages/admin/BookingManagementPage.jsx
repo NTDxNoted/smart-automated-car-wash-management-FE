@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import BookingTable from "../../components/admin/BookingTable";
 import BookingDetailDrawer from "../../components/admin/BookingDetailDrawer";
+import WalkInModal from "../../components/admin/WalkInModal";
 import adminBookingService from "../../services/adminBookingService";
 import "./BookingManagementPage.css";
 
@@ -10,6 +11,7 @@ export default function BookingManagementPage() {
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [openWalkInModal, setOpenWalkInModal] = useState(false);
 
   const [filters, setFilters] = useState({
     status: searchParams.get("status") || "",
@@ -49,6 +51,7 @@ export default function BookingManagementPage() {
         totalAmount: b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice,
         scheduledTime: b.scheduledTime,
         services: b.services || b.serviceNames || b.serviceName || b.service || [],
+        isWalkIn: b.isWalkIn !== undefined ? b.isWalkIn : (b.IsWalkIn !== undefined ? b.IsWalkIn : (b.isWalkin || false)),
       }));
 
       setBookings(mapped);
@@ -221,12 +224,31 @@ export default function BookingManagementPage() {
         </div>
       </div>
 
+      {/* Action Container for Walk-In Booking below the table */}
+      <div className="flex justify-end pt-2 pb-4">
+        <button
+          type="button"
+          onClick={() => setOpenWalkInModal(true)}
+          className="booking-add-walkin-btn"
+        >
+          <span>+</span> Đặt lịch khách vãng lai
+        </button>
+      </div>
+
       {/* Booking Detail Drawer */}
       <BookingDetailDrawer
         booking={selectedBooking}
         open={!!selectedBooking}
         onClose={() => setSelectedBooking(null)}
         onRefresh={fetchBookings}
+      />
+
+      {/* Walk-In Booking Modal */}
+      <WalkInModal
+        open={openWalkInModal}
+        onClose={() => setOpenWalkInModal(false)}
+        onSuccess={fetchBookings}
+        existingBookings={bookings}
       />
     </div>
   );

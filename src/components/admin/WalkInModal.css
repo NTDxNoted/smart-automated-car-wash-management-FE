@@ -1,0 +1,221 @@
+/* WalkInModal.css */
+
+.walkin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.walkin-modal-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.walkin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #F1F5F9;
+  background: #FFFFFF;
+}
+
+.walkin-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 24px;
+  color: #1E293B;
+  letter-spacing: 0.5px;
+}
+
+.walkin-modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #94A3B8;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s ease;
+}
+
+.walkin-modal-close-btn:hover {
+  color: #334155;
+}
+
+.walkin-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #047857;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.walkin-modal-body {
+  padding: 24px;
+}
+
+.walkin-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.walkin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.walkin-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #334155;
+}
+
+.walkin-required {
+  color: #EF4444;
+  font-weight: 700;
+}
+
+.walkin-input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 14px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #1E293B;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.walkin-input:focus {
+  background: #FFFFFF;
+  border-color: #06B6D4;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+.walkin-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.walkin-select {
+  width: 100%;
+  height: 40px;
+  padding: 8px 36px 8px 14px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #1E293B;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.walkin-select:focus {
+  background: #FFFFFF;
+  border-color: #06B6D4;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+.walkin-select-chevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.walkin-error-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: 10px;
+  color: #DC2626;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.walkin-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.walkin-btn {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.walkin-btn.reset {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.walkin-btn.reset:hover {
+  background: #E2E8F0;
+  color: #1E293B;
+}
+
+.walkin-btn.submit {
+  background: linear-gradient(135deg, #0891B2 0%, #06B6D4 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 10px rgba(6, 182, 212, 0.25);
+}
+
+.walkin-btn.submit:hover {
+  background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+  box-shadow: 0 6px 14px rgba(6, 182, 212, 0.35);
+}
+
+.walkin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

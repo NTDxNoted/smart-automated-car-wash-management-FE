@@ -19,6 +19,15 @@ const adminBookingService = {
     return adminAxiosInstance.get(`/admin/bookings/${id}`);
   },
 
+  createWalkIn(payload) {
+    return adminAxiosInstance.post("/admin/bookings/walk-in", payload).catch((err) => {
+      if (err.response?.status === 404 || err.response?.status === 405) {
+        return adminAxiosInstance.post("/admin/bookings", payload);
+      }
+      throw err;
+    });
+  },
+
   updateStatus(id, status) {
     return adminAxiosInstance.patch(`/admin/bookings/${id}/status`, { newStatus: status });
   },

@@ -537,3 +537,29 @@
   height: 9px;
   color: #3D494D;
 }
+
+/* Walk-in Add Button matching Promo Add Button UI */
+.booking-add-walkin-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  gap: 8px;
+  height: 36px;
+  background: #0693b3;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-add-walkin-btn:hover {
+  background: #0894b8;
+}

@@ -116,9 +116,16 @@ export default function BookingTable({
                 <div className="booking-customer-avatar">
                   {getInitials(booking.customerName)}
                 </div>
-                <span className="booking-customer-name" title={booking.customerName}>
-                  {booking.customerName}
-                </span>
+                <div className="flex flex-col min-w-0">
+                  <span className="booking-customer-name" title={booking.customerName}>
+                    {booking.customerName}
+                  </span>
+                  {booking.isWalkIn && (
+                    <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200 tracking-wider mt-0.5 w-fit">
+                      WALK-IN
+                    </span>
+                  )}
+                </div>
               </td>
               
               <td className="booking-td phone">
