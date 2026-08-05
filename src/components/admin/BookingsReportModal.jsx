@@ -228,85 +228,6 @@ export default function BookingsReportModal({ open, onClose }) {
     return { ...counts, revenue, discount, cash, transfer };
   }, [filteredData]);
 
-  const dayDistribution = useMemo(() => {
-    const range = computeDateRange(dateRangeType, customStartDate, customEndDate);
-    if (!range) return [];
-    const start = new Date(range.startDate);
-    const end = new Date(range.endDate);
-    const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
-    if (diffDays <= 31) {
-      const buckets = [
-        { key: 1, label: "T2", count: 0 },
-        { key: 2, label: "T3", count: 0 },
-        { key: 3, label: "T4", count: 0 },
-        { key: 4, label: "T5", count: 0 },
-        { key: 5, label: "T6", count: 0 },
-        { key: 6, label: "T7", count: 0 },
-        { key: 7, label: "CN", count: 0 },
-      ];
-      filteredData.forEach((b) => {
-        if (!b.scheduledTime) return;
-        let day = new Date(b.scheduledTime).getDay();
-        if (day === 0) day = 7;
-        const bucket = buckets.find((x) => x.key === day);
-        if (bucket) bucket.count++;
-      });
-      return buckets;
-    }
-
-    const map = {};
-    filteredData.forEach((b) => {
-      if (!b.scheduledTime) return;
-      const d = new Date(b.scheduledTime);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      map[key] = (map[key] || 0) + 1;
-    });
-    return Object.keys(map).sort().map((key) => {
-      const [year, month] = key.split("-");
-      return { key, label: `${month}/${year}`, count: map[key] };
-    });
-  }, [filteredData, dateRangeType, customStartDate, customEndDate]);
-
-  const maxDayCount = Math.max(1, ...dayDistribution.map((d) => d.count));
-
-  const topServices = useMemo(() => {
-    const map = {};
-    filteredData.forEach((b) => {
-      const name = b.serviceName || "Dịch vụ";
-      if (!map[name]) map[name] = { name, count: 0, revenue: 0 };
-      map[name].count++;
-      if (classifyStatus(b) === "COMPLETED") map[name].revenue += b.finalAmount;
-    });
-    return Object.values(map).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [filteredData]);
-
-  const topCustomers = useMemo(() => {
-    const map = {};
-    filteredData.forEach((b) => {
-      const key = b.phone || b.customerName;
-      if (!key) return;
-      if (!map[key]) map[key] = { name: b.customerName, phone: b.phone, count: 0, revenue: 0 };
-      map[key].count++;
-      if (classifyStatus(b) === "COMPLETED") map[key].revenue += b.finalAmount;
-    });
-    return Object.values(map).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [filteredData]);
-
-  const peakHours = useMemo(() => {
-    const map = {};
-    filteredData.forEach((b) => {
-      if (!b.scheduledTime) return;
-      const hour = new Date(b.scheduledTime).getHours();
-      const key = `${String(hour).padStart(2, "0")}:00`;
-      map[key] = (map[key] || 0) + 1;
-    });
-    return Object.entries(map)
-      .map(([time, count]) => ({ time, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-  }, [filteredData]);
-
   const sortedData = useMemo(() => {
     const arr = [...filteredData];
     arr.sort((a, b) => {
@@ -453,10 +374,6 @@ export default function BookingsReportModal({ open, onClose }) {
               <div className="bkd-summary-item"><span className="bkd-summary-label">Đang thực hiện</span><span className="bkd-summary-value">{summary.processing}</span></div>
               <div className="bkd-summary-item"><span className="bkd-summary-label">Đã hủy</span><span className="bkd-summary-value danger">{summary.cancelled}</span></div>
               <div className="bkd-summary-item"><span className="bkd-summary-label">No-show</span><span className="bkd-summary-value danger">{summary.noshow}</span></div>
-              <div className="bkd-summary-item"><span className="bkd-summary-label">Doanh thu</span><span className="bkd-summary-value net">{formatVnd(summary.revenue)}</span></div>
-              <div className="bkd-summary-item"><span className="bkd-summary-label">Đã giảm giá</span><span className="bkd-summary-value danger">{formatVnd(summary.discount)}</span></div>
-              <div className="bkd-summary-item"><span className="bkd-summary-label">Tiền mặt</span><span className="bkd-summary-value">{formatVnd(summary.cash)}</span></div>
-              <div className="bkd-summary-item"><span className="bkd-summary-label">Chuyển khoản</span><span className="bkd-summary-value">{formatVnd(summary.transfer)}</span></div>
             </div>
           )}
         </div>
@@ -468,68 +385,6 @@ export default function BookingsReportModal({ open, onClose }) {
             <div className="bkd-error">{error}</div>
           ) : (
             <>
-              <div className="bkd-insights-grid">
-                <div className="bkd-insight-card">
-                  <h4 className="bkd-insight-title">Booking theo ngày</h4>
-                  {dayDistribution.length === 0 ? <p className="bkd-insight-empty">Không có dữ liệu</p> : (
-                    <div className="bkd-bar-list">
-                      {dayDistribution.map((d) => (
-                        <div key={d.key} className="bkd-bar-row">
-                          <span className="bkd-bar-label">{d.label}</span>
-                          <div className="bkd-bar-track"><div className="bkd-bar-fill" style={{ width: `${(d.count / maxDayCount) * 100}%` }} /></div>
-                          <span className="bkd-bar-count">{d.count}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="bkd-insight-card">
-                  <h4 className="bkd-insight-title">Top dịch vụ</h4>
-                  {topServices.length === 0 ? <p className="bkd-insight-empty">Không có dữ liệu</p> : (
-                    <ul className="bkd-rank-list">
-                      {topServices.map((s, i) => (
-                        <li key={s.name} className="bkd-rank-row">
-                          <span className="bkd-rank-index">{i + 1}</span>
-                          <span className="bkd-rank-name">{s.name}</span>
-                          <span className="bkd-rank-meta">{s.count} lượt · {formatVnd(s.revenue)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div className="bkd-insight-card">
-                  <h4 className="bkd-insight-title">Top khách hàng</h4>
-                  {topCustomers.length === 0 ? <p className="bkd-insight-empty">Không có dữ liệu</p> : (
-                    <ul className="bkd-rank-list">
-                      {topCustomers.map((c, i) => (
-                        <li key={c.phone || c.name} className="bkd-rank-row">
-                          <span className="bkd-rank-index">{i + 1}</span>
-                          <span className="bkd-rank-name">{c.name}</span>
-                          <span className="bkd-rank-meta">{c.count} lượt · {formatVnd(c.revenue)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div className="bkd-insight-card">
-                  <h4 className="bkd-insight-title">Giờ cao điểm</h4>
-                  {peakHours.length === 0 ? <p className="bkd-insight-empty">Không có dữ liệu</p> : (
-                    <ul className="bkd-rank-list">
-                      {peakHours.map((h, i) => (
-                        <li key={h.time} className="bkd-rank-row">
-                          <span className="bkd-rank-index">{i + 1}</span>
-                          <span className="bkd-rank-name">{h.time}</span>
-                          <span className="bkd-rank-meta">{h.count} lượt</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-
               <div className="bkd-table-wrapper">
                 <table className="bkd-table">
                   <thead>
