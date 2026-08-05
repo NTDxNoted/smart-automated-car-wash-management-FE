@@ -1,8 +1,29 @@
 import adminAxiosInstance from '../api/adminAxiosInstance';
 
-export const getOverviewReport = async ({ signal } = {}) => {
-  const { data } = await adminAxiosInstance.get('/admin/reports/overview', { signal });
-  return data;
+export const getOverviewReport = async (startDate, endDate, { signal } = {}) => {
+  const { data } = await adminAxiosInstance.get('/admin/reports/overview', {
+    params: { startDate, endDate },
+    signal
+  });
+
+  const totalBookings = data.totalBookings ?? data.TotalBookings ?? 0;
+  const completedBookings = data.completedBookings ?? data.CompletedBookings ?? 0;
+  const cancelledBookings = data.cancelledBookings ?? data.CancelledBookings ?? 0;
+  const noShowBookings = data.noShowBookings ?? data.NoShowBookings ?? 0;
+  const failedBookings = data.failedBookings ?? data.FailedBookings ?? 0;
+  const pendingBookings = Math.max(0, totalBookings - completedBookings - cancelledBookings - noShowBookings - failedBookings);
+
+  return {
+    totalBookings,
+    completedBookings,
+    cancelledBookings,
+    noShowBookings,
+    failedBookings,
+    pendingBookings,
+    totalRevenue: Number(data.totalRevenue ?? data.TotalRevenue ?? 0),
+    completionRate: Number(data.completionRate ?? data.CompletionRate ?? 0) * 100,
+    avgOrderValue: Number(data.avgOrderValue ?? data.AvgOrderValue ?? 0),
+  };
 };
 
 export const getRfmReport = async ({ signal } = {}) => {
