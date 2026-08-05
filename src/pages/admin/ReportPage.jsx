@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 import OverviewChart from "../../components/admin/OverviewChart";
 import RfmTable from "../../components/admin/RfmTable";
@@ -6,7 +7,7 @@ import TierDistributionChart from "../../components/admin/TierDistributionChart"
 import LoyaltyStatsPanel from "../../components/admin/LoyaltyStatsPanel";
 import BookingStatusPieChart from "../../components/admin/BookingStatusPieChart";
 import RevenueDetailModal from "../../components/admin/RevenueDetailModal";
-import BookingDetailModal from "../../components/admin/BookingDetailModal";
+import BookingsReportModal from "../../components/admin/BookingsReportModal";
 
 import {
   getOverviewReport,
@@ -19,6 +20,7 @@ import adminBookingService from "../../services/adminBookingService";
 import "./ReportPage.css";
 
 export default function ReportPage() {
+  const navigate = useNavigate();
   const [overview, setOverview] = useState(null);
   const [rfm, setRfm] = useState([]);
   const [tiers, setTiers] = useState([]);
@@ -55,8 +57,7 @@ export default function ReportPage() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const [overviewData, rfmData, tierData, loyaltyData, bookingsRes] = await Promise.all([
-          getOverviewReport({ signal: controller.signal }),
+        const [rfmData, tierData, loyaltyData, bookingsRes] = await Promise.all([
           getRfmReport({ signal: controller.signal }),
           getTierDistribution({ signal: controller.signal }),
           getLoyaltyStats({ signal: controller.signal }),
@@ -65,7 +66,6 @@ export default function ReportPage() {
 
         if (!isMounted) return;
 
-        setOverview(overviewData);
         setRfm(rfmData);
         setTiers(tierData);
         setLoyalty(loyaltyData);
@@ -131,17 +131,16 @@ export default function ReportPage() {
     };
   }, []);
 
-  // Filter Bookings by Date Range
-  const filteredBookings = useMemo(() => {
-    if (allBookings.length === 0) return [];
-    
+  // Resolved {start, end} window for the selected date-range filter — shared by the client-side
+  // booking filter below and the getOverviewReport fetch, so both agree on the same period.
+  const dateRange = useMemo(() => {
     const now = new Date();
     let start = new Date();
     let end = new Date();
-    
+
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 999);
-    
+
     if (dateRangeType === "today") {
       // today only
     } else if (dateRangeType === "7days") {
@@ -158,20 +157,43 @@ export default function ReportPage() {
         end.setHours(23, 59, 59, 999);
       }
     }
-    
+
+    const toIsoDate = (date) => date.toLocaleDateString('en-CA');
+    return { start, end, startDate: toIsoDate(start), endDate: toIsoDate(end) };
+  }, [dateRangeType, customStartDate, customEndDate]);
+
+  // Overview KPIs (completion/cancel rate, revenue, AOV, status breakdown) come from the backend
+  // so this page and the "Chi tiết" report modal never compute two different answers for the same
+  // numbers — refetched whenever the selected date range changes.
+  useEffect(() => {
+    const controller = new AbortController();
+    getOverviewReport(dateRange.startDate, dateRange.endDate, { signal: controller.signal })
+      .then((result) => setOverview(result))
+      .catch((err) => {
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
+          console.error("Lỗi tải overview report:", err);
+        }
+      });
+    return () => controller.abort();
+  }, [dateRange]);
+
+  // Filter Bookings by Date Range
+  const filteredBookings = useMemo(() => {
+    if (allBookings.length === 0) return [];
+    const { start, end } = dateRange;
+
     return allBookings.filter(b => {
       if (!b.scheduledTime) return false;
       const bDate = new Date(b.scheduledTime);
       return bDate >= start && bDate <= end;
     });
-  }, [allBookings, dateRangeType, customStartDate, customEndDate]);
+  }, [allBookings, dateRange]);
 
-  // Aggregate period-specific KPI stats
+  // Aggregate period-specific KPI stats. Bookings/revenue/completion-rate/cancel-rate/AOV come
+  // from the backend overview report (single source of truth, shared with the "Chi tiết" report
+  // modal); unique/repeat-customer counts have no backend equivalent so they stay client-derived
+  // from the raw booking list.
   const kpis = useMemo(() => {
-    const total = filteredBookings.length;
-    const completedList = filteredBookings.filter(b => b.status?.toUpperCase() === 'COMPLETED');
-    const revenue = completedList.reduce((sum, b) => sum + b.totalAmount, 0);
-    
     const uniqueCusts = new Set();
     const custCounts = {};
     filteredBookings.forEach(b => {
@@ -182,30 +204,27 @@ export default function ReportPage() {
       }
     });
     const customers = uniqueCusts.size;
-    
-    const completedCount = completedList.length;
-    const completedRate = total > 0 ? (completedCount / total) * 100 : 0;
-    
-    const cancelNoShow = filteredBookings.filter(b => 
-      ['CANCELLED', 'FAILED', 'NOSHOW', 'NO-SHOW', 'CANCEL_BY_ADMIN', 'CANCEL_BY_CUSTOMER'].includes(b.status?.toUpperCase())
-    ).length;
-    const cancelRate = total > 0 ? (cancelNoShow / total) * 100 : 0;
-    
-    const aov = completedCount > 0 ? revenue / completedCount : 0;
-    
     const repeatCustomers = Object.values(custCounts).filter(count => count >= 2).length;
     const repeatRate = customers > 0 ? (repeatCustomers / customers) * 100 : 0;
-    
+
+    if (!overview) {
+      return { revenue: 0, bookings: 0, customers, completedRate: 0, cancelRate: 0, aov: 0, repeatRate };
+    }
+
+    const total = overview.totalBookings;
+    const cancelNoShow = overview.cancelledBookings + overview.noShowBookings + overview.failedBookings;
+    const cancelRate = total > 0 ? (cancelNoShow / total) * 100 : 0;
+
     return {
-      revenue,
+      revenue: overview.totalRevenue,
       bookings: total,
       customers,
-      completedRate,
+      completedRate: overview.completionRate,
       cancelRate,
-      aov,
+      aov: overview.avgOrderValue,
       repeatRate
     };
-  }, [filteredBookings]);
+  }, [filteredBookings, overview]);
 
   // Grouped Revenue trend chart data (by day or by month)
   const revenueChartData = useMemo(() => {
@@ -280,55 +299,19 @@ export default function ReportPage() {
     }
   }, [filteredBookings, dateRangeType, customStartDate, customEndDate]);
 
-  // Pie chart counts
+  // Pie chart counts — sourced from the same overview report as the KPI cards above, instead of
+  // re-deriving status counts from the raw booking list a second time.
   const bookingStatusPieData = useMemo(() => {
-    const counts = {
-      Completed: 0,
-      Pending: 0,
-      Cancelled: 0,
-      Failed: 0,
-      'No-show': 0
-    };
-    
-    filteredBookings.forEach(b => {
-      const status = b.status?.toUpperCase();
-      if (status === 'COMPLETED') counts.Completed++;
-      else if (status === 'PENDING') counts.Pending++;
-      else if (['CANCELLED', 'FAILED', 'CANCEL', 'CANCEL_BY_ADMIN', 'CANCEL_BY_CUSTOMER'].includes(status)) {
-        if (status === 'FAILED') counts.Failed++;
-        else counts.Cancelled++;
-      } else if (['NOSHOW', 'NO-SHOW', 'NO_SHOW'].includes(status)) counts['No-show']++;
-      else counts.Pending++;
-    });
-    
-    return Object.keys(counts).map(name => ({
-      name,
-      value: counts[name]
-    })).filter(item => item.value > 0);
-  }, [filteredBookings]);
+    if (!overview) return [];
 
-  // Popular Services counts
-  const popularServicesData = useMemo(() => {
-    const completed = filteredBookings.filter(b => b.status?.toUpperCase() === 'COMPLETED');
-    const serviceMap = {};
-    
-    completed.forEach(b => {
-      const name = b.serviceName || 'Rửa xe';
-      if (!serviceMap[name]) {
-        serviceMap[name] = { serviceName: name, totalWashes: 0, revenue: 0 };
-      }
-      serviceMap[name].totalWashes++;
-      serviceMap[name].revenue += b.totalAmount;
-    });
-    
-    const list = Object.values(serviceMap);
-    const totalRev = list.reduce((sum, item) => sum + item.revenue, 0);
-    
-    return list.map(item => ({
-      ...item,
-      revenueContribution: totalRev > 0 ? (item.revenue / totalRev) * 100 : 0
-    })).sort((a, b) => b.revenue - a.revenue);
-  }, [filteredBookings]);
+    return [
+      { name: 'Completed', value: overview.completedBookings },
+      { name: 'Pending', value: overview.pendingBookings },
+      { name: 'Cancelled', value: overview.cancelledBookings },
+      { name: 'Failed', value: overview.failedBookings },
+      { name: 'No-show', value: overview.noShowBookings },
+    ].filter(item => item.value > 0);
+  }, [overview]);
 
   // RFM Insight counts over all-time RFM data
   const rfmMetrics = useMemo(() => {
@@ -465,6 +448,7 @@ export default function ReportPage() {
               value={kpis.customers.toLocaleString()}
               subtitle="Khách hàng duy nhất"
               cardClass="row1"
+              onDetailClick={() => navigate('/admin/customers')}
             />
             <SummaryCard
               title="Tỷ lệ hoàn thành"
@@ -595,7 +579,7 @@ export default function ReportPage() {
         initialDateRangeType="month"
       />
 
-      <BookingDetailModal
+      <BookingsReportModal
         open={bookingDetailOpen}
         onClose={() => setBookingDetailOpen(false)}
       />

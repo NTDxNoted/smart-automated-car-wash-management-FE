@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import adminRewardService from '../../services/adminRewardService';
 import RewardModal from '../../components/admin/RewardModal';
 import './RewardManagementPage.css';
@@ -10,6 +10,12 @@ const RewardManagementPage = () => {
   const [selectedReward, setSelectedReward] = useState(null);
   const [togglingIds, setTogglingIds] = useState([]);
   const [deletingIds, setDeletingIds] = useState([]);
+
+  // Guards every setState call below against firing after unmount — matters most for the
+  // mount-time fetch in the effect further down, since that request can still resolve after
+  // the admin has already navigated away from this page.
+  const mountedRef = useRef(true);
+  useEffect(() => () => { mountedRef.current = false; }, []);
 
   const fetchRewards = async () => {
     setLoading(true);
@@ -31,17 +37,19 @@ const RewardManagementPage = () => {
           isActive: item.isActive !== undefined ? item.isActive : (item.IsActive !== undefined ? item.IsActive : true),
         };
       });
-      setRewards(mapped);
+      if (mountedRef.current) setRewards(mapped);
     } catch (err) {
       console.error("Lỗi khi tải danh sách voucher đổi điểm:", err);
-      setRewards([]);
+      if (mountedRef.current) setRewards([]);
     } finally {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchRewards();
+    (async () => {
+      await fetchRewards();
+    })();
   }, []);
 
   const handleCreate = () => {
@@ -110,11 +118,7 @@ const RewardManagementPage = () => {
       await fetchRewards();
     } catch (err) {
       console.error("Lỗi khi xóa voucher:", err);
-      if (err?.response?.status === 404 || err?.response?.status === 405) {
-        alert("API Backend hiện tại chưa hỗ trợ phương thức Xóa voucher (DELETE /api/admin/rewards/{id}). Yêu cầu đã được lưu vào hệ thống vấn đề Backend.");
-      } else {
-        alert(err?.response?.data?.message || "Không thể xóa voucher đổi điểm.");
-      }
+      alert(err?.response?.data?.message || "Không thể xóa voucher đổi điểm.");
     } finally {
       setDeletingIds((prev) => prev.filter((id) => id !== reward.id));
     }

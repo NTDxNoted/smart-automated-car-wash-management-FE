@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Papa from "papaparse";
 import adminBookingService from "../../services/adminBookingService";
 import BookingDetailDrawer from "./BookingDetailDrawer";
-import "./BookingDetailModal.css";
+import "./BookingsReportModal.css";
 
 const PAGE_SIZE = 10;
 
@@ -88,7 +88,7 @@ const formatBookingId = (id) => {
   return `#AW-${(clean.length > 4 ? clean.slice(-4) : clean).toUpperCase()}`;
 };
 
-export default function BookingDetailModal({ open, onClose }) {
+export default function BookingsReportModal({ open, onClose }) {
   const [dateRangeType, setDateRangeType] = useState("7days");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -107,20 +107,27 @@ export default function BookingDetailModal({ open, onClose }) {
 
   const requestIdRef = useRef(0);
 
-  useEffect(() => {
-    if (!open) return;
-    setDateRangeType("7days");
-    setCustomStartDate("");
-    setCustomEndDate("");
-    setStatusFilter("all");
-    setServiceFilter("all");
-    setPaymentFilter("all");
-    setSearch("");
-    setSortKey("scheduledTime");
-    setSortDir("desc");
-    setPage(1);
-    setError("");
-  }, [open]);
+  // Reset every filter when the modal transitions to open — adjusted during render (React's
+  // documented pattern for "resetting state when a prop changes", see
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
+  // instead of an effect, so it happens before the first paint rather than after.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setDateRangeType("7days");
+      setCustomStartDate("");
+      setCustomEndDate("");
+      setStatusFilter("all");
+      setServiceFilter("all");
+      setPaymentFilter("all");
+      setSearch("");
+      setSortKey("scheduledTime");
+      setSortDir("desc");
+      setPage(1);
+      setError("");
+    }
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -316,9 +323,13 @@ export default function BookingDetailModal({ open, onClose }) {
     return arr;
   }, [filteredData, sortKey, sortDir]);
 
-  useEffect(() => {
+  // Same render-time reset pattern as above: jump back to page 1 whenever any filter changes.
+  const filterSignature = `${statusFilter}|${serviceFilter}|${paymentFilter}|${search}|${dateRangeType}|${customStartDate}|${customEndDate}`;
+  const [prevFilterSignature, setPrevFilterSignature] = useState(filterSignature);
+  if (filterSignature !== prevFilterSignature) {
+    setPrevFilterSignature(filterSignature);
     setPage(1);
-  }, [statusFilter, serviceFilter, paymentFilter, search, dateRangeType, customStartDate, customEndDate]);
+  }
 
   const totalPages = Math.max(1, Math.ceil(sortedData.length / PAGE_SIZE));
   const pagedData = sortedData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

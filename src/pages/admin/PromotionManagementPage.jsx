@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import adminPromotionService from '../../services/adminPromotionService';
 import PromotionModal from '../../components/admin/PromotionModal';
+import PromotionUsageModal from '../../components/admin/PromotionUsageModal';
 import './PromotionManagementPage.css';
 
 const PromotionManagementPage = () => {
@@ -8,6 +9,7 @@ const PromotionManagementPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [togglingIds, setTogglingIds] = useState([]);
+  const [usagePromotion, setUsagePromotion] = useState(null);
 
   const fetchPromotions = async () => {
     try {
@@ -55,7 +57,9 @@ const PromotionManagementPage = () => {
   };
 
   useEffect(() => {
-    fetchPromotions();
+    (async () => {
+      await fetchPromotions();
+    })();
   }, []);
 
   const handleCreate = () => {
@@ -262,12 +266,20 @@ const PromotionManagementPage = () => {
                     </td>
 
                     <td className="promo-td action">
-                      <button
-                        onClick={() => handleEdit(item)}
-                        className="promo-action-btn edit"
-                      >
-                        Sửa
-                      </button>
+                      <div className="promo-action-group">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="promo-action-btn edit"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => setUsagePromotion(item)}
+                          className="promo-action-btn detail"
+                        >
+                          Chi tiết
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -282,6 +294,12 @@ const PromotionManagementPage = () => {
         onClose={() => setOpenModal(false)}
         onSubmit={handleSubmit}
         initialData={selectedPromotion}
+      />
+
+      <PromotionUsageModal
+        open={!!usagePromotion}
+        onClose={() => setUsagePromotion(null)}
+        promotion={usagePromotion}
       />
     </div>
   );
