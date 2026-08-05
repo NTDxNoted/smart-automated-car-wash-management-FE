@@ -3,11 +3,42 @@ import {
   Pie,
   Cell,
   Tooltip,
-  Legend,
 } from "recharts";
 import SafeChartContainer from "../common/SafeChartContainer";
 
-const COLORS = ["#00677F", "#0EA5E9", "#10B981", "#F59E0B", "#EF4444", "#64748B"];
+const COLORS = [
+  "#00677F", 
+  "#0EA5E9", 
+  "#10B981", 
+  "#F59E0B", 
+  "#EF4444", 
+  "#8B5CF6", 
+  "#64748B",
+  "#EC4899",
+  "#14B8A6"
+];
+
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+  if (percent < 0.04) return null;
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="#FFFFFF"
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontSize="12"
+      fontWeight="700"
+    >
+      {`${Math.round(percent * 100)}%`}
+    </text>
+  );
+};
 
 export default function PopularServicesChart({ data }) {
   if (!data || data.length === 0) {
@@ -37,24 +68,25 @@ export default function PopularServicesChart({ data }) {
 
   return (
     <div className="report-chart-card">
-      <h3 className="report-chart-title">
+      <h3 className="report-chart-title" style={{ marginBottom: "12px" }}>
         Tỷ lệ lượt dịch vụ phổ biến
       </h3>
 
-      <SafeChartContainer height={280}>
+      <SafeChartContainer height={230}>
         {(width, height) => {
-          const outerRadius = Math.min(65, width * 0.18);
-          const innerRadius = Math.max(20, outerRadius - 25);
+          const outerRadius = Math.min(85, width * 0.22, height * 0.42);
+          const innerRadius = Math.max(35, outerRadius * 0.55);
           return (
-            <PieChart width={width} height={height} margin={{ left: 20, right: 20 }}>
+            <PieChart width={width} height={height} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
                 outerRadius={outerRadius}
-                innerRadius={innerRadius} // Making it a Doughnut Chart
+                innerRadius={innerRadius}
+                paddingAngle={3}
                 dataKey="value"
-                label={({ name, percent }) => width > 350 ? `${name}: ${(percent * 100).toFixed(0)}%` : `${(percent * 100).toFixed(0)}%`}
+                label={renderCustomizedLabel}
                 labelLine={false}
               >
                 {chartData.map((entry, index) => (
@@ -68,25 +100,40 @@ export default function PopularServicesChart({ data }) {
               <Tooltip
                 contentStyle={{
                   background: '#FFFFFF',
-                  border: '1px solid #BCC8CE',
+                  border: '1px solid #C3C6D7',
                   borderRadius: '8px',
-                  boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
+                  boxShadow: '0px 4px 12px rgba(0,0,0,0.1)',
                   fontSize: '12px',
                   fontFamily: 'Inter, sans-serif',
+                  padding: '8px 12px',
                 }}
                 formatter={(value, name, props) => {
                   const item = props.payload;
                   return [
-                    `${value} lượt (Doanh thu: ${item.revenue?.toLocaleString()}đ)`,
+                    `${value} lượt - Doanh thu: ${item.revenue?.toLocaleString()}đ (${Math.round(item.percentage)}%)`,
                     name
                   ];
                 }}
               />
-              <Legend verticalAlign="bottom" height={36} iconType="circle" />
             </PieChart>
           );
         }}
       </SafeChartContainer>
+
+      {/* Custom HTML Legend preventing overflow and wrapping cleanly */}
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 pt-4 mt-3 border-t border-slate-100">
+        {chartData.map((entry, index) => (
+          <div key={index} className="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
+            <span
+              className="w-3 h-3 rounded-full flex-shrink-0"
+              style={{ backgroundColor: COLORS[index % COLORS.length] }}
+            />
+            <span>{entry.name}:</span>
+            <span className="font-semibold text-slate-900">{Math.round(entry.percentage)}%</span>
+            <span className="text-slate-400 text-[11px]">({entry.value} lượt)</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

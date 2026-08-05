@@ -54,7 +54,7 @@ export default function PopularServicesTable({ data }) {
       "Tên dịch vụ": row.serviceName,
       "Tổng lượt rửa": row.totalWashes,
       "Doanh thu (VNĐ)": row.revenue,
-      "Đóng góp (%)": `${row.revenueContribution.toFixed(2)}%`,
+      "Đóng góp (%)": `${Math.round(row.revenueContribution)}%`,
     }));
 
     const csv = "\uFEFF" + Papa.unparse(exportData);
@@ -133,7 +133,7 @@ export default function PopularServicesTable({ data }) {
                   {row.revenue?.toLocaleString()} VND
                 </td>
                 <td className="rfm-td revenueContribution" style={COLUMN_FLEX_STYLES.revenueContribution}>
-                  {row.revenueContribution?.toFixed(2)}%
+                  {Math.round(row.revenueContribution)}%
                 </td>
               </tr>
             ))}
