@@ -1,16 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import CustomerDetailPanel from '../../components/admin/CustomerDetailPanel';
 import LockToggleButton from '../../components/admin/LockToggleButton';
-import { getCustomerDetail, toggleLock } from '../../services/adminCustomerService';
+import { getCustomerDetail, toggleLock, updateNotes } from '../../services/adminCustomerService';
 import './CustomerDetailPage.css';
+
+const formatVnd = (value) => `${Math.round(value || 0).toLocaleString('vi-VN')}đ`;
+
+const paymentLabel = (method) => {
+  const upper = (method || '').toUpperCase();
+  if (upper === 'CASH') return 'Tiền mặt';
+  if (upper === 'TRANSFER') return 'Chuyển khoản';
+  return 'Chưa thanh toán';
+};
 
 export default function CustomerDetailPage() {
   const { id } = useParams();
 
   const [customer, setCustomer] = useState(null);
   const [lockLoading, setLockLoading] = useState(false);
+  const [savingNotes, setSavingNotes] = useState(false);
 
   useEffect(() => {
     loadDetail();
@@ -22,6 +32,20 @@ export default function CustomerDetailPage() {
       setCustomer(data);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleSaveNotes = async (notes) => {
+    if (savingNotes) return;
+    try {
+      setSavingNotes(true);
+      const data = await updateNotes(id, notes);
+      setCustomer((prev) => ({ ...prev, adminNotes: data?.adminNotes ?? notes }));
+    } catch (err) {
+      console.error(err);
+      alert('Không thể lưu ghi chú');
+    } finally {
+      setSavingNotes(false);
     }
   };
 
@@ -94,6 +118,21 @@ export default function CustomerDetailPage() {
     }
   };
 
+  const bookingHistory = customer?.bookingHistory || [];
+
+  const summary = useMemo(() => {
+    let noShowCancel = 0;
+    bookingHistory.forEach((b) => {
+      const s = (b.status || '').toUpperCase();
+      if (s === 'CANCELLED' || s === 'FAILED' || s === 'NOSHOW') noShowCancel++;
+    });
+    return {
+      usageCount: bookingHistory.length,
+      totalRevenue: customer?.totalSpending || 0,
+      noShowCancel,
+    };
+  }, [bookingHistory, customer?.totalSpending]);
+
   if (!customer) {
     return (
       <div className="py-12 text-center text-slate-500 bg-white rounded-2xl border border-[#BCC8CE] shadow-sm">
@@ -102,8 +141,6 @@ export default function CustomerDetailPage() {
       </div>
     );
   }
-
-  const bookingHistory = customer.bookingHistory || [];
 
   return (
     <div className="detail-page-container">
@@ -122,11 +159,26 @@ export default function CustomerDetailPage() {
           />
         </div>
 
-        <CustomerDetailPanel customer={customer} />
+        <CustomerDetailPanel customer={customer} onSaveNotes={handleSaveNotes} savingNotes={savingNotes} />
       </div>
 
       <div className="detail-card">
         <h3 className="detail-card-subtitle">Lịch sử booking</h3>
+
+        <div className="booking-summary-row">
+          <div className="booking-summary-item">
+            <span className="booking-summary-label">Tổng số lần dùng dịch vụ</span>
+            <span className="booking-summary-value">{summary.usageCount}</span>
+          </div>
+          <div className="booking-summary-item">
+            <span className="booking-summary-label">Tổng doanh thu mang lại</span>
+            <span className="booking-summary-value net">{formatVnd(summary.totalRevenue)}</span>
+          </div>
+          <div className="booking-summary-item">
+            <span className="booking-summary-label">No-show / Hủy lịch</span>
+            <span className="booking-summary-value danger">{summary.noShowCancel}</span>
+          </div>
+        </div>
 
         {bookingHistory.length === 0 ? (
           <div className="py-10 text-center text-slate-400 border border-dashed border-slate-200 rounded-2xl font-medium">
@@ -137,10 +189,13 @@ export default function CustomerDetailPage() {
             <table className="detail-table">
               <thead>
                 <tr>
+                  <th>Mã hóa đơn</th>
                   <th>Mã</th>
                   <th>Dịch vụ</th>
                   <th>Ngày</th>
                   <th>Trạng thái</th>
+                  <th>Thanh toán</th>
+                  <th>Khuyến mãi</th>
                   <th style={{ textAlign: 'right' }}>Tổng tiền</th>
                 </tr>
               </thead>
@@ -154,6 +209,7 @@ export default function CustomerDetailPage() {
 
                   return (
                     <tr key={bId}>
+                      <td>{booking.invoiceCode || '-'}</td>
                       <td style={{ fontWeight: '600' }}>#{bId}</td>
                       <td>{booking.serviceName || booking.service?.serviceName || "Rửa xe cơ bản"}</td>
                       <td>{formattedDate}</td>
@@ -162,6 +218,8 @@ export default function CustomerDetailPage() {
                           {getBookingStatusText(booking.status)}
                         </span>
                       </td>
+                      <td>{paymentLabel(booking.paymentMethod)}</td>
+                      <td>{booking.promotionApplied || '-'}</td>
                       <td style={{ textAlign: 'right', fontWeight: '600' }}>
                         {price.toLocaleString()}đ
                       </td>

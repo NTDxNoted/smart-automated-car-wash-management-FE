@@ -319,3 +319,112 @@
   color: #0369a1;
   border: 1px solid #38bdf8;
 }
+
+/* Customer Type Badge (duplicated visual language from CustomerListPage.css — kept
+   self-contained here since this page can be opened directly via URL, not only via the list). */
+.customer-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.customer-type-badge.registered {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.customer-type-badge.walkin {
+  background: #FEF9C3;
+  color: #854D0E;
+}
+
+/* Ghi chú Admin */
+.notes-box {
+  grid-column: 1 / -1;
+}
+
+.admin-notes-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 4px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #1E293B;
+  resize: vertical;
+  outline: none;
+}
+
+.admin-notes-textarea:focus {
+  border-color: #00A9CE;
+}
+
+.admin-notes-save-btn {
+  align-self: flex-end;
+  margin-top: 10px;
+  padding: 8px 18px;
+  background: #00677F;
+  border: none;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-notes-save-btn:hover:not(:disabled) {
+  background: #004f61;
+}
+
+.admin-notes-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tóm tắt lịch sử booking */
+.booking-summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.booking-summary-item {
+  flex: 1 1 160px;
+  padding: 14px 16px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+}
+
+.booking-summary-label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #64748B;
+  margin-bottom: 4px;
+}
+
+.booking-summary-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.booking-summary-value.danger {
+  color: #DC2626;
+}
+
+.booking-summary-value.net {
+  color: #00677F;
+}

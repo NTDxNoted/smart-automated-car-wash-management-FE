@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import './AdminLayout.css';
 import adminBookingService from '../services/adminBookingService';
 import BookingDetailDrawer from '../components/admin/BookingDetailDrawer';
@@ -738,7 +738,16 @@ export default function AdminLayout() {
 
         {/* Content Body */}
         <main className="flex-grow p-6 md:p-8 overflow-y-auto">
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className="flex flex-col items-center justify-center py-24 gap-4">
+                <div className="w-10 h-10 border-4 border-slate-200 border-t-cyan-500 rounded-full animate-spin"></div>
+                <p className="text-sm text-slate-500 font-medium">Đang tải trang...</p>
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </main>
       </div>
 
