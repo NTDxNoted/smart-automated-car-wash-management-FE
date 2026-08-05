@@ -13,6 +13,9 @@ const adminPromotionService = {
   togglePromotion(id) {
     return adminAxiosInstance.patch(`/admin/promotions/${id}/toggle`);
   },
+  getPromoUsage(id) {
+    return adminAxiosInstance.get(`/admin/promotions/${id}/usage`);
+  },
 };
 
 export default adminPromotionService;
