@@ -32,12 +32,39 @@ export default function OccupancyReportPage() {
       try {
         setLoading(true);
         setError(null);
+
+        if (startDate && endDate) {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          if (start > end) {
+            setError("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+            setLoading(false);
+            return;
+          }
+          const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+          if (diffDays > 365) {
+            setError("Khoảng thời gian chọn quá dài (tối đa 365 ngày / 1 năm). Vui lòng chọn lại khoảng thời gian ngắn hơn.");
+            setLoading(false);
+            return;
+          }
+        }
+
         const res = await getPeakOccupancy(startDate, endDate, { signal: controller.signal });
         setData(res || { weekly: [], hourly: [] });
       } catch (err) {
         if (err.name !== "AbortError" && err.name !== "CanceledError") {
           console.error(err);
-          setError("Không thể tải báo cáo tần suất hoạt động. Vui lòng kiểm tra kết nối API.");
+          const backendMsg = err.response?.data?.message;
+          const backendError = err.response?.data?.error;
+          if (backendError === "DATE_RANGE_TOO_WIDE" || (backendMsg && backendMsg.includes("366 days"))) {
+            setError("Khoảng thời gian chọn quá dài (tối đa 365 ngày / 1 năm). Vui lòng thu hẹp khoảng thời gian.");
+          } else if (backendError === "INVALID_DATE_RANGE" || (backendMsg && backendMsg.includes("startDate must be before"))) {
+            setError("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+          } else if (backendMsg) {
+            setError(backendMsg);
+          } else {
+            setError("Không thể tải báo cáo tần suất hoạt động. Vui lòng kiểm tra kết nối API.");
+          }
         }
       } finally {
         setLoading(false);
