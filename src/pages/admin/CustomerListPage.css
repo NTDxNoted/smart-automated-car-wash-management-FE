@@ -5,7 +5,7 @@
   flex-direction: column;
   gap: 24px;
   width: 100%;
-  max-width: 1008px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -57,6 +57,7 @@
 .customer-filters-row {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: flex-start;
   padding: 0px;
   gap: 16px;
@@ -147,19 +148,25 @@
   pointer-events: none;
 }
 
-/* Data Table layout */
+/* Data Table layout — horizontally scrollable, more columns than fit at once */
 .customer-table-wrapper {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 0px;
   width: 100%;
-  height: 387.5px;
+  max-height: 500px;
   overflow-y: auto;
+}
+
+.customer-table-scroll {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .customer-table {
   width: 100%;
+  min-width: 1180px;
   border-collapse: collapse;
 }
 
@@ -171,23 +178,12 @@
 }
 
 .customer-thead-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 0px;
-  width: 100%;
-  height: 57px;
   background: #F0F3FF;
   border-bottom: 1px solid #BCC8CE;
 }
 
 .customer-th {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px 32px;
-  height: 56px;
+  padding: 16px 20px;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 12px;
@@ -195,75 +191,61 @@
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: #3D494D;
-  justify-content: center;
+  text-align: left;
+  white-space: nowrap;
 }
 
-.customer-th.name {
-  width: 19%;
-  flex: 0 0 19%;
-}
-
-.customer-th.phone {
-  width: 18%;
-  flex: 0 0 18%;
-}
-
-.customer-th.tier {
-  width: 14%;
-  flex: 0 0 14%;
-}
-
-.customer-th.points {
-  width: 17%;
-  flex: 0 0 17%;
-  align-items: flex-end;
+.customer-th.spending,
+.customer-th.usage {
   text-align: right;
 }
 
-.customer-th.status {
-  width: 18%;
-  flex: 0 0 18%;
-}
-
 .customer-th.actions {
-  width: 14%;
-  flex: 0 0 14%;
-  align-items: flex-end;
   text-align: right;
   padding-right: 32px;
 }
 
 /* Body Rows */
 .customer-tbody-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0px;
-  width: 100%;
-  height: 83px;
   background: #FFFFFF;
   border-bottom: 1px solid #BCC8CE;
 }
 
 .customer-tbody-row:nth-child(even) {
-  height: 84px;
   background: rgba(191, 200, 201, 0.1);
-  border-top: 1px solid #BCC8CE;
 }
 
 .customer-td {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 29.5px 32px;
-  height: 83px;
-  justify-content: center;
+  padding: 18px 20px;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
-.customer-td.name {
-  width: 19%;
-  flex: 0 0 19%;
+.customer-id-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #64748B;
+}
+
+.customer-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.customer-type-badge.registered {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.customer-type-badge.walkin {
+  background: #FEF9C3;
+  color: #854D0E;
 }
 
 .customer-name-text {
@@ -274,11 +256,6 @@
   color: #111C2C;
 }
 
-.customer-td.phone {
-  width: 18%;
-  flex: 0 0 18%;
-}
-
 .customer-phone-text {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
@@ -287,10 +264,24 @@
   color: #3D494D;
 }
 
-.customer-td.tier {
-  width: 14%;
-  flex: 0 0 14%;
-  padding: 29px 32px 28px;
+.customer-usage-text,
+.customer-lastvisit-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #3D494D;
+}
+
+.customer-td.usage,
+.customer-td.spending {
+  text-align: right;
+}
+
+.customer-spending-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #00677F;
 }
 
 /* Customer Tier Badges */
@@ -441,14 +432,12 @@
 }
 
 .customer-td.actions {
-  width: 14%;
-  flex: 0 0 14%;
+  display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  padding: 0px 32px 0px 0px;
+  padding: 18px 20px;
   gap: 8px;
-  height: 37px;
 }
 
 .customer-action-btn {
@@ -490,14 +479,22 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 20px 32px;
   width: 100%;
-  height: 77px;
+  min-height: 77px;
   background: #FFFFFF;
   border-top: 1px solid #BCC8CE;
   border-radius: 0px 0px 16px 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.customer-pagination-info {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #64748B;
 }
 
 .customer-pagination-nav {
@@ -559,4 +556,311 @@
   font-size: 14px;
   line-height: 20px;
   color: #020202;
+}
+
+/* ── 1. Thống kê tổng quan ─────────────────────────────────────────── */
+.cust-overview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.cust-stat-card {
+  box-sizing: border-box;
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  background: #FFFFFF;
+  border: 1px solid #C3C6D7;
+  border-radius: 12px;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.06);
+}
+
+.cust-stat-card.accent {
+  background: linear-gradient(135deg, #00677F 0%, #00A9CE 100%);
+  border-color: transparent;
+}
+
+.cust-stat-card.accent .cust-stat-label,
+.cust-stat-card.accent .cust-stat-value {
+  color: #FFFFFF;
+}
+
+.cust-stat-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.cust-stat-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111C2C;
+}
+
+/* ── 2. Phân loại khách hàng ───────────────────────────────────────── */
+.cust-group-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 800px) {
+  .cust-group-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cust-group-card {
+  box-sizing: border-box;
+  padding: 20px 24px;
+  background: #FFFFFF;
+  border: 1px solid #C3C6D7;
+  border-radius: 12px;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.06);
+}
+
+.cust-group-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #1E293B;
+  margin: 0 0 14px;
+}
+
+.cust-group-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cust-group-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cust-group-stat-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #64748B;
+}
+
+.cust-group-stat-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #00677F;
+}
+
+.cust-group-highlight {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid #F1F5F9;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #475569;
+}
+
+.cust-group-highlight b {
+  color: #1E293B;
+}
+
+/* ── 5. Thống kê trực quan ─────────────────────────────────────────── */
+.cust-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .cust-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cust-chart-card {
+  box-sizing: border-box;
+  padding: 20px 24px;
+  background: #FFFFFF;
+  border: 1px solid #C3C6D7;
+  border-radius: 12px;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.06);
+  min-height: 180px;
+}
+
+.cust-chart-card.wide {
+  grid-column: 1 / -1;
+}
+
+.cust-chart-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1E293B;
+  margin: 0 0 14px;
+}
+
+.cust-chart-empty {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #94A3B8;
+}
+
+.cust-bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cust-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cust-bar-label {
+  width: 110px;
+  flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #334155;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cust-bar-track {
+  flex: 1;
+  height: 10px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cust-bar-fill {
+  height: 100%;
+  background: #00677F;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.cust-bar-fill.amber {
+  background: #F59E0B;
+}
+
+.cust-bar-value {
+  width: 90px;
+  flex-shrink: 0;
+  text-align: right;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.cust-ratio-chart-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cust-ratio-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cust-ratio-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cust-ratio-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cust-ratio-legend-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #334155;
+}
+
+/* ── Bộ lọc mở rộng ────────────────────────────────────────────────── */
+.customer-vip-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 46px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #3D494D;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.customer-date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 46px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #64748B;
+}
+
+.customer-date-input {
+  box-sizing: border-box;
+  height: 46px;
+  padding: 12px 14px;
+  background: #FFFFFF;
+  border: 1px solid #BCC8CE;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #111C2C;
+  outline: none;
+}
+
+.customer-date-input:focus {
+  border-color: #00A9CE;
+}
+
+.customer-export-btn {
+  height: 46px;
+  padding: 0 20px;
+  background: #00677F;
+  border: none;
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.customer-export-btn:hover:not(:disabled) {
+  background: #004f61;
+}
+
+.customer-export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

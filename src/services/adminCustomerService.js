@@ -5,6 +5,7 @@ export const getCustomers = async ({
   status,
   search,
   page = 1,
+  pageSize,
 }) => {
   let isLocked = undefined;
   if (status === 'LOCKED') isLocked = true;
@@ -18,6 +19,7 @@ export const getCustomers = async ({
       search: search || undefined,
       keyword: search || undefined,
       page,
+      pageSize: pageSize || undefined,
     },
   });
 
@@ -35,6 +37,15 @@ export const getCustomerDetail = async (id) => {
 export const toggleLock = async (id) => {
   const { data } = await adminAxiosInstance.patch(
     `/admin/customers/${id}/lock`
+  );
+
+  return data;
+};
+
+export const updateNotes = async (id, notes) => {
+  const { data } = await adminAxiosInstance.patch(
+    `/admin/customers/${id}/notes`,
+    { notes }
   );
 
   return data;
