@@ -53,8 +53,6 @@ export default function BookingHistoryPage() {
     fetchBookings(filter, 1);
   }, [filter, fetchBookings]);
 
-  const [toast, setToast] = useState(null); // { type: 'SUCCESS' | 'ERROR', message: string }
-
   // ─── Xử lý Hủy Lịch Đặt (BR-63 & Luồng Phản Hồi) ───────────────────────────
   const handleCancelConfirm = async (id) => {
     setIsCancelling(true);
@@ -66,13 +64,6 @@ export default function BookingHistoryPage() {
       setBookingToCancel(null);
       setSelectedBooking(null);
 
-      // Hiển thị Toast thông báo thành công (thay thế browser alert)
-      setToast({
-        type: 'SUCCESS',
-        message: t('cancelSuccessToast') || 'Đã hủy lịch hẹn rửa xe thành công!'
-      });
-      setTimeout(() => setToast(null), 3500);
-
       // Chuyển hướng / Tải lại danh sách bookings
       fetchBookings(filter, pagi.page);
       navigate('/bookings');
@@ -80,17 +71,11 @@ export default function BookingHistoryPage() {
       console.error("Lỗi khi hủy đặt lịch:", err);
       const serverCode = err?.response?.data?.code || err?.response?.data?.error;
       const serverMsg = err?.response?.data?.message;
-
-      let errorText = serverMsg || t('cancelGenericError') || 'Hủy đơn hàng thất bại.';
       if (serverCode === "CANCELLATION_TIME_EXCEEDED" || serverCode === "CANCEL_TOO_LATE") {
-        errorText = t('cancelTimeExceeded') || 'Đơn hàng chỉ được hủy trước giờ hẹn tối thiểu 1 tiếng.';
+        alert(t('cancelTimeExceeded') || 'Đơn hàng chỉ được hủy trước giờ hẹn tối thiểu 1 tiếng.');
+      } else {
+        alert(serverMsg || t('cancelGenericError') || 'Hủy đơn hàng thất bại.');
       }
-
-      setToast({
-        type: 'ERROR',
-        message: errorText
-      });
-      setTimeout(() => setToast(null), 4000);
     } finally {
       setIsCancelling(false);
     }
@@ -229,20 +214,6 @@ export default function BookingHistoryPage() {
           onConfirm={handleCancelConfirm}
           onClose={() => setBookingToCancel(null)}
         />
-      )}
-
-      {/* 6. TOAST NOTIFICATION OVERLAY (Thay thế hoàn toàn browser alert) */}
-      {toast && (
-        <div className={`fixed top-20 right-6 z-[999999] flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl border text-sm font-extrabold transition-all duration-300 animate-in fade-in slide-in-from-top-4 ${
-          toast.type === 'SUCCESS' || toast.type === 'success'
-            ? 'bg-emerald-500 text-white border-emerald-400 shadow-emerald-500/20'
-            : 'bg-rose-500 text-white border-rose-400 shadow-rose-500/20'
-        }`}>
-          <span className="material-symbols-outlined text-xl">
-            {toast.type === 'SUCCESS' || toast.type === 'success' ? 'check_circle' : 'error'}
-          </span>
-          <span>{toast.message}</span>
-        </div>
       )}
     </div>
   );
