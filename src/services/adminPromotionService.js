@@ -16,6 +16,9 @@ const adminPromotionService = {
   getPromoUsage(id) {
     return adminAxiosInstance.get(`/admin/promotions/${id}/usage`);
   },
+  dispatchRfmAction(data) {
+    return adminAxiosInstance.post('/admin/rfm/send-action', data);
+  },
 };
 
 export default adminPromotionService;

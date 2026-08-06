@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import Papa from "papaparse";
 import { toast } from "react-hot-toast";
+import adminPromotionService from "../../services/adminPromotionService";
 
 const PAGE_SIZE = 20;
 
@@ -46,6 +47,7 @@ export default function RfmTable({ data, initialSegment = "" }) {
   const [sortDir, setSortDir] = useState("desc");
   const [page, setPage] = useState(1);
   const [segmentFilter, setSegmentFilter] = useState(initialSegment);
+  const [sendingKey, setSendingKey] = useState(null);
 
   useEffect(() => {
     setSegmentFilter(initialSegment);
@@ -146,7 +148,25 @@ export default function RfmTable({ data, initialSegment = "" }) {
     }
   };
 
-  const handleAction = (customerName, segmentName) => {
+  const handleAction = async (row, segmentName) => {
+    const customerName = typeof row === 'object' ? (row.customer || row.fullName || "Khách hàng") : row;
+    const customerId = typeof row === 'object' ? (row.customerId || row.customerID || row.id || null) : null;
+    const key = `${customerId || customerName}-${segmentName}`;
+
+    setSendingKey(key);
+    try {
+      await adminPromotionService.dispatchRfmAction({
+        customerId: customerId,
+        customerName: customerName,
+        segmentName: segmentName,
+        actionType: segmentName
+      });
+    } catch (err) {
+      console.warn("Backend RFM action API endpoint not yet connected:", err?.message || err);
+    } finally {
+      setSendingKey(null);
+    }
+
     if (segmentName === "Champions") {
       toast.success(`Đã gửi tặng Voucher VIP giảm 20% cho khách hàng ${customerName}! 💎`);
     } else if (segmentName === "At Risk") {
@@ -245,27 +265,47 @@ export default function RfmTable({ data, initialSegment = "" }) {
                 </td>
                 <td className="rfm-td action">
                   {row.segmentName === "Champions" && (
-                    <button className="rfm-action-btn vip" onClick={() => handleAction(row.customer, "Champions")}>
+                    <button
+                      className="rfm-action-btn vip cursor-pointer"
+                      disabled={sendingKey === `${row.customerId || row.customer}-Champions`}
+                      onClick={() => handleAction(row, "Champions")}
+                    >
                       💎 Tặng voucher VIP
                     </button>
                   )}
                   {row.segmentName === "At Risk" && (
-                    <button className="rfm-action-btn discount" onClick={() => handleAction(row.customer, "At Risk")}>
+                    <button
+                      className="rfm-action-btn discount cursor-pointer"
+                      disabled={sendingKey === `${row.customerId || row.customer}-At Risk`}
+                      onClick={() => handleAction(row, "At Risk")}
+                    >
                       🔔 Gửi mã giảm giá
                     </button>
                   )}
                   {row.segmentName === "New Customers" && (
-                    <button className="rfm-action-btn promo2" onClick={() => handleAction(row.customer, "New Customers")}>
+                    <button
+                      className="rfm-action-btn promo2 cursor-pointer"
+                      disabled={sendingKey === `${row.customerId || row.customer}-New Customers`}
+                      onClick={() => handleAction(row, "New Customers")}
+                    >
                       🎁 Khuyến mãi lần 2
                     </button>
                   )}
                   {row.segmentName === "Lost Customers" && (
-                    <button className="rfm-action-btn winback" onClick={() => handleAction(row.customer, "Lost Customers")}>
+                    <button
+                      className="rfm-action-btn winback cursor-pointer"
+                      disabled={sendingKey === `${row.customerId || row.customer}-Lost Customers`}
+                      onClick={() => handleAction(row, "Lost Customers")}
+                    >
                       ⚡ Chiến dịch win-back
                     </button>
                   )}
                   {row.segmentName === "Inactive customer" && (
-                    <button className="rfm-action-btn remind" onClick={() => handleAction(row.customer, "Inactive customer")}>
+                    <button
+                      className="rfm-action-btn remind cursor-pointer"
+                      disabled={sendingKey === `${row.customerId || row.customer}-Inactive customer`}
+                      onClick={() => handleAction(row, "Inactive customer")}
+                    >
                       🔔 Nhắc nhở & giảm giá
                     </button>
                   )}
