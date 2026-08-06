@@ -18,8 +18,8 @@ function validate({ fullName, phone, password, confirmPassword }) {
   if (!fullName.trim()) errors.fullName = "Vui lòng nhập họ và tên";
   if (!phone.trim()) {
     errors.phone = "Vui lòng nhập số điện thoại";
-  } else if (!/^0\d{9}$/.test(phone.trim())) {
-    errors.phone = "Số điện thoại phải đúng 10 chữ số (bắt đầu bằng 0)";
+  } else if (!/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(phone.trim().replace(/\s/g, ""))) {
+    errors.phone = "Số điện thoại không đúng định dạng (phải có 10 chữ số, VD: 0909123456)";
   }
   if (!password) {
     errors.password = "Vui lòng nhập mật khẩu";
@@ -50,7 +50,7 @@ function InputRow({ label, name, type = "text", value, onChange, placeholder, er
         className={[
           "group flex items-center gap-3 rounded-2xl border-2 bg-slate-50 px-4 py-3.5 transition-all duration-300",
           error
-            ? "border-red-200 bg-red-50/30 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-100"
+            ? "border-red-300 bg-red-50/50 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-100"
             : "border-slate-200/80 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-sm"
         ].join(" ")}
         style={{ padding: "14px 16px" }}
@@ -84,14 +84,14 @@ function InputRow({ label, name, type = "text", value, onChange, placeholder, er
       </div>
 
       {error && (
-        <p className="flex items-center gap-1.5 text-red-500 text-xs px-1" style={{ marginTop: "8px" }}>
+        <p className="flex items-start gap-1.5 text-red-500 text-xs font-semibold px-1 leading-relaxed" style={{ marginTop: "8px" }}>
           <span
-            className="material-symbols-outlined shrink-0 text-sm"
+            className="material-symbols-outlined shrink-0 text-sm mt-0.5"
             style={{ fontVariationSettings: "'FILL' 1" }}
           >
             error
           </span>
-          {error}
+          <span>{error}</span>
         </p>
       )}
     </div>
@@ -172,11 +172,16 @@ export default function RegisterPage() {
       toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
       navigate("/login");
     } catch (err) {
-      if (err.code === "PHONE_ALREADY_EXISTS") {
-        setErrors({ phone: "Số điện thoại này đã được đăng ký" });
-        toast.error("Số điện thoại đã tồn tại trong hệ thống");
+      const code = err?.code;
+      const msg = err?.message || "";
+      if (code === "PHONE_ALREADY_EXISTS" || msg.includes("tồn tại") || msg.includes("đã được đăng ký") || msg.includes("already exists")) {
+        setErrors((prev) => ({
+          ...prev,
+          phone: "Số điện thoại này đã được đăng ký tài khoản trong hệ thống. Vui lòng dùng số khác hoặc Đăng nhập."
+        }));
+        toast.error("Số điện thoại này đã được đăng ký tài khoản!");
       } else {
-        toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+        toast.error(msg || "Có lỗi xảy ra. Vui lòng thử lại.");
       }
     } finally {
       setLoading(false);

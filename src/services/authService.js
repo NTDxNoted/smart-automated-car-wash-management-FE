@@ -52,10 +52,28 @@ export async function register({ fullName, phone, password, confirmPassword }) {
   } catch (err) {
     const code = extractErrorCode(err);
     const status = err?.response?.status;
-    if (code === "PHONE_ALREADY_EXISTS" || status === 409)
-      throw Object.assign(new Error("PHONE_ALREADY_EXISTS"), { code: "PHONE_ALREADY_EXISTS" });
-    if (code)
-      throw Object.assign(new Error(code), { code });
+    const serverMsg = err?.response?.data?.message || err?.response?.data?.error || err?.response?.data || "";
+    const msgStr = String(serverMsg).toLowerCase();
+
+    if (
+      code === "PHONE_ALREADY_EXISTS" ||
+      code === "PHONE_EXISTS" ||
+      code === "DUPLICATE_PHONE" ||
+      status === 409 ||
+      msgStr.includes("tồn tại") ||
+      msgStr.includes("đã được đăng ký") ||
+      msgStr.includes("already exists") ||
+      msgStr.includes("duplicate phone")
+    ) {
+      throw Object.assign(new Error("PHONE_ALREADY_EXISTS"), {
+        code: "PHONE_ALREADY_EXISTS",
+        message: "Số điện thoại này đã được đăng ký tài khoản trong hệ thống."
+      });
+    }
+
+    if (code) {
+      throw Object.assign(new Error(code), { code, message: serverMsg });
+    }
     throw new Error("NETWORK_ERROR");
   }
 }
