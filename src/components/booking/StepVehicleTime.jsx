@@ -12,6 +12,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(true);
+  const [isValidatingPlate, setIsValidatingPlate] = useState(false);
 
   const getBookingWindowDays = (tier) => {
     const tStr = String(tier !== undefined && tier !== null ? tier : '').trim().toUpperCase();
@@ -25,6 +26,59 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
   const bookingWindowDays = getBookingWindowDays(user?.tier);
 
+  // ── Validation Helpers ───────────────────────────────────────────────────
+  const validatePlateFormat = (plate) => {
+    if (!plate || !plate.trim()) {
+      return t('licensePlateRequired') || 'Vui lòng nhập hoặc chọn biển số xe';
+    }
+    const cleanPlate = plate.trim().toUpperCase();
+    if (cleanPlate.length < 6 || cleanPlate.length > 12) {
+      return 'Biển số xe không đạt yêu cầu (độ dài phải từ 6 - 12 ký tự, VD: 51L-007.10)';
+    }
+    if (!/^[0-9A-Z.\-\s]+$/.test(cleanPlate)) {
+      return 'Biển số xe không hợp lệ. Chỉ chấp nhận chữ cái, chữ số, dấu gạch ngang và dấu chấm.';
+    }
+    return null;
+  };
+
+  const checkPlateAvailability = async (plate) => {
+    if (!plate || !plate.trim()) return false;
+
+    const formatErr = validatePlateFormat(plate);
+    if (formatErr) {
+      setErrors(prev => ({ ...prev, licensePlate: formatErr }));
+      return false;
+    }
+
+    setIsValidatingPlate(true);
+    try {
+      const res = await bookingService.validatePlate(plate.trim());
+      if (!res.isAvailable) {
+        const errMsg = res.message || 'Biển số xe này hiện bị khóa hoặc đang có đơn rửa xe chờ xử lý.';
+        setErrors(prev => ({ ...prev, licensePlate: errMsg }));
+        setIsValidatingPlate(false);
+        return false;
+      }
+      setErrors(prev => ({ ...prev, licensePlate: null }));
+      setIsValidatingPlate(false);
+      return true;
+    } catch (err) {
+      const serverCode = err?.response?.data?.error || err?.response?.data?.code;
+      const serverMsg = err?.response?.data?.message || err?.response?.data?.error;
+      let msg = serverMsg || 'Biển số xe không đạt yêu cầu hoặc đang trong thời gian chờ.';
+      if (serverCode === 'VEHICLE_BUFFER_VIOLATION' || serverCode === 'LICENSE_PLATE_LOCKED') {
+        msg = 'Biển số xe này đang có lịch hẹn chờ rửa trong vòng 2 tiếng. Vui lòng chọn biển số khác hoặc kiểm tra lại.';
+      } else if (serverCode === 'LICENSE_PLATE_COOLDOWN') {
+        msg = 'Biển số xe này vừa mới hoàn thành rửa xe trong 1 giờ. Vui lòng chọn giờ hẹn sau 1 tiếng.';
+      } else if (serverCode === 'BOOKING_COOLDOWN_ACTIVE' || serverCode === 'BOOKING_SUSPENDED') {
+        msg = 'Tài khoản / Biển số xe tạm thời bị khóa đặt lịch do hủy đơn 3 lần liên tiếp.';
+      }
+      setErrors(prev => ({ ...prev, licensePlate: msg }));
+      setIsValidatingPlate(false);
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (user) {
       bookingService.getVehicles()
@@ -36,6 +90,9 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
               selectedVehicleId: data[0].id,
               licensePlate: data[0].licensePlate,
             }));
+            if (data[0].licensePlate) {
+              checkPlateAvailability(data[0].licensePlate);
+            }
           }
         })
         .catch(err => console.error('Lỗi fetch xe:', err));
@@ -139,6 +196,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
   };
 
   const handleVehicleChange = (vehicleId) => {
+    setErrors(prev => ({ ...prev, licensePlate: null }));
     if (vehicleId === 'new') {
       setBookingData(prev => ({
         ...prev,
@@ -147,24 +205,46 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       }));
     } else {
       const selected = vehicles.find(v => v.id === vehicleId);
+      const plateVal = selected ? selected.licensePlate : '';
       setBookingData(prev => ({
         ...prev,
         selectedVehicleId: vehicleId,
-        licensePlate: selected ? selected.licensePlate : '',
+        licensePlate: plateVal,
       }));
+      if (plateVal) {
+        checkPlateAvailability(plateVal);
+      }
     }
   };
 
-  const validate = () => {
+  const handleNext = async () => {
     const errs = {};
-    if (!bookingData.phone.trim()) errs.phone = t('phoneRequired');
-    if (!bookingData.licensePlate.trim()) errs.licensePlate = t('licensePlateRequired');
-    if (!selectedDate || !selectedTime) errs.scheduledTime = t('selectSlotRequired');
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
+    if (!bookingData.phone || !bookingData.phone.trim()) {
+      errs.phone = t('phoneRequired') || 'Vui lòng nhập số điện thoại';
+    } else if (!/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(bookingData.phone.trim().replace(/\s/g, ''))) {
+      errs.phone = 'Số điện thoại không đúng định dạng (Ví dụ: 0909123456)';
+    }
 
-  const handleNext = () => { if (validate()) onNext(); };
+    const plateFormatErr = validatePlateFormat(bookingData.licensePlate);
+    if (plateFormatErr) {
+      errs.licensePlate = plateFormatErr;
+    }
+
+    if (!selectedDate || !selectedTime) {
+      errs.scheduledTime = t('selectSlotRequired') || 'Vui lòng chọn ngày và khung giờ rửa xe';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
+    }
+
+    // Validate license plate availability against backend buffer rules
+    const isPlateValid = await checkPlateAvailability(bookingData.licensePlate);
+    if (!isPlateValid) return;
+
+    onNext();
+  };
 
   const activeDaySlots = availableDays.find(d => d.dateStr === selectedDate)?.slots || [];
 
@@ -199,7 +279,10 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                   type="tel"
                   inputMode="tel"
                   value={bookingData.phone}
-                  onChange={e => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
+                  onChange={e => {
+                    setBookingData(prev => ({ ...prev, phone: e.target.value }));
+                    if (errors.phone) setErrors(prev => ({ ...prev, phone: null }));
+                  }}
                   placeholder={t('phonePlaceholder')}
                   className="w-full bg-transparent text-base font-semibold text-slate-800 placeholder:text-slate-400 outline-none"
                 />
@@ -219,12 +302,16 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                 <button
                   type="button"
                   onClick={() => {
+                    setErrors(prev => ({ ...prev, licensePlate: null }));
                     if (vehicles.length > 0) {
                       setBookingData(prev => ({
                         ...prev,
                         selectedVehicleId: vehicles[0].id,
                         licensePlate: vehicles[0].licensePlate
                       }));
+                      if (vehicles[0].licensePlate) {
+                        checkPlateAvailability(vehicles[0].licensePlate);
+                      }
                     }
                   }}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
@@ -239,6 +326,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                 <button
                   type="button"
                   onClick={() => {
+                    setErrors(prev => ({ ...prev, licensePlate: null }));
                     setBookingData(prev => ({
                       ...prev,
                       selectedVehicleId: 'new',
@@ -280,6 +368,15 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                     ))}
                   </select>
                 </span>
+                {errors.licensePlate && (
+                  <div className="mt-2.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in duration-200 shadow-xs">
+                    <span className="material-symbols-outlined text-base shrink-0 text-rose-500 mt-0.5">error</span>
+                    <div className="flex-1 leading-relaxed">
+                      <strong className="block font-bold text-rose-800 mb-0.5">Biển số xe không đạt yêu cầu / Bị khóa:</strong>
+                      <span>{errors.licensePlate}</span>
+                    </div>
+                  </div>
+                )}
               </label>
             )}
 
@@ -297,16 +394,31 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                   <input
                     type="text"
                     value={bookingData.licensePlate}
-                    onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
+                    onChange={e => {
+                      const val = e.target.value.toUpperCase();
+                      setBookingData(prev => ({ ...prev, licensePlate: val }));
+                      if (errors.licensePlate) setErrors(prev => ({ ...prev, licensePlate: null }));
+                    }}
+                    onBlur={() => {
+                      if (bookingData.licensePlate) {
+                        checkPlateAvailability(bookingData.licensePlate);
+                      }
+                    }}
                     placeholder={t('licensePlatePlaceholder') || 'VD: 30F-123.45 hoặc 51F12345'}
                     className="w-full bg-transparent text-base font-semibold uppercase text-slate-800 placeholder:text-slate-400 outline-none"
                   />
+                  {isValidatingPlate && (
+                    <span className="material-symbols-outlined animate-spin text-cyan-600 text-sm">progress_activity</span>
+                  )}
                 </span>
                 {errors.licensePlate && (
-                  <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
-                    <span className="material-symbols-outlined text-xs">error</span>
-                    {errors.licensePlate}
-                  </p>
+                  <div className="mt-2.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in duration-200 shadow-xs">
+                    <span className="material-symbols-outlined text-base shrink-0 text-rose-500 mt-0.5">error</span>
+                    <div className="flex-1 leading-relaxed">
+                      <strong className="block font-bold text-rose-800 mb-0.5">Biển số xe không đạt yêu cầu / Bị khóa:</strong>
+                      <span>{errors.licensePlate}</span>
+                    </div>
+                  </div>
                 )}
               </label>
             )}
@@ -327,7 +439,10 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                   type="tel"
                   inputMode="tel"
                   value={bookingData.phone}
-                  onChange={e => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
+                  onChange={e => {
+                    setBookingData(prev => ({ ...prev, phone: e.target.value }));
+                    if (errors.phone) setErrors(prev => ({ ...prev, phone: null }));
+                  }}
                   placeholder={t('phonePlaceholder')}
                   className="w-full bg-transparent text-base font-semibold text-slate-800 placeholder:text-slate-400 outline-none"
                 />
@@ -348,12 +463,32 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                 <input
                   type="text"
                   value={bookingData.licensePlate}
-                  onChange={e => setBookingData(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
+                  onChange={e => {
+                    const val = e.target.value.toUpperCase();
+                    setBookingData(prev => ({ ...prev, licensePlate: val }));
+                    if (errors.licensePlate) setErrors(prev => ({ ...prev, licensePlate: null }));
+                  }}
+                  onBlur={() => {
+                    if (bookingData.licensePlate) {
+                      checkPlateAvailability(bookingData.licensePlate);
+                    }
+                  }}
                   placeholder={t('licensePlatePlaceholder')}
                   className="w-full bg-transparent text-base font-semibold uppercase text-slate-800 placeholder:text-slate-400 outline-none"
                 />
+                {isValidatingPlate && (
+                  <span className="material-symbols-outlined animate-spin text-cyan-600 text-sm">progress_activity</span>
+                )}
               </span>
-              {errors.licensePlate && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.licensePlate}</p>}
+              {errors.licensePlate && (
+                <div className="mt-2.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in duration-200 shadow-xs">
+                  <span className="material-symbols-outlined text-base shrink-0 text-rose-500 mt-0.5">error</span>
+                  <div className="flex-1 leading-relaxed">
+                    <strong className="block font-bold text-rose-800 mb-0.5">Biển số xe không đạt yêu cầu / Bị khóa:</strong>
+                    <span>{errors.licensePlate}</span>
+                  </div>
+                </div>
+              )}
             </label>
           </>
         )}
