@@ -27,6 +27,17 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
   const bookingWindowDays = getBookingWindowDays(user?.tier);
 
   // ── Validation Helpers ───────────────────────────────────────────────────
+  const validatePhone = (phoneStr) => {
+    if (!phoneStr || !phoneStr.trim()) {
+      return t('phoneRequired') || 'Vui lòng nhập số điện thoại liên hệ';
+    }
+    const cleanPhone = phoneStr.trim().replace(/\s/g, '');
+    if (!/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(cleanPhone)) {
+      return 'Số điện thoại không đúng định dạng (phải bắt đầu bằng 03, 05, 07, 08, 09 và gồm 10 chữ số)';
+    }
+    return null;
+  };
+
   const validatePlateFormat = (plate) => {
     if (!plate || !plate.trim()) {
       return t('licensePlateRequired') || 'Vui lòng nhập hoặc chọn biển số xe';
@@ -219,10 +230,10 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
   const handleNext = async () => {
     const errs = {};
-    if (!bookingData.phone || !bookingData.phone.trim()) {
-      errs.phone = t('phoneRequired') || 'Vui lòng nhập số điện thoại';
-    } else if (!/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(bookingData.phone.trim().replace(/\s/g, ''))) {
-      errs.phone = 'Số điện thoại không đúng định dạng (Ví dụ: 0909123456)';
+
+    const phoneErr = validatePhone(bookingData.phone);
+    if (phoneErr) {
+      errs.phone = phoneErr;
     }
 
     const plateFormatErr = validatePlateFormat(bookingData.licensePlate);
@@ -283,11 +294,20 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                     setBookingData(prev => ({ ...prev, phone: e.target.value }));
                     if (errors.phone) setErrors(prev => ({ ...prev, phone: null }));
                   }}
+                  onBlur={() => {
+                    const phoneErr = validatePhone(bookingData.phone);
+                    if (phoneErr) setErrors(prev => ({ ...prev, phone: phoneErr }));
+                  }}
                   placeholder={t('phonePlaceholder')}
                   className="w-full bg-transparent text-base font-semibold text-slate-800 placeholder:text-slate-400 outline-none"
                 />
               </span>
-              {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.phone}</p>}
+              {errors.phone && (
+                <div className="mt-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+                  <span className="material-symbols-outlined text-base shrink-0 text-red-500">error</span>
+                  <span>{errors.phone}</span>
+                </div>
+              )}
             </label>
 
             {/* Vehicle Mode Toggle Tab (Chọn xe đã lưu / Nhập biển số mới) */}
@@ -443,11 +463,20 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                     setBookingData(prev => ({ ...prev, phone: e.target.value }));
                     if (errors.phone) setErrors(prev => ({ ...prev, phone: null }));
                   }}
+                  onBlur={() => {
+                    const phoneErr = validatePhone(bookingData.phone);
+                    if (phoneErr) setErrors(prev => ({ ...prev, phone: phoneErr }));
+                  }}
                   placeholder={t('phonePlaceholder')}
                   className="w-full bg-transparent text-base font-semibold text-slate-800 placeholder:text-slate-400 outline-none"
                 />
               </span>
-              {errors.phone && <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1"><span className="material-symbols-outlined text-xs">error</span>{errors.phone}</p>}
+              {errors.phone && (
+                <div className="mt-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+                  <span className="material-symbols-outlined text-base shrink-0 text-red-500">error</span>
+                  <span>{errors.phone}</span>
+                </div>
+              )}
             </label>
 
             {/* License plate input */}
