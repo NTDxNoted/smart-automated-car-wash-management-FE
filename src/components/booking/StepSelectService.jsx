@@ -72,11 +72,14 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
       <div
         className="custom-booking-scrollbar"
         style={{
-          maxHeight: '460px',
+          maxHeight: '480px',
           overflowY: 'auto',
           overflowX: 'hidden',
-          paddingRight: '6px',
-          marginTop: '10px'
+          paddingTop: '16px',
+          paddingBottom: '16px',
+          paddingLeft: '6px',
+          paddingRight: '8px',
+          marginTop: '4px'
         }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -90,9 +93,9 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                 type="button"
                 onClick={() => setBookingData(prev => ({ ...prev, service }))}
                 aria-pressed={isSelected}
-                className={`w-full text-left flex flex-col justify-between p-5 rounded-2xl border-2 transition-all duration-300 relative cursor-pointer group overflow-visible ${isSelected
-                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-800 shadow-md ring-2 ring-cyan-400/30 -translate-y-0.5'
-                  : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-400 hover:shadow-lg hover:-translate-y-1'
+                className={`booking-service-card w-full text-left flex flex-col justify-between p-5 rounded-2xl border-2 cursor-pointer group ${isSelected
+                  ? 'is-selected border-cyan-500 bg-cyan-50/50 text-slate-800 shadow-md ring-2 ring-cyan-400/30'
+                  : 'border-slate-100 bg-white text-slate-800 hover:border-cyan-400'
                   }`}
               >
                 <div className="w-full flex flex-col justify-between flex-grow" style={{ padding: '6px' }}>
@@ -111,15 +114,15 @@ export default function StepSelectService({ bookingData, setBookingData, onNext,
                       >
                         {meta.badge}
                       </span>
+                      {isSelected && (
+                        <span
+                          className="w-6.5 h-6.5 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-xs border-2 border-white animate-fade-in shrink-0"
+                          title="Đã chọn"
+                        >
+                          <span className="material-symbols-outlined text-[13px] font-black">check</span>
+                        </span>
+                      )}
                     </div>
-
-                    {isSelected && (
-                      <span
-                        className="absolute -top-2.5 -right-2.5 w-6.5 h-6.5 rounded-full bg-cyan-500 text-white flex items-center justify-center shadow-md border-2 border-white animate-fade-in shrink-0 z-10"
-                      >
-                        <span className="material-symbols-outlined text-[12px] font-black">check</span>
-                      </span>
-                    )}
                   </div>
 
                   {/* Service Info */}
