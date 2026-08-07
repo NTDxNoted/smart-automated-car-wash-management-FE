@@ -478,35 +478,29 @@
 
 /* ── Service Card Transition & Boundary Shielding ── */
 .custom-booking-scrollbar {
-  padding-top: 16px !important;
-  padding-bottom: 16px !important;
-  padding-left: 6px !important;
-  padding-right: 8px !important;
+  padding-top: 6px !important;
+  padding-bottom: 10px !important;
+  padding-left: 4px !important;
+  padding-right: 6px !important;
   box-sizing: border-box !important;
 }
 
 .booking-service-card {
   position: relative !important;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   will-change: transform;
 }
 
 .booking-service-card:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.15), 0 8px 10px -6px rgba(6, 182, 212, 0.1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px -4px rgba(6, 182, 212, 0.12) !important;
 }
 
 .booking-service-card.is-selected {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 20px -4px rgba(6, 182, 212, 0.2) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px -3px rgba(6, 182, 212, 0.18) !important;
 }
 
-.booking-service-card .service-check-badge {
-  position: absolute !important;
-  top: -8px !important;
-  right: -8px !important;
-  z-index: 20 !important;
-}
 
 
 
