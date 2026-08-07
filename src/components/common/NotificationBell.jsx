@@ -95,6 +95,33 @@ export default function NotificationBell({ user }) {
     return `Giảm ${val.toLocaleString('vi-VN')}đ`;
   }
 
+  function formatExpiryDate(p) {
+    const rawStr = p.expiresAt || p.expires_at || p.endDate || p.end_date;
+    if (!rawStr) return null;
+
+    const dateObj = new Date(rawStr);
+    if (isNaN(dateObj.getTime())) return null;
+
+    const now = new Date();
+    const diffMs = dateObj.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 0) {
+      return locale === 'en' ? 'Expired' : 'Đã hết hạn';
+    }
+    if (diffDays === 1) {
+      return locale === 'en' ? 'Expires today' : 'Hết hạn hôm nay';
+    }
+    if (diffDays <= 3) {
+      return locale === 'en' ? `Expires in ${diffDays} days` : `Hết hạn sau ${diffDays} ngày`;
+    }
+
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return locale === 'en' ? `Exp: ${day}/${month}/${year}` : `HSD: ${day}/${month}/${year}`;
+  }
+
   const visiblePromotions = promotions.filter(p => !dismissedIds.includes(p.id || p.code));
 
   const modalContent = (
@@ -144,6 +171,7 @@ export default function NotificationBell({ user }) {
             const promoId = p.id || p.code || idx;
             const code = p.code || p.promoCode || p.promo_code || `PROMO-${idx + 1}`;
             const isCopied = copiedCode === code;
+            const expiryLabel = formatExpiryDate(p);
 
             return (
               <div
@@ -173,13 +201,19 @@ export default function NotificationBell({ user }) {
                 </div>
 
                 {/* Badge Info */}
-                <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                <div className="flex items-center gap-2 pt-1 border-t border-slate-100 flex-wrap">
                   <span className="text-xs font-black font-mono bg-slate-100 text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200">
                     {code}
                   </span>
                   <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/60">
                     {formatDiscount(p)}
                   </span>
+                  {expiryLabel && (
+                    <span className="text-[11px] font-bold text-amber-700 bg-amber-50/90 px-2 py-1 rounded-lg border border-amber-200/70 flex items-center gap-1 ml-auto">
+                      <span className="material-symbols-outlined text-xs text-amber-600">schedule</span>
+                      {expiryLabel}
+                    </span>
+                  )}
                 </div>
 
                 {/* Bottom Action Buttons - Exactly matching reference screenshot */}
