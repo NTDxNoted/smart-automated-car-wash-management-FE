@@ -339,47 +339,107 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
               )}
             </label>
 
-            {/* Vehicle Selector or Input */}
-            {vehicles.length > 0 ? (
-              <label className="block">
+            {/* Vehicle Mode Toggle Tab (Chọn xe đã lưu / Nhập biển số mới) */}
+            <div className="block">
+              <span
+                className="block text-sm font-bold text-slate-700 tracking-wide"
+                style={{ marginBottom: '8px' }}
+              >
+                Phương thức chọn xe
+              </span>
+              <div className="flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErrors(prev => ({ ...prev, licensePlate: null }));
+                    if (vehicles.length > 0) {
+                      setBookingData(prev => ({
+                        ...prev,
+                        selectedVehicleId: vehicles[0].id,
+                        licensePlate: vehicles[0].licensePlate
+                      }));
+                      if (vehicles[0].licensePlate) {
+                        checkPlateAvailability(vehicles[0].licensePlate);
+                      }
+                    }
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
+                    bookingData.selectedVehicleId !== 'new' && bookingData.selectedVehicleId !== null
+                      ? 'bg-white text-cyan-600 shadow-sm border border-slate-200/50'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  <span>🚗</span>
+                  <span>Chọn xe đã lưu</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErrors(prev => ({ ...prev, licensePlate: null }));
+                    setBookingData(prev => ({
+                      ...prev,
+                      selectedVehicleId: 'new',
+                      licensePlate: ''
+                    }));
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
+                    bookingData.selectedVehicleId === 'new'
+                      ? 'bg-white text-cyan-600 shadow-sm border border-slate-200/50'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  <span>✏️</span>
+                  <span>Nhập biển số mới</span>
+                </button>
+              </div>
+            </div>
+
+            {/* If 'Chọn xe đã lưu' active: Dropdown */}
+            {bookingData.selectedVehicleId !== 'new' && vehicles.length > 0 && (
+              <label className="block sm:col-span-2">
                 <span
-                  className="block text-sm font-bold text-slate-700 tracking-wide flex justify-between items-center"
+                  className="block text-sm font-bold text-slate-700 tracking-wide"
                   style={{ marginBottom: '8px' }}
                 >
-                  <span>{t('savedVehiclesLabel')}</span>
-                  <span className="text-xs text-cyan-600 font-normal">{vehicles.length} xe khả dụng</span>
+                  {t('selectVehicleLabel') || 'Chọn Xe Của Bạn'}
                 </span>
-                <div className="relative">
+                <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
+                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
                   <select
-                    value={bookingData.selectedVehicleId || 'new'}
+                    value={bookingData.selectedVehicleId}
                     onChange={e => handleVehicleChange(e.target.value)}
-                    className="w-full appearance-none rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 pr-10 text-base font-bold text-slate-800 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100/50 outline-none transition-all duration-300 cursor-pointer"
+                    className="w-full bg-transparent text-base font-semibold text-slate-800 outline-none cursor-pointer"
                   >
                     {vehicles.map(v => (
-                      <option key={v.id} value={v.id}>
-                        {v.model ? `${v.licensePlate} (${v.model})` : v.licensePlate}
+                      <option key={v.id} value={v.id} className="bg-white">
+                        {v.model ? `${v.model} (${v.licensePlate})` : v.licensePlate}
                       </option>
                     ))}
-                    <option value="new">+ {t('enterNewPlateOption')}</option>
                   </select>
-                  <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                    expand_more
-                  </span>
-                </div>
+                </span>
+                {errors.licensePlate && (
+                  <div className="mt-2.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in duration-200 shadow-xs">
+                    <span className="material-symbols-outlined text-base shrink-0 text-rose-500 mt-0.5">error</span>
+                    <div className="flex-1 leading-relaxed">
+                      <strong className="block font-bold text-rose-800 mb-0.5">Biển số xe không đạt yêu cầu / Bị khóa:</strong>
+                      <span>{errors.licensePlate}</span>
+                    </div>
+                  </div>
+                )}
               </label>
-            ) : null}
+            )}
 
-            {/* If choosing new plate or no saved vehicles */}
+            {/* If 'Nhập biển số mới' active OR no saved vehicles: Input text box */}
             {(bookingData.selectedVehicleId === 'new' || vehicles.length === 0) && (
               <label className="block sm:col-span-2">
                 <span
                   className="block text-sm font-bold text-slate-700 tracking-wide"
                   style={{ marginBottom: '8px' }}
                 >
-                  {t('licensePlateLabel')}
+                  {t('licensePlateLabel') || 'Biển số xe mới'}
                 </span>
                 <span className="group flex items-center gap-3 rounded-2xl border-2 border-slate-100 bg-white px-4 py-3.5 focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-100/50 focus-within:shadow-md transition-all duration-300">
-                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">directions_car</span>
+                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-cyan-600 transition-colors duration-300 text-xl">badge</span>
                   <input
                     type="text"
                     value={bookingData.licensePlate}
