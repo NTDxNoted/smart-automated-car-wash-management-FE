@@ -51,6 +51,31 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
     }
   }, [open]);
 
+  // Helper to compute actual remaining slot count for a given slot object & date
+  const getSlotCount = (slotObj, targetDate = form.bookingDate) => {
+    if (!slotObj) return 0;
+    const timeStr = typeof slotObj === 'string' ? slotObj : slotObj.time;
+    const maxCapacity = 3;
+    const bookedInList = (existingBookings || []).filter(b => {
+      if (!b.scheduledTime) return false;
+      const bStatus = (b.status || '').toUpperCase();
+      if (bStatus === 'CANCELLED' || bStatus === 'FAILED') return false;
+
+      const [bDate, bTime] = b.scheduledTime.split('T');
+      const bTimeShort = bTime ? bTime.slice(0, 5) : '';
+      return bDate === targetDate && bTimeShort === timeStr;
+    }).length;
+
+    let c = maxCapacity - bookedInList;
+    if (typeof slotObj === 'object' && slotObj.availableCount !== undefined) {
+      c = Math.min(slotObj.availableCount, c);
+    }
+    if (typeof slotObj === 'object' && (slotObj.available === false || slotObj.isAvailable === false)) {
+      c = 0;
+    }
+    return Math.max(0, c);
+  };
+
   // Fetch available slots when date or plate changes
   useEffect(() => {
     if (!open || !form.bookingDate) return;
@@ -62,29 +87,33 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
         if (Array.isArray(slotsData) && slotsData.length > 0) {
           finalSlots = slotsData;
         } else {
-          finalSlots = DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 4, available: true }));
+          finalSlots = DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 3, available: true }));
         }
         setSlotsList(finalSlots);
 
         // Auto select first available slot
-        const firstAvail = finalSlots.find(s => (s.availableCount > 0 || s.available !== false));
+        const firstAvail = finalSlots.find(s => {
+          const tStr = typeof s === 'string' ? s : s.time;
+          return getSlotCount(s, form.bookingDate) > 0;
+        });
         const defaultTime = firstAvail
           ? (typeof firstAvail === 'string' ? firstAvail : firstAvail.time)
           : (finalSlots[0] ? (typeof finalSlots[0] === 'string' ? finalSlots[0] : finalSlots[0].time) : '');
 
         setForm(prev => ({
           ...prev,
-          bookingTime: prev.bookingTime && finalSlots.some(s => (typeof s === 'string' ? s : s.time) === prev.bookingTime) ? prev.bookingTime : defaultTime
+          bookingTime: prev.bookingTime && getSlotCount(prev.bookingTime, form.bookingDate) > 0 ? prev.bookingTime : defaultTime
         }));
       })
       .catch(err => {
         console.error('Lỗi lấy danh sách slot:', err);
-        const fallback = DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 4, available: true }));
+        const fallback = DEFAULT_SLOTS.map(t => ({ time: t, availableCount: 3, available: true }));
         setSlotsList(fallback);
-        setForm(prev => ({ ...prev, bookingTime: fallback[0].time }));
+        const firstAvail = fallback.find(s => getSlotCount(s, form.bookingDate) > 0);
+        setForm(prev => ({ ...prev, bookingTime: firstAvail ? firstAvail.time : fallback[0].time }));
       })
       .finally(() => setLoadingSlots(false));
-  }, [open, form.bookingDate, form.plate]);
+  }, [open, form.bookingDate, form.plate, existingBookings]);
 
   if (!open) return null;
 
@@ -190,7 +219,8 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
 
     // 7. Validate Slot KÍN (Hết slot)
     const selectedSlotObj = slotsList.find(s => (typeof s === 'string' ? s : s.time) === form.bookingTime);
-    if (selectedSlotObj && (selectedSlotObj.availableCount === 0 || selectedSlotObj.available === false)) {
+    const countRemaining = getSlotCount(selectedSlotObj || form.bookingTime, form.bookingDate);
+    if (countRemaining === 0) {
       setError('Khung giờ này đã KÍN (hết slot). Vui lòng chọn khung giờ khác.');
       return;
     }
@@ -398,8 +428,8 @@ export default function WalkInModal({ open, onClose, onSuccess, existingBookings
                   >
                     {slotsList.map(slot => {
                       const timeStr = typeof slot === 'string' ? slot : slot.time;
-                      const count = typeof slot === 'object' && slot.availableCount !== undefined ? slot.availableCount : (slot.available ? 4 : 0);
-                      const isFull = count === 0 || slot.available === false;
+                      const count = getSlotCount(slot, form.bookingDate);
+                      const isFull = count === 0;
                       const displayLabel = isFull
                         ? `${timeStr} - KÍN (Hết slot)`
                         : `${timeStr} (• ${count} chỗ trống)`;
