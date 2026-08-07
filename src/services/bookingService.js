@@ -35,11 +35,9 @@ export const bookingService = {
 
             let message = serverMsg;
             if (serverCode === 'LICENSE_PLATE_LOCKED' || serverCode === 'VEHICLE_BUFFER_VIOLATION' || serverCode === 'PENDING_BOOKING_EXISTS' || msgStr.includes('pending') || msgStr.includes('chờ')) {
-                message = 'Biển số xe này đã có đơn đặt lịch đang chờ rửa (Pending). Vui lòng chọn biển số khác hoặc kiểm tra lại.';
-            } else if (serverCode === 'LICENSE_PLATE_COOLDOWN' || serverCode === 'COMPLETED_COOLDOWN' || msgStr.includes('hoàn thành') || msgStr.includes('1 tiếng') || msgStr.includes('60 phút') || msgStr.includes('cooldown')) {
-                message = 'Biển số xe này vừa hoàn thành rửa xe. Tạm thời không được đặt lịch trong vòng 1 tiếng (60 phút). Vui lòng quay lại sau.';
+                message = 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
             } else if (!message) {
-                message = 'Biển số xe này hiện chưa thể đặt lịch (đang có đơn chờ rửa hoặc vừa hoàn thành trong vòng 1 giờ).';
+                message = 'Biển số xe này đã được đặt lịch rồi.';
             }
             return { isAvailable: false, code: serverCode, message };
         }

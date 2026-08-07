@@ -66,57 +66,28 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       // 1. Check with Backend API
       const res = await bookingService.validatePlate(plate.trim());
       if (!res.isAvailable) {
-        const errMsg = res.message || 'Biển số xe này hiện bị khóa hoặc đang có đơn rửa xe chờ xử lý.';
+        const errMsg = res.message || 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác.';
         setErrors(prev => ({ ...prev, licensePlate: errMsg, scheduledTime: errMsg }));
         setIsValidatingPlate(false);
         return false;
       }
 
-      // 2. Client-side check against myBookings list for buffer rules
+      // 2. Client-side check against myBookings list for active Pending bookings
       if (user) {
         try {
           const myBookingsRes = await bookingService.getMyBookings({ page: 1, pageSize: 50 });
           const list = myBookingsRes?.data || [];
           const cleanTargetPlate = plate.trim().replace(/[-.\s]/g, '').toUpperCase();
-          const targetMs = targetScheduledTime ? new Date(targetScheduledTime).getTime() : Date.now();
 
-          // Rule 1: Check Pending / Confirmed / Processing active bookings (2h buffer window)
+          // ONLY check Pending / Confirmed / Processing / In_Progress active bookings (COMPLETED is allowed to re-book immediately!)
           const activePending = list.find(b => {
             const bPlate = (b.vehiclePlate || '').trim().replace(/[-.\s]/g, '').toUpperCase();
             const status = String(b.status || '').toUpperCase();
-            if (bPlate === cleanTargetPlate && (status === 'PENDING' || status === 'CONFIRMED' || status === 'IN_PROGRESS' || status === 'PROCESSING')) {
-              const bMs = new Date(b.scheduledTime || b.createdAt).getTime();
-              const diffMins = Math.abs(targetMs - bMs) / (1000 * 60);
-              return diffMins < 120; // 2h buffer window
-            }
-            return false;
+            return bPlate === cleanTargetPlate && (status === 'PENDING' || status === 'CONFIRMED' || status === 'IN_PROGRESS' || status === 'PROCESSING');
           });
 
           if (activePending) {
-            const msg = 'Biển số xe này đã có đơn đặt lịch (Pending) quá gần khung giờ này (trong vòng 2 tiếng). Vui lòng chọn khung giờ khác hoặc biển số khác.';
-            setErrors(prev => ({
-              ...prev,
-              licensePlate: msg,
-              scheduledTime: msg
-            }));
-            setIsValidatingPlate(false);
-            return false;
-          }
-
-          // Rule 2: Check Completed bookings within 60 minutes cooldown
-          const recentCompleted = list.find(b => {
-            const bPlate = (b.vehiclePlate || '').trim().replace(/[-.\s]/g, '').toUpperCase();
-            const status = String(b.status || '').toUpperCase();
-            if (bPlate === cleanTargetPlate && status === 'COMPLETED') {
-              const bMs = new Date(b.scheduledTime || b.createdAt).getTime();
-              const diffMins = (targetMs - bMs) / (1000 * 60);
-              return diffMins >= 0 && diffMins < 60; // 1h cooldown
-            }
-            return false;
-          });
-
-          if (recentCompleted) {
-            const msg = 'Biển số xe này vừa hoàn thành rửa xe. Tạm thời không thể đặt lịch trong vòng 1 tiếng (60 phút). Vui lòng chọn khung giờ sau 1 tiếng.';
+            const msg = 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
             setErrors(prev => ({
               ...prev,
               licensePlate: msg,
@@ -139,14 +110,12 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       const msgStr = String(serverMsg || '').toLowerCase();
 
       let msg = serverMsg;
-      if (serverCode === 'VEHICLE_BUFFER_VIOLATION' || serverCode === 'LICENSE_PLATE_LOCKED' || msgStr.includes('pending') || msgStr.includes('trùng') || msgStr.includes('gần')) {
-        msg = 'Biển số xe này đã có lịch hẹn trùng hoặc quá gần thời gian này (trong 2 tiếng). Vui lòng chọn giờ khác.';
-      } else if (serverCode === 'LICENSE_PLATE_COOLDOWN' || serverCode === 'COMPLETED_COOLDOWN' || msgStr.includes('hoàn thành') || msgStr.includes('1 tiếng') || msgStr.includes('60 phút')) {
-        msg = 'Biển số xe này vừa hoàn thành rửa xe trong vòng 1 tiếng. Vui lòng chọn khung giờ sau 1 tiếng.';
+      if (serverCode === 'VEHICLE_BUFFER_VIOLATION' || serverCode === 'LICENSE_PLATE_LOCKED' || msgStr.includes('pending') || msgStr.includes('đã được đặt') || msgStr.includes('trùng')) {
+        msg = 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
       } else if (serverCode === 'BOOKING_COOLDOWN_ACTIVE' || serverCode === 'BOOKING_SUSPENDED') {
         msg = 'Tài khoản / Biển số xe tạm thời bị khóa đặt lịch do hủy đơn 3 lần liên tiếp.';
       } else if (!msg) {
-        msg = 'Biển số xe không đạt yêu cầu hoặc đang trong thời gian chờ.';
+        msg = 'Biển số xe không đạt yêu cầu hoặc đã được đặt lịch.';
       }
       setErrors(prev => ({ ...prev, licensePlate: msg, scheduledTime: msg }));
       setIsValidatingPlate(false);
