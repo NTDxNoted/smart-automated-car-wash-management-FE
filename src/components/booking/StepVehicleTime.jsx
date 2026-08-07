@@ -252,7 +252,18 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     if (!selectedDate || !selectedTime) {
       errs.scheduledTime = t('selectSlotRequired') || 'Vui lòng chọn ngày và khung giờ rửa xe';
     } else {
-      // 60-minute advance booking rule check
+      // 1. Check if selected slot is full
+      const currentDaySlots = availableDays.find(d => d.dateStr === selectedDate)?.slots || [];
+      const chosenSlot = currentDaySlots.find(s => (typeof s === 'string' ? s : s.time) === selectedTime);
+
+      if (chosenSlot) {
+        const count = typeof chosenSlot === 'object' ? (chosenSlot.availableCount ?? (chosenSlot.available === false ? 0 : 3)) : 3;
+        if (count <= 0 || chosenSlot.available === false || chosenSlot.isAvailable === false) {
+          errs.scheduledTime = 'Khung giờ này hiện tại đã kín (đã có người đặt trước). Vui lòng chọn khung giờ khác.';
+        }
+      }
+
+      // 2. 60-minute advance booking rule check
       const d = new Date();
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -268,7 +279,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         const diffMins = (slotDate.getTime() - now.getTime()) / (1000 * 60);
 
         if (diffMins < 60) {
-          errs.scheduledTime = 'Khung giờ rửa xe phải được đặt trước ít nhất 60 phút. V vui lòng chọn giờ khác.';
+          errs.scheduledTime = 'Khung giờ rửa xe phải được đặt trước ít nhất 60 phút. Vui lòng chọn giờ khác.';
         }
       }
     }
