@@ -437,7 +437,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
                   >
                     {vehicles.map(v => (
                       <option key={v.id} value={v.id} className="bg-white">
-                        {v.model ? `${v.model} (${v.licensePlate})` : v.licensePlate}
+                        {(v.model ? `${v.model} (${v.licensePlate})` : v.licensePlate) + (v.hasPendingBooking ? ' — Đang có lịch chờ' : '')}
                       </option>
                     ))}
                   </select>

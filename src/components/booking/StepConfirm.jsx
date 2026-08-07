@@ -83,6 +83,7 @@ export default function StepConfirm({ bookingData, onBack, user }) {
       case 'PENDING_QUOTA_EXCEEDED': return t('quotaExceeded');
       case 'SLOT_NOT_AVAILABLE': return t('slotUnavailable');
       case 'VEHICLE_BUFFER_VIOLATION': return 'Biển số xe này đã được đặt lịch (đơn chưa hoàn thành). Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
+      case 'VEHICLE_ALREADY_PENDING': return t('vehicleAlreadyPending');
       case 'BOOKING_WINDOW_VIOLATION': return t('bookingWindowViolation');
       case 'BOOKING_SUSPENDED': return t('bookingSuspended');
       default: return t('genericBookingError');

@@ -61,6 +61,7 @@ export const bookingService = {
             licensePlate: v.licensePlate,
             model: v.model || '',
             isActive: v.isActive,
+            hasPendingBooking: !!v.hasPendingBooking,
         }));
     },
 
