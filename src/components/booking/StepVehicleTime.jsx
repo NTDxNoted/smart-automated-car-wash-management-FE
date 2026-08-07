@@ -52,7 +52,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     return null;
   };
 
-  const checkPlateAvailability = async (plate) => {
+  const checkPlateAvailability = async (plate, targetScheduledTime = null) => {
     if (!plate || !plate.trim()) return false;
 
     const formatErr = validatePlateFormat(plate);
@@ -67,51 +67,60 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       const res = await bookingService.validatePlate(plate.trim());
       if (!res.isAvailable) {
         const errMsg = res.message || 'Biển số xe này hiện bị khóa hoặc đang có đơn rửa xe chờ xử lý.';
-        setErrors(prev => ({ ...prev, licensePlate: errMsg }));
+        setErrors(prev => ({ ...prev, licensePlate: errMsg, scheduledTime: errMsg }));
         setIsValidatingPlate(false);
         return false;
       }
 
-      // 2. Instant client-side check against myBookings list (if logged in)
+      // 2. Client-side check against myBookings list for buffer rules
       if (user) {
         try {
-          const myBookingsRes = await bookingService.getMyBookings({ page: 1, pageSize: 20 });
+          const myBookingsRes = await bookingService.getMyBookings({ page: 1, pageSize: 50 });
           const list = myBookingsRes?.data || [];
           const cleanTargetPlate = plate.trim().replace(/[-.\s]/g, '').toUpperCase();
+          const targetMs = targetScheduledTime ? new Date(targetScheduledTime).getTime() : Date.now();
 
-          // Rule 1: Check Pending / Confirmed / Processing active bookings
+          // Rule 1: Check Pending / Confirmed / Processing active bookings (2h buffer window)
           const activePending = list.find(b => {
             const bPlate = (b.vehiclePlate || '').trim().replace(/[-.\s]/g, '').toUpperCase();
             const status = String(b.status || '').toUpperCase();
-            return bPlate === cleanTargetPlate && (status === 'PENDING' || status === 'CONFIRMED' || status === 'IN_PROGRESS' || status === 'PROCESSING');
+            if (bPlate === cleanTargetPlate && (status === 'PENDING' || status === 'CONFIRMED' || status === 'IN_PROGRESS' || status === 'PROCESSING')) {
+              const bMs = new Date(b.scheduledTime || b.createdAt).getTime();
+              const diffMins = Math.abs(targetMs - bMs) / (1000 * 60);
+              return diffMins < 120; // 2h buffer window
+            }
+            return false;
           });
 
           if (activePending) {
+            const msg = 'Biển số xe này đã có đơn đặt lịch (Pending) quá gần khung giờ này (trong vòng 2 tiếng). Vui lòng chọn khung giờ khác hoặc biển số khác.';
             setErrors(prev => ({
               ...prev,
-              licensePlate: 'Biển số xe này đã có đơn đặt lịch đang chờ rửa (Pending). Vui lòng chọn biển số khác hoặc kiểm tra lại lịch hẹn.'
+              licensePlate: msg,
+              scheduledTime: msg
             }));
             setIsValidatingPlate(false);
             return false;
           }
 
-          // Rule 2: Check Completed bookings within 1 hour (60 mins)
+          // Rule 2: Check Completed bookings within 60 minutes cooldown
           const recentCompleted = list.find(b => {
             const bPlate = (b.vehiclePlate || '').trim().replace(/[-.\s]/g, '').toUpperCase();
             const status = String(b.status || '').toUpperCase();
             if (bPlate === cleanTargetPlate && status === 'COMPLETED') {
-              const bookingTime = new Date(b.scheduledTime || b.createdAt).getTime();
-              const now = Date.now();
-              const diffMins = (now - bookingTime) / (1000 * 60);
-              return diffMins >= 0 && diffMins < 60; // within 1 hour cooldown
+              const bMs = new Date(b.scheduledTime || b.createdAt).getTime();
+              const diffMins = (targetMs - bMs) / (1000 * 60);
+              return diffMins >= 0 && diffMins < 60; // 1h cooldown
             }
             return false;
           });
 
           if (recentCompleted) {
+            const msg = 'Biển số xe này vừa hoàn thành rửa xe. Tạm thời không thể đặt lịch trong vòng 1 tiếng (60 phút). Vui lòng chọn khung giờ sau 1 tiếng.';
             setErrors(prev => ({
               ...prev,
-              licensePlate: 'Biển số xe này vừa hoàn thành rửa xe. Tạm thời không thể đặt lịch trong vòng 1 tiếng (60 phút). Vui lòng quay lại sau.'
+              licensePlate: msg,
+              scheduledTime: msg
             }));
             setIsValidatingPlate(false);
             return false;
@@ -121,7 +130,7 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
         }
       }
 
-      setErrors(prev => ({ ...prev, licensePlate: null }));
+      setErrors(prev => ({ ...prev, licensePlate: null, scheduledTime: null }));
       setIsValidatingPlate(false);
       return true;
     } catch (err) {
@@ -130,16 +139,16 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       const msgStr = String(serverMsg || '').toLowerCase();
 
       let msg = serverMsg;
-      if (serverCode === 'VEHICLE_BUFFER_VIOLATION' || serverCode === 'LICENSE_PLATE_LOCKED' || msgStr.includes('pending') || msgStr.includes('chờ')) {
-        msg = 'Biển số xe này đã có đơn đặt lịch đang chờ rửa (Pending). Vui lòng chọn biển số khác hoặc kiểm tra lại.';
+      if (serverCode === 'VEHICLE_BUFFER_VIOLATION' || serverCode === 'LICENSE_PLATE_LOCKED' || msgStr.includes('pending') || msgStr.includes('trùng') || msgStr.includes('gần')) {
+        msg = 'Biển số xe này đã có lịch hẹn trùng hoặc quá gần thời gian này (trong 2 tiếng). Vui lòng chọn giờ khác.';
       } else if (serverCode === 'LICENSE_PLATE_COOLDOWN' || serverCode === 'COMPLETED_COOLDOWN' || msgStr.includes('hoàn thành') || msgStr.includes('1 tiếng') || msgStr.includes('60 phút')) {
-        msg = 'Biển số xe này vừa hoàn thành rửa xe. Tạm thời không thể đặt lịch trong vòng 1 tiếng (60 phút). Vui lòng quay lại sau.';
+        msg = 'Biển số xe này vừa hoàn thành rửa xe trong vòng 1 tiếng. Vui lòng chọn khung giờ sau 1 tiếng.';
       } else if (serverCode === 'BOOKING_COOLDOWN_ACTIVE' || serverCode === 'BOOKING_SUSPENDED') {
         msg = 'Tài khoản / Biển số xe tạm thời bị khóa đặt lịch do hủy đơn 3 lần liên tiếp.';
       } else if (!msg) {
         msg = 'Biển số xe không đạt yêu cầu hoặc đang trong thời gian chờ.';
       }
-      setErrors(prev => ({ ...prev, licensePlate: msg }));
+      setErrors(prev => ({ ...prev, licensePlate: msg, scheduledTime: msg }));
       setIsValidatingPlate(false);
       return false;
     }
@@ -216,38 +225,6 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           });
         });
         setLoadingSlots(false);
-
-        if (selectedTime) {
-          const matchingSlot = slotsData.find(s => s.time === selectedTime);
-          const isStillAvailable = matchingSlot && matchingSlot.availableCount > 0;
-
-          const isSlotViolatingAdvanceRule = (timeStr) => {
-            if (!timeStr || !selectedDate) return false;
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const dateVal = String(d.getDate()).padStart(2, '0');
-            const todayStr = `${year}-${month}-${dateVal}`;
-
-            if (selectedDate !== todayStr) return false;
-
-            const now = new Date();
-            const [y, m, dayVal] = selectedDate.split('-').map(Number);
-            const [hours, minutes] = timeStr.split(':').map(Number);
-
-            const slotDate = new Date(y, m - 1, dayVal, hours, minutes, 0);
-            const diffMins = (slotDate.getTime() - now.getTime()) / (1000 * 60);
-
-            return diffMins < 60;
-          };
-
-          const violatesRule = isSlotViolatingAdvanceRule(selectedTime);
-
-          if (!isStillAvailable || violatesRule) {
-            setSelectedTime('');
-            setBookingData(prev => ({ ...prev, scheduledTime: '' }));
-          }
-        }
       })
       .catch(err => {
         console.error('Lỗi fetch slot giờ trống:', err);
@@ -259,10 +236,11 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
     setSelectedDate(dateStr);
     setSelectedTime(timeStr);
     setBookingData(prev => ({ ...prev, scheduledTime: `${dateStr}T${timeStr}` }));
+    if (errors.scheduledTime) setErrors(prev => ({ ...prev, scheduledTime: null }));
   };
 
   const handleVehicleChange = (vehicleId) => {
-    setErrors(prev => ({ ...prev, licensePlate: null }));
+    setErrors(prev => ({ ...prev, licensePlate: null, scheduledTime: null }));
     if (vehicleId === 'new') {
       setBookingData(prev => ({
         ...prev,
@@ -298,6 +276,26 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
 
     if (!selectedDate || !selectedTime) {
       errs.scheduledTime = t('selectSlotRequired') || 'Vui lòng chọn ngày và khung giờ rửa xe';
+    } else {
+      // 60-minute advance booking rule check
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const dateVal = String(d.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${dateVal}`;
+
+      if (selectedDate === todayStr) {
+        const now = new Date();
+        const [y, m, dayVal] = selectedDate.split('-').map(Number);
+        const [hours, minutes] = selectedTime.split(':').map(Number);
+
+        const slotDate = new Date(y, m - 1, dayVal, hours, minutes, 0);
+        const diffMins = (slotDate.getTime() - now.getTime()) / (1000 * 60);
+
+        if (diffMins < 60) {
+          errs.scheduledTime = 'Khung giờ rửa xe phải được đặt trước ít nhất 60 phút. Vui lòng chọn giờ khác.';
+        }
+      }
     }
 
     if (Object.keys(errs).length > 0) {
@@ -305,8 +303,9 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       return;
     }
 
-    // Validate license plate availability against backend buffer rules
-    const isPlateValid = await checkPlateAvailability(bookingData.licensePlate);
+    const scheduledIso = `${selectedDate}T${selectedTime}`;
+    // Validate license plate availability against backend & buffer rules for target time
+    const isPlateValid = await checkPlateAvailability(bookingData.licensePlate, scheduledIso);
     if (!isPlateValid) return;
 
     onNext();
@@ -647,7 +646,13 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           )}
 
           {errors.scheduledTime && (
-            <p className="text-red-500 text-xs mt-2">{errors.scheduledTime}</p>
+            <div className="mt-3.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in duration-200 shadow-xs">
+              <span className="material-symbols-outlined text-base shrink-0 text-rose-500 mt-0.5">error</span>
+              <div className="flex-1 leading-relaxed">
+                <strong className="block font-bold text-rose-800 mb-0.5">Không thể chọn thời gian này:</strong>
+                <span>{errors.scheduledTime}</span>
+              </div>
+            </div>
           )}
         </div>
       )}
