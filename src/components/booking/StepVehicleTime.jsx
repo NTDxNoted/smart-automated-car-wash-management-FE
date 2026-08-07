@@ -88,12 +88,20 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
           // ONLY check Pending / Confirmed / Processing / In_Progress active bookings (COMPLETED is allowed to re-book immediately!)
           const activePending = list.find(b => {
             const bPlate = (b.licensePlate || b.vehiclePlate || b.plate || '').trim().replace(/[-.\s]/g, '').toUpperCase();
-            const status = String(b.status || '').toUpperCase();
-            return bPlate === cleanTargetPlate && (status === 'PENDING' || status === 'CONFIRMED' || status === 'IN_PROGRESS' || status === 'PROCESSING');
+            const status = String(b.status || '').toUpperCase().replace(/_/g, '');
+            return bPlate === cleanTargetPlate && (status === 'PENDING' || status === 'CONFIRMED' || status === 'INPROGRESS' || status === 'PROCESSING');
           });
 
           if (activePending) {
-            const msg = 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
+            let msg = 'Biển số xe này đã có đơn đặt lịch đang chờ rửa. Vui lòng hoàn thành đơn hiện tại hoặc chọn biển số khác.';
+            if (targetScheduledTime && activePending.scheduledTime) {
+              const tTarget = new Date(targetScheduledTime).getTime();
+              const tActive = new Date(activePending.scheduledTime).getTime();
+              if (!isNaN(tTarget) && !isNaN(tActive) && Math.abs(tTarget - tActive) <= 120 * 60 * 1000) {
+                msg = 'Biển số xe này đã có lịch hẹn trùng hoặc quá gần thời gian này (trong vòng 120 phút). Vui lòng chọn giờ khác hoặc biển số khác.';
+              }
+            }
+
             setErrors(prev => ({
               ...prev,
               licensePlate: msg,
