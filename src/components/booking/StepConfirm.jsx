@@ -5,6 +5,7 @@ import { loyaltyService } from '../../services/loyaltyService';
 import InvoicePreview from './InvoicePreview';
 import PromoCodeInput from './PromoCodeInput';
 import { useLanguage } from '../../context/LanguageContext';
+import { vnLocalToUtcIso } from '../../utils/datetime';
 
 export default function StepConfirm({ bookingData, onBack, user }) {
   const navigate = useNavigate();
@@ -89,12 +90,16 @@ export default function StepConfirm({ bookingData, onBack, user }) {
     setLoading(true);
     setSubmitError('');
 
+    const [scheduledDate, scheduledClock] = (bookingData.scheduledTime || '').split('T');
+
     const payload = {
       serviceId: bookingData.service.id,
       phone: bookingData.phone || null,
       licensePlate: bookingData.licensePlate || null,
       vehicleId: bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
-      scheduledTime: bookingData.scheduledTime,
+      // bookingData.scheduledTime holds VN wall-clock time ("YYYY-MM-DDTHH:mm") for
+      // display/state purposes; convert to a true UTC instant only at the API boundary.
+      scheduledTime: vnLocalToUtcIso(scheduledDate, scheduledClock),
       promoCode: appliedPromo?.promoCode || appliedPromo?.code || null,
       promotionId: appliedPromo?.promotionId || appliedPromo?.id || null,
       rewardId: selectedReward ? Number(selectedReward.id) : null,
