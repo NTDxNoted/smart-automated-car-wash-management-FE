@@ -6,19 +6,15 @@ import './RewardManagementPage.css';
 const RewardManagementPage = () => {
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
   const [togglingIds, setTogglingIds] = useState([]);
   const [deletingIds, setDeletingIds] = useState([]);
 
-  // Guards every setState call below against firing after unmount — matters most for the
-  // mount-time fetch in the effect further down, since that request can still resolve after
-  // the admin has already navigated away from this page.
-  const mountedRef = useRef(true);
-  useEffect(() => () => { mountedRef.current = false; }, []);
-
   const fetchRewards = async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const res = await adminRewardService.getRewards();
       const rawList = res.data?.data || res.data || [];
@@ -37,19 +33,26 @@ const RewardManagementPage = () => {
           isActive: item.isActive !== undefined ? item.isActive : (item.IsActive !== undefined ? item.IsActive : true),
         };
       });
-      if (mountedRef.current) setRewards(mapped);
+      setRewards(mapped);
     } catch (err) {
       console.error("Lỗi khi tải danh sách voucher đổi điểm:", err);
-      if (mountedRef.current) setRewards([]);
+      setRewards([]);
+      setFetchError(err?.response?.data?.message || "Không thể tải danh sách voucher đổi điểm. Vui lòng kiểm tra kết nối Server.");
     } finally {
-      if (mountedRef.current) setLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
+    let isSubscribed = true;
     (async () => {
-      await fetchRewards();
+      if (isSubscribed) {
+        await fetchRewards();
+      }
     })();
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   const handleCreate = () => {
@@ -170,13 +173,33 @@ const RewardManagementPage = () => {
                     </div>
                   </td>
                 </tr>
+              ) : fetchError ? (
+                <tr>
+                  <td colSpan={6} className="p-0 border-none">
+                    <div className="reward-empty-row py-8">
+                      <div className="reward-empty-container flex flex-col items-center gap-3">
+                        <span className="text-rose-500 font-semibold text-sm text-center px-4">{fetchError}</span>
+                        <button
+                          type="button"
+                          onClick={fetchRewards}
+                          className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 mt-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                          </svg>
+                          Thử lại
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
               ) : rewards.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-0 border-none">
                     <div className="reward-empty-row">
                       <div className="reward-empty-container">
                         <svg className="reward-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 12vA8 8 0 0 0 4 12v0a8 8 0 0 0 16 0z" />
+                          <circle cx="12" cy="12" r="9" />
                           <polygon points="12 8 13.9 11.9 18.2 12.5 15.1 15.6 15.8 19.9 12 17.9 8.2 19.9 8.9 15.6 5.8 12.5 10.1 11.9" />
                         </svg>
                         <div className="reward-empty-margin">
