@@ -76,13 +76,16 @@ export default function StepConfirm({ bookingData, onBack, user }) {
   const invoice = { baseAmount, tierDiscount, memberDiscountRatePct, promotionDiscount, rewardDiscount, finalAmount };
 
   const handleErrorResponse = (errCode, serverMessage) => {
+    if (serverMessage && typeof serverMessage === 'string' && serverMessage.trim()) {
+      return serverMessage;
+    }
     switch (errCode) {
       case 'PENDING_QUOTA_EXCEEDED': return t('quotaExceeded');
       case 'SLOT_NOT_AVAILABLE': return t('slotUnavailable');
-      case 'VEHICLE_BUFFER_VIOLATION': return t('bufferViolation');
+      case 'VEHICLE_BUFFER_VIOLATION': return 'Biển số xe này đã được đặt lịch (đơn chưa hoàn thành). Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
       case 'BOOKING_WINDOW_VIOLATION': return t('bookingWindowViolation');
       case 'BOOKING_SUSPENDED': return t('bookingSuspended');
-      default: return serverMessage || t('genericBookingError');
+      default: return t('genericBookingError');
     }
   };
 
