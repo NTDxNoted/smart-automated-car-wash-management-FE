@@ -72,10 +72,24 @@ export const bookingService = {
     },
 
     // ── FE-ISSUE-04: Tạo booking mới ─────────────────────────────────────────
-    // POST /api/bookings
+    // POST /api/bookings (Hoặc fallback /api/bookings/guest nếu khách vãng lai)
     createBooking: async (bookingData) => {
-        const response = await axiosInstance.post('/bookings', bookingData);
-        return response.data;
+        const payload = { ...bookingData };
+        if (bookingData.fullName || bookingData.customerName) {
+            payload.customerName = (bookingData.fullName || bookingData.customerName).trim();
+            payload.fullName = payload.customerName;
+        }
+        if (bookingData.licensePlate || bookingData.plate) {
+            payload.licensePlate = (bookingData.licensePlate || bookingData.plate).trim().toUpperCase();
+            payload.plate = payload.licensePlate;
+        }
+
+        return axiosInstance.post('/bookings', payload).catch((err) => {
+            if (err.response?.status === 404 || err.response?.status === 405) {
+                return axiosInstance.post('/bookings/guest', payload);
+            }
+            throw err;
+        }).then(res => res.data);
     },
 
     // ── FE-ISSUE-05: Lấy danh sách booking của member ────────────────────────

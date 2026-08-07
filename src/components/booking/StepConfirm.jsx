@@ -93,17 +93,21 @@ export default function StepConfirm({ bookingData, onBack, user }) {
     const [scheduledDate, scheduledClock] = (bookingData.scheduledTime || '').split('T');
 
     const payload = {
+      customerName: bookingData.fullName || bookingData.customerName || null,
+      fullName: bookingData.fullName || bookingData.customerName || null,
       serviceId: bookingData.service.id,
       phone: bookingData.phone || null,
       licensePlate: bookingData.licensePlate || null,
-      vehicleId: bookingData.selectedVehicleId ? Number(bookingData.selectedVehicleId) : null,
-      // bookingData.scheduledTime holds VN wall-clock time ("YYYY-MM-DDTHH:mm") for
-      // display/state purposes; convert to a true UTC instant only at the API boundary.
+      plate: bookingData.licensePlate || null,
+      vehicleId: (bookingData.selectedVehicleId && bookingData.selectedVehicleId !== 'new') ? Number(bookingData.selectedVehicleId) : null,
       scheduledTime: vnLocalToUtcIso(scheduledDate, scheduledClock),
+      bookingDate: scheduledDate,
+      bookingTime: scheduledClock,
       promoCode: appliedPromo?.promoCode || appliedPromo?.code || null,
       promotionId: appliedPromo?.promotionId || appliedPromo?.id || null,
       rewardId: selectedReward ? Number(selectedReward.id) : null,
       rewardPointsUsed: selectedReward ? selectedReward.pointsRequired : 0,
+      isWalkIn: !user ? true : undefined,
     };
 
     try {
