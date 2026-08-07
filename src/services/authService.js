@@ -11,7 +11,10 @@ const authApi = axios.create({
 function extractErrorCode(err) {
   const data = err?.response?.data;
   if (!data) return null;
-  return data.errorCode || data.message || null;
+  // Backend trả lỗi dạng { error: "ACCOUNT_LOCKED", message: "..." } (xem AuthController) —
+  // "errorCode" không phải field thật sự nên trước đây luôn rơi xuống data.message (chuỗi tiếng
+  // Việt), khiến các so sánh code === "ACCOUNT_LOCKED" phía dưới không bao giờ khớp.
+  return data.error || data.errorCode || data.message || null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
