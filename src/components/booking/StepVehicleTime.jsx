@@ -66,8 +66,14 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       // 1. Check with Backend API
       const res = await bookingService.validatePlate(plate.trim());
       if (!res.isAvailable) {
-        const errMsg = res.message || 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác.';
-        setErrors(prev => ({ ...prev, licensePlate: errMsg, scheduledTime: errMsg }));
+        let cleanMsg = (res.message || '').replace(/^[A-Z_]+:\s*/, '');
+        if (res.code === 'VEHICLE_BUFFER_VIOLATION' || cleanMsg.includes('120 phút') || cleanMsg.includes('đã có lịch hẹn')) {
+          cleanMsg = 'Biển số xe này đã có lịch hẹn trùng hoặc quá gần thời gian này (trong vòng 120 phút). Vui lòng chọn giờ khác hoặc biển số khác.';
+        } else if (!cleanMsg) {
+          cleanMsg = 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
+        }
+
+        setErrors(prev => ({ ...prev, licensePlate: cleanMsg, scheduledTime: cleanMsg }));
         setIsValidatingPlate(false);
         return false;
       }
@@ -106,16 +112,16 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       return true;
     } catch (err) {
       const serverCode = err?.response?.data?.error || err?.response?.data?.code;
-      const serverMsg = err?.response?.data?.message || err?.response?.data?.error;
+      let serverMsg = (err?.response?.data?.message || err?.response?.data?.error || '').replace(/^[A-Z_]+:\s*/, '');
       const msgStr = String(serverMsg || '').toLowerCase();
 
       let msg = serverMsg;
-      if (serverCode === 'VEHICLE_BUFFER_VIOLATION' || serverCode === 'LICENSE_PLATE_LOCKED' || msgStr.includes('pending') || msgStr.includes('đã được đặt') || msgStr.includes('trùng')) {
-        msg = 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
+      if (serverCode === 'VEHICLE_BUFFER_VIOLATION' || msgStr.includes('120 phút') || msgStr.includes('đã có lịch hẹn')) {
+        msg = 'Biển số xe này đã có lịch hẹn trùng hoặc quá gần thời gian này (trong vòng 120 phút). Vui lòng chọn giờ khác hoặc biển số khác.';
       } else if (serverCode === 'BOOKING_COOLDOWN_ACTIVE' || serverCode === 'BOOKING_SUSPENDED') {
         msg = 'Tài khoản / Biển số xe tạm thời bị khóa đặt lịch do hủy đơn 3 lần liên tiếp.';
       } else if (!msg) {
-        msg = 'Biển số xe không đạt yêu cầu hoặc đã được đặt lịch.';
+        msg = 'Biển số xe này đã được đặt lịch rồi. Vui lòng chọn biển số khác hoặc hoàn thành đơn hiện tại.';
       }
       setErrors(prev => ({ ...prev, licensePlate: msg, scheduledTime: msg }));
       setIsValidatingPlate(false);
