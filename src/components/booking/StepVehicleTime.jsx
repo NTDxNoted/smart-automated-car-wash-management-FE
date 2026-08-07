@@ -32,8 +32,8 @@ export default function StepVehicleTime({ bookingData, setBookingData, onNext, o
       return t('phoneRequired') || 'Vui lòng nhập số điện thoại liên hệ';
     }
     const cleanPhone = phoneStr.trim().replace(/\s/g, '');
-    if (!/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(cleanPhone)) {
-      return 'Số điện thoại không đúng định dạng (phải bắt đầu bằng 03, 05, 07, 08, 09 và gồm 10 chữ số)';
+    if (!/^(0[0-9]{9}|\+84[0-9]{9})$/.test(cleanPhone)) {
+      return 'Số điện thoại không hợp lệ (phải bắt đầu bằng số 0 và gồm 10 chữ số)';
     }
     return null;
   };
