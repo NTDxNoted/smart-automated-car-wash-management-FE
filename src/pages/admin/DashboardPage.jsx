@@ -209,8 +209,6 @@ export default function DashboardPage() {
     { day: 'T7', revenue: 0 },
     { day: 'CN', revenue: 0 },
   ]);
-  const [recentBookings, setRecentBookings] = useState([]);
-
   const fetchStats = async () => {
     try {
       let localTierMap = {};
@@ -260,6 +258,36 @@ export default function DashboardPage() {
         console.error("Lỗi tải doanh thu hôm nay trong Dashboard:", revenueErr);
       }
 
+      // Doanh thu 7 ngày qua: cùng cách tính với tile "hôm nay" ở trên (Transaction Paid theo
+      // PaidAt) thay vì tự cộng finalAmount theo scheduledTime ở client — cách cũ đếm cả booking
+      // Completed chưa thanh toán và gán nhầm ngày khi lịch hẹn với lúc thanh toán khác ngày nhau.
+      try {
+        const todayDate = new Date();
+        const weekDays = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(todayDate);
+          d.setDate(d.getDate() - i);
+          const dateStr = d.toLocaleDateString('en-CA');
+          const dayLabel = d.toLocaleDateString('vi-VN', { weekday: 'short' }).replace('Th ', 'T').replace('Thứ ', 'T');
+          weekDays.push({ dateStr, day: `${dayLabel} (${d.getDate()}/${d.getMonth() + 1})`, revenue: 0 });
+        }
+
+        const weekRevenueDetail = await getRevenueDetail(weekDays[0].dateStr, weekDays[6].dateStr, 'all');
+        weekRevenueDetail.transactions.forEach(tx => {
+          const paidLocal = parseLocalDate(tx.paidAt);
+          const paidDateStr = paidLocal ? paidLocal.toLocaleDateString('en-CA') : null;
+          const bucket = paidDateStr ? weekDays.find(item => item.dateStr === paidDateStr) : null;
+          if (bucket) bucket.revenue += tx.amount;
+        });
+
+        setChartData(weekDays.map(item => ({
+          day: item.day,
+          revenue: Number((item.revenue / 1_000_000).toFixed(2)),
+        })));
+      } catch (weekRevenueErr) {
+        console.error("Lỗi tải doanh thu 7 ngày qua trong Dashboard:", weekRevenueErr);
+      }
+
       const res = await adminBookingService.getAll({ pageSize: 1000 });
       const list = res.data?.data || res.data || [];
       if (list.length > 0) {
@@ -281,25 +309,6 @@ export default function DashboardPage() {
 
         // Operational warnings lists
         const warningList = [];
-
-        // Aggregation for the past 7 days ending today in chronological order
-        const last7Days = [];
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(targetTodayDate);
-          d.setDate(d.getDate() - i);
-          const dateStr = d.toLocaleDateString('en-CA');
-          const dayLabel = d.toLocaleDateString('vi-VN', { weekday: 'short' });
-          const formattedDay = dayLabel.replace('Th ', 'T').replace('Thứ ', 'T');
-          const dateDisplay = `${d.getDate()}/${d.getMonth() + 1}`;
-          let dayIndex = d.getDay(); // 0 is Sunday, 1 is Monday, etc.
-          if (dayIndex === 0) dayIndex = 7; // Map Sunday to 7
-          last7Days.push({
-            dateStr,
-            day: `${formattedDay} (${dateDisplay})`,
-            revenue: 0,
-            dayIndex,
-          });
-        }
 
         list.forEach(b => {
           const bStatus = b.status?.toUpperCase();
@@ -359,14 +368,6 @@ export default function DashboardPage() {
               }
             }
           }
-
-          // Aggregate weekly revenue
-          if (bStatus === 'COMPLETED') {
-            const dayBucket = last7Days.find(item => item.dateStr === bDateStr);
-            if (dayBucket) {
-              dayBucket.revenue += Number(b.finalAmount ?? b.baseAmount ?? b.totalAmount ?? b.totalPrice ?? 0);
-            }
-          }
         });
 
         // Set dynamic counters
@@ -380,32 +381,6 @@ export default function DashboardPage() {
         setWaitingCars(waitList);
         setNeedCheckinCars(nCheckinList);
         setWarnings(warningList);
-
-        // Update chart dataset in chronological order (6 days ago -> today)
-        setChartData(last7Days.map(item => ({
-          day: item.day,
-          revenue: Number((item.revenue / 1000000).toFixed(2)),
-        })));
-
-        // Top 5 sorted bookings
-        const sortedList = [...list].sort((a, b) => new Date(b.scheduledTime || b.createdAt) - new Date(a.scheduledTime || a.createdAt));
-        const top5 = sortedList.slice(0, 5).map(b => {
-          const customerName = b.customerName ?? b.phone ?? 'Khách hàng';
-          const nameKey = customerName.toLowerCase().trim();
-          const phoneKey = b.phone?.trim();
-          const tier = b.tier || b.customerTier || localTierMap[nameKey] || (phoneKey ? localTierMap[phoneKey] : null) || 'Member';
-          return {
-            id: b.bookingID ?? b.bookingId ?? b.id,
-            customer: customerName,
-            plate: b.licensePlate || '-',
-            service: b.serviceName || 'Rửa Xe',
-            status: b.status || 'Pending',
-            tier: tier
-          };
-        });
-        if (top5.length > 0) {
-          setRecentBookings(top5);
-        }
       }
     } catch (err) {
       console.error('Error fetching dashboard stats:', err);
@@ -424,83 +399,6 @@ export default function DashboardPage() {
     } catch (err) {
       toast.error("Không thể ghi nhận check-in");
       console.error(err);
-    }
-  };
-
-  const getInitials = (name) => {
-    if (!name) return 'KH';
-    const parts = name.trim().split(' ');
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-  };
-
-  const renderAvatar = (customer) => {
-    let bgClass = "bg-[#C9DBFD] text-[#4F607D]"; // default (e.g. NL, VT)
-    if (customer === 'Hoang Anh' || customer === 'Tran Minh') {
-      bgClass = "bg-[#00A9CE] text-white";
-    }
-
-    return (
-      <div className={`w-8 h-8 rounded-full ${bgClass} flex items-center justify-center text-[10px] font-bold shadow-sm shrink-0`}>
-        {getInitials(customer)}
-      </div>
-    );
-  };
-
-  const formatBookingId = (id) => {
-    if (!id) return '#AW-0000';
-    const cleanId = String(id).replace(/[^a-zA-Z0-9]/g, '');
-    if (cleanId.length > 4) {
-      return `#AW-${cleanId.slice(-4).toUpperCase()}`;
-    }
-    return `#AW-${cleanId.toUpperCase()}`;
-  };
-
-  const getStatusBadge = (status) => {
-    const normStatus = status?.toUpperCase();
-    switch (normStatus) {
-      case 'COMPLETED':
-        return (
-          <span className="status-badge-figma completed">
-            <span className="status-dot"></span>
-            <span className="status-text">Đã xong</span>
-          </span>
-        );
-      case 'PROCESSING':
-      case 'IN-PROGRESS':
-      case 'IN_PROGRESS':
-        return (
-          <span className="status-badge-figma processing">
-            <span className="status-dot"></span>
-            <span className="status-text">Đang rửa</span>
-          </span>
-        );
-      case 'CANCELLED':
-      case 'CANCEL':
-      case 'CANCEL_BY_ADMIN':
-      case 'CANCEL_BY_CUSTOMER':
-      case 'FAILED':
-        return (
-          <span className="status-badge-figma cancelled">
-            <span className="status-dot"></span>
-            <span className="status-text">Đã hủy</span>
-          </span>
-        );
-      case 'NOSHOW':
-      case 'NO-SHOW':
-        return (
-          <span className="status-badge-figma completed">
-            <span className="status-dot bg-slate-400"></span>
-            <span className="status-text text-slate-500">No-show</span>
-          </span>
-        );
-      default:
-        return (
-          <span className="status-badge-figma completed">
-            <span className="status-dot bg-amber-500 animate-pulse"></span>
-            <span className="status-text text-amber-700">Đang chờ</span>
-          </span>
-        );
     }
   };
 
@@ -957,70 +855,6 @@ export default function DashboardPage() {
 
         </div>
 
-      </div>
-
-      {/* Recent Bookings Table */}
-      <div className="bookings-table-container">
-        <div className="bookings-header-row">
-          <h3 className="text-[#111C2C] text-lg font-bold" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
-            Booking gần đây
-          </h3>
-          <button className="bookings-view-all-btn" onClick={() => navigate('/admin/bookings')}>
-            Xem tất cả
-          </button>
-        </div>
-
-        <div className="bookings-table-wrapper">
-          <table className="bookings-table">
-            <thead>
-              <tr className="bookings-thead-row">
-                <th className="bookings-th code">MÃ ĐƠN</th>
-                <th className="bookings-th customer">KHÁCH HÀNG</th>
-                <th className="bookings-th plate">BIỂN SỐ XE</th>
-                <th className="bookings-th service">DỊCH VỤ</th>
-                <th className="bookings-th status">TRẠNG THÁI</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {recentBookings.map((booking) => (
-                <tr
-                  key={booking.id}
-                  className="bookings-tbody-row cursor-pointer"
-                  onClick={() => setSelectedBooking(booking)}
-                >
-                  <td className="bookings-td code">
-                    {formatBookingId(booking.id)}
-                  </td>
-
-                  <td className="bookings-td customer" style={{ display: 'flex', alignItems: 'center', height: '73px' }}>
-                    {renderAvatar(booking.customer)}
-                    <div className="flex flex-col gap-1 items-start justify-center ml-2.5">
-                      <span className="bookings-customer-name" style={{ padding: 0, fontSize: '13.5px', fontWeight: 600 }}>
-                        {booking.customer}
-                      </span>
-                      <span className={`rfm-tier-badge ${booking.tier?.toLowerCase()}`} style={{ fontSize: '9px', padding: '1px 5px', textTransform: 'uppercase' }}>
-                        {booking.tier}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="bookings-td plate">
-                    {booking.plate}
-                  </td>
-
-                  <td className="bookings-td service">
-                    {booking.service}
-                  </td>
-
-                  <td className="bookings-td status">
-                    {getStatusBadge(booking.status)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
 
       {/* Booking Detail Drawer */}
