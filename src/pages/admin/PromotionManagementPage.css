@@ -475,18 +475,3 @@
 .promo-action-btn.edit:hover {
   background: rgba(14, 165, 233, 0.05);
 }
-
-.promo-action-btn.detail {
-  color: #64748B;
-  border: 1.5px solid #64748B;
-  border-radius: 6px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  padding: 4px 10px;
-}
-
-.promo-action-btn.detail:hover {
-  background: rgba(100, 116, 139, 0.08);
-}
